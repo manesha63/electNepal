@@ -1,0 +1,11 @@
+{
+  "provinces": [
+    {"code":"P1","name_en":"Koshi Province","name_ne":"कोशी प्रदेश"}
+  ],
+  "districts": [
+    {"code":"D001","name_en":"Bhojpur","name_ne":"भोजपुर","province_code":"P1"}
+  ],
+  "municipalities": [
+    {"code":"M0001","name_en":"Bhojpur Municipality","name_ne":"भोजपुर नगरपालिका","district_code":"D001","type":"municipality","total_wards":10}
+  ]
+}

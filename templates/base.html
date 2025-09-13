@@ -1,0 +1,28 @@
+{% load i18n static %}
+<!doctype html>
+<html lang="{{ request.LANGUAGE_CODE|default:'en' }}">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}{% trans "Nepal Independent Candidates" %}{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="{% if request.LANGUAGE_CODE == 'ne' %}font-[Noto Sans Devanagari]{% else %}font-[Inter]{% endif %}">
+<header class="bg-white border-b">
+  <div class="max-w-6xl mx-auto p-4 flex justify-between">
+    <a href="{% url 'home' %}" class="font-semibold text-blue-900">{% trans "Independent Candidates" %}</a>
+    <form method="post" action="{% url 'set_language' %}">{% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <select name="language" onchange="this.form.submit()" class="border rounded px-2 py-1 text-sm">
+        {% get_current_language as LANGUAGE_CODE %}{% get_available_languages as LANGUAGES %}
+        {% for code,name in LANGUAGES %}
+          <option value="{{code}}"{% if code == LANGUAGE_CODE %} selected{% endif %}>{{name}}</option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+</header>
+<main class="max-w-6xl mx-auto p-4">{% block content %}{% endblock %}</main>
+<footer class="border-t text-sm text-gray-500 p-4 text-center">© 2024</footer>
+</body></html>

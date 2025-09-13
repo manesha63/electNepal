@@ -1,0 +1,142 @@
+from django.db import models
+from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
+from django.urls import reverse
+from locations.models import Province, District, Municipality
+
+
+def candidate_photo_path(instance, filename):
+    return f'candidates/{instance.user.username}/{filename}'
+
+
+def verification_doc_path(instance, filename):
+    return f'verification/{instance.user.username}/{filename}'
+
+
+class Candidate(models.Model):
+    POSITION_LEVELS = [
+        ('ward', 'Ward Representative'),
+        ('local_executive', 'Local Executive (Mayor/Chairperson)'),
+        ('provincial', 'Provincial Assembly'),
+        ('federal', 'Federal Parliament'),
+    ]
+    VERIFICATION_STATUS = [
+        ('pending', 'Pending Verification'),
+        ('verified', 'Verified'),
+        ('rejected', 'Verification Rejected'),
+    ]
+    
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    full_name = models.CharField(max_length=200, help_text="Full name as it appears on official documents")
+    photo = models.ImageField(upload_to=candidate_photo_path, blank=True, null=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    phone_number = models.CharField(max_length=20, blank=True)
+
+    bio_en = models.TextField(help_text="Biography in English")
+    bio_ne = models.TextField(blank=True, help_text="Biography in Nepali (optional)")
+    education_en = models.TextField(blank=True)
+    education_ne = models.TextField(blank=True)
+    experience_en = models.TextField(blank=True)
+    experience_ne = models.TextField(blank=True)
+    manifesto_en = models.TextField(blank=True)
+    manifesto_ne = models.TextField(blank=True)
+
+    position_level = models.CharField(max_length=20, choices=POSITION_LEVELS)
+    province = models.ForeignKey(Province, on_delete=models.CASCADE)
+    district = models.ForeignKey(District, on_delete=models.CASCADE)
+    municipality = models.ForeignKey(Municipality, on_delete=models.CASCADE, null=True, blank=True)
+    ward_number = models.IntegerField(
+        null=True, blank=True,
+        validators=[MinValueValidator(1), MaxValueValidator(35)],
+        help_text="Ward number (1-35, required for ward-level positions)"
+    )
+    constituency_code = models.CharField(max_length=50, blank=True)
+
+    verification_status = models.CharField(max_length=20, choices=VERIFICATION_STATUS, default='pending')
+    verification_document = models.FileField(upload_to=verification_doc_path, blank=True)
+    verification_notes = models.TextField(blank=True)
+    verified_at = models.DateTimeField(null=True, blank=True)
+    verified_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='verified_candidates')
+
+    website = models.URLField(blank=True)
+    facebook_url = models.URLField(blank=True)
+    donation_link = models.URLField(blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['verification_status']),
+            models.Index(fields=['position_level', 'district']),
+            models.Index(fields=['province', 'district', 'municipality']),
+            models.Index(fields=['full_name']),
+        ]
+
+    def clean(self):
+        if self.position_level == 'ward' and not self.ward_number:
+            raise ValidationError('Ward number is required for ward-level positions')
+        if self.position_level == 'ward' and not self.municipality:
+            raise ValidationError('Municipality is required for ward-level positions')
+        if self.municipality and self.municipality.district != self.district:
+            raise ValidationError('Municipality must belong to the selected district')
+        if self.district.province != self.province:
+            raise ValidationError('District must belong to the selected province')
+
+    def get_absolute_url(self):
+        return reverse('candidates:detail', kwargs={'pk': self.pk})
+
+    def is_verified(self):
+        return self.verification_status == 'verified'
+
+    def get_display_location(self):
+        parts = [self.municipality.name_en if self.municipality else self.district.name_en]
+        if self.ward_number:
+            parts.append(f"Ward {self.ward_number}")
+        parts.append(self.district.name_en)
+        parts.append(self.province.name_en)
+        return ", ".join(parts)
+
+    def __str__(self):
+        return f"{self.full_name} ({self.get_position_level_display()})"
+
+
+class CandidatePost(models.Model):
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name='posts')
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    is_published = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['candidate', '-created_at']),
+            models.Index(fields=['is_published', '-created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.candidate.full_name}: {self.title}"
+
+
+class CandidateEvent(models.Model):
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name='events')
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    event_date = models.DateTimeField()
+    location = models.CharField(max_length=200)
+    is_published = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['event_date']
+        indexes = [
+            models.Index(fields=['candidate', 'event_date']),
+            models.Index(fields=['is_published', 'event_date']),
+        ]
+    
+    def __str__(self):
+        return f"{self.candidate.full_name}: {self.title}"

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}{% block content %}
+<h1 class="text-xl font-semibold mb-4">Candidates</h1>
+<ul class="space-y-2">
+  {% for c in candidates %}
+    <li><a class="text-blue-700 underline" href="{{ c.get_absolute_url }}">{{ c.full_name }}</a></li>
+  {% empty %}
+    <li>No candidates yet.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

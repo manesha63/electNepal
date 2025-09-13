@@ -1,0 +1,4 @@
+{% extends 'base.html' %}{% block content %}
+<h1 class="text-2xl font-semibold mb-2">{{ candidate.full_name }}</h1>
+<p>{{ candidate.get_position_level_display }}</p>
+{% endblock %}

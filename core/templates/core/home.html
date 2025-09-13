@@ -1,0 +1,7 @@
+{% extends 'base.html' %}{% load i18n %}
+{% block title %}{% trans "Find Independent Candidates in Nepal" %}{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-semibold mb-4">{% trans "Democracy Starts with You" %}</h1>
+<p class="mb-6">{% trans "Use the navigation to explore candidates and voter info." %}</p>
+<a href="{% url 'how_to_vote' %}" class="text-blue-700 underline">{% trans "How to Vote" %}</a>
+{% endblock %}
