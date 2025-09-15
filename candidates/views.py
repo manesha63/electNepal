@@ -1,9 +1,11 @@
 from django.views.generic import ListView, DetailView
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from django.db.models import Q
+from django.db.models import Q, Case, When, Value, IntegerField
 from django.utils import timezone
 from django.utils.translation import get_language
+from django.views.decorators.http import require_GET
+from django.core.paginator import Paginator
 from .models import Candidate, CandidateEvent
 from locations.models import Province, District, Municipality
 import json
@@ -11,40 +13,40 @@ import json
 
 class CandidateListView(ListView):
     model = Candidate
-    template_name = 'candidates/feed.html'  # Using Instagram-style feed template
+    template_name = 'candidates/feed_simple_grid.html'  # Using simple 3x3 grid with row navigation
     context_object_name = 'candidates'
     paginate_by = 12
-    
+
     def get_queryset(self):
         queryset = Candidate.objects.all()
-        
+
         # Get filter parameters
         verified_only = self.request.GET.get('verified', 'true') == 'true'
         search = self.request.GET.get('search', '')
         district_id = self.request.GET.get('district')
         municipality_id = self.request.GET.get('municipality')
         position_level = self.request.GET.get('position')
-        
+
         # Apply filters
         if verified_only:
             queryset = queryset.filter(verification_status='verified')
-        
+
         if search:
             queryset = queryset.filter(
                 Q(full_name__icontains=search) |
                 Q(bio_en__icontains=search) |
                 Q(bio_ne__icontains=search)
             )
-        
+
         if district_id:
             queryset = queryset.filter(district_id=district_id)
-        
+
         if municipality_id:
             queryset = queryset.filter(municipality_id=municipality_id)
-        
+
         if position_level:
             queryset = queryset.filter(position_level=position_level)
-        
+
         return queryset.select_related('district', 'municipality', 'province').order_by('full_name')
     
     def get_context_data(self, **kwargs):
@@ -215,3 +217,213 @@ def search_candidates_api(request):
         })
     
     return JsonResponse({'results': results})
+
+
+@require_GET
+def my_ballot(request):
+    """
+    Return candidates for the user's ballot based on their location.
+    Sorted by relevance: exact ward > municipality > district > province > federal.
+    """
+    # Get location parameters from request
+    province_id = request.GET.get('province_id')
+    district_id = request.GET.get('district_id')
+    municipality_id = request.GET.get('municipality_id')
+    ward_number = request.GET.get('ward_number')
+
+    # Province ID is required at minimum
+    if not province_id:
+        return JsonResponse({'error': 'province_id is required'}, status=400)
+
+    try:
+        province_id = int(province_id)
+    except (TypeError, ValueError):
+        return JsonResponse({'error': 'Invalid province_id'}, status=400)
+
+    # Build the filter query
+    filters = Q(province_id=province_id) | Q(position_level='federal')
+
+    # Convert IDs to integers if provided
+    if district_id:
+        try:
+            district_id = int(district_id)
+            filters |= Q(district_id=district_id)
+        except (TypeError, ValueError):
+            pass
+
+    if municipality_id:
+        try:
+            municipality_id = int(municipality_id)
+            filters |= Q(municipality_id=municipality_id)
+        except (TypeError, ValueError):
+            pass
+
+    if ward_number:
+        try:
+            ward_number = int(ward_number)
+            if municipality_id:
+                filters |= Q(municipality_id=municipality_id, ward_number=ward_number)
+        except (TypeError, ValueError):
+            pass
+
+    # Query candidates with the filters
+    queryset = Candidate.objects.filter(filters).filter(verification_status='verified')
+
+    # Create relevance ranking based on location match
+    ranking_conditions = []
+
+    # Exact ward match (highest priority - 0)
+    if municipality_id and ward_number:
+        ranking_conditions.append(
+            When(municipality_id=municipality_id, ward_number=ward_number, then=Value(0))
+        )
+
+    # Municipality match (priority - 1)
+    if municipality_id:
+        ranking_conditions.append(
+            When(municipality_id=municipality_id, then=Value(1))
+        )
+
+    # District match (priority - 2)
+    if district_id:
+        ranking_conditions.append(
+            When(district_id=district_id, then=Value(2))
+        )
+
+    # Province match (priority - 3)
+    ranking_conditions.append(
+        When(province_id=province_id, then=Value(3))
+    )
+
+    # Federal level (priority - 4)
+    ranking_conditions.append(
+        When(position_level='federal', then=Value(4))
+    )
+
+    # Apply ranking
+    if ranking_conditions:
+        queryset = queryset.annotate(
+            relevance=Case(
+                *ranking_conditions,
+                default=Value(9),
+                output_field=IntegerField()
+            )
+        ).order_by('relevance', '-verified_at', 'full_name')
+    else:
+        queryset = queryset.order_by('-verified_at', 'full_name')
+
+    # Select related for efficiency
+    queryset = queryset.select_related('province', 'district', 'municipality')
+
+    # Get language preference
+    lang = get_language()
+    is_nepali = lang == 'ne'
+
+    # Build response data
+    candidates_data = []
+    for candidate in queryset[:50]:  # Limit to 50 candidates for now
+        # Use language-aware fields
+        bio_field = 'bio_ne' if is_nepali and candidate.bio_ne else 'bio_en'
+        bio_text = getattr(candidate, bio_field, '')
+
+        # Get location display
+        location_parts = []
+        if candidate.ward_number:
+            location_parts.append(f"Ward {candidate.ward_number}")
+        if candidate.municipality:
+            municipality_name = candidate.municipality.name_ne if is_nepali else candidate.municipality.name_en
+            location_parts.append(municipality_name)
+        if candidate.district:
+            district_name = candidate.district.name_ne if is_nepali else candidate.district.name_en
+            location_parts.append(district_name)
+        if candidate.province:
+            province_name = candidate.province.name_ne if is_nepali else candidate.province.name_en
+            location_parts.append(province_name)
+
+        location_display = ', '.join(location_parts) if location_parts else ''
+
+        candidates_data.append({
+            'id': candidate.id,
+            'full_name': candidate.full_name,
+            'position_level': candidate.position_level,
+            'position_display': candidate.get_position_level_display(),
+            'province_id': candidate.province_id,
+            'district_id': candidate.district_id,
+            'municipality_id': candidate.municipality_id,
+            'ward_number': candidate.ward_number,
+            'location': location_display,
+            'bio': bio_text[:200] + '...' if len(bio_text) > 200 else bio_text,
+            'photo': candidate.photo.url if candidate.photo else None,
+            'status': candidate.verification_status,
+            'verified': candidate.verification_status == 'verified',
+            'party': 'Independent' if not is_nepali else 'स्वतन्त्र'
+        })
+
+    return JsonResponse({
+        'candidates': candidates_data,
+        'total': len(candidates_data),
+        'location_context': {
+            'province_id': province_id,
+            'district_id': district_id,
+            'municipality_id': municipality_id,
+            'ward_number': ward_number
+        }
+    })
+
+
+def ballot_view(request):
+    """Display the ballot page with geolocation-based candidate sorting."""
+    provinces = Province.objects.all().order_by('name_en')
+    return render(request, 'candidates/ballot.html', {'provinces': provinces})
+
+
+@require_GET
+def candidate_cards_api(request):
+    """API endpoint for candidate cards with pagination."""
+    # Get parameters
+    q = (request.GET.get('q') or '').strip()
+    page = int(request.GET.get('page', 1))
+    # "batch" = 3 rows * variable columns; front-end sends page_size
+    page_size = max(1, min(int(request.GET.get('page_size', 9)), 48))
+
+    # Build queryset
+    qs = Candidate.objects.filter(verification_status='verified').select_related('province', 'district', 'municipality')
+
+    # Apply search filter if provided
+    if q:
+        qs = qs.filter(
+            Q(full_name__icontains=q) |
+            Q(bio_en__icontains=q) |
+            Q(bio_ne__icontains=q)
+        )
+
+    # Order by verification and name
+    qs = qs.order_by('-verified_at', 'full_name')
+
+    # Paginate
+    paginator = Paginator(qs, page_size)
+    page_obj = paginator.get_page(page)
+
+    def candidate_to_dict(c):
+        """Convert candidate to dictionary for JSON response."""
+        return {
+            "id": c.id,
+            "name": c.full_name,
+            "photo": c.photo.url if c.photo else "/static/images/default-avatar.png",
+            "position_level": c.position_level,
+            "province": c.province.name_en if c.province else None,
+            "district": c.district.name_en if c.district else None,
+            "municipality": c.municipality.name_en if c.municipality else None,
+            "ward": c.ward_number,
+            "verified": c.verification_status == "verified",
+            "detail_url": f"/candidates/{c.id}/",
+        }
+
+    return JsonResponse({
+        "items": [candidate_to_dict(c) for c in page_obj.object_list],
+        "page": page_obj.number,
+        "num_pages": paginator.num_pages,
+        "has_next": page_obj.has_next(),
+        "has_previous": page_obj.has_previous(),
+        "total": paginator.count,
+    })

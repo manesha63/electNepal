@@ -1,0 +1,523 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block title %}Discover Candidates - ElectNepal{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Keep all existing styles from original feed.html */
+    body {
+        background: #f5f7fa;
+    }
+
+    .main-content .container {
+        max-width: 100%;
+        padding: 0;
+    }
+
+    /* Top Search Bar - UNCHANGED */
+    .search-header {
+        background: transparent;
+        padding: 20px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .search-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .search-bar {
+        display: flex;
+        align-items: center;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        height: 36px;
+        width: 874px;
+        transition: all 0.3s;
+        position: relative;
+    }
+
+    .search-bar:focus-within {
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+    }
+
+    .search-icon {
+        padding: 0 16px;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .search-input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        font-size: 14px;
+        padding: 0;
+        outline: none;
+        height: 100%;
+    }
+
+    .search-input::placeholder {
+        color: #9ca3af;
+    }
+
+    .search-btn {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 0 20px;
+        height: 100%;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+        border-radius: 0 3px 3px 0;
+    }
+
+    .search-btn:hover {
+        background: #5a67d8;
+    }
+
+    /* Filter Button - UNCHANGED */
+    .filter-wrapper {
+        position: relative;
+    }
+
+    .filter-button {
+        width: 40px;
+        height: 36px;
+        border-radius: 4px;
+        background: white;
+        border: 1px solid #e0e0e0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+    }
+
+    .filter-button:hover {
+        border-color: #667eea;
+        background: #f9fafb;
+    }
+
+    .filter-dropdown {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 8px;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        min-width: 400px;
+    }
+
+    .filter-dropdown.show {
+        display: block;
+    }
+
+    /* Content and Grid Styling */
+    .content-wrapper {
+        max-width: 100%;
+        margin: 0 3.5cm;
+        padding: 20px 0;
+        display: flex;
+        justify-content: center;
+    }
+
+    .candidates-section {
+        min-height: 100vh;
+        width: 100%;
+    }
+
+    /* Grid container for cards */
+    .candidate-grid-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    @media (max-width: 1024px) {
+        .candidate-grid-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 640px) {
+        .candidate-grid-container {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Candidate Card - Keep original styling */
+    .candidate-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s;
+        cursor: pointer;
+        min-width: 0;
+    }
+
+    .candidate-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .candidate-photo {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .candidate-photo-placeholder {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .candidate-info {
+        flex: 1;
+    }
+
+    .candidate-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 4px;
+    }
+
+    .candidate-details {
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+
+    .detail-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 2px;
+    }
+
+    .level-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: capitalize;
+    }
+
+    .badge-federal { background: #dbeafe; color: #1e40af; }
+    .badge-provincial { background: #dcfce7; color: #166534; }
+    .badge-district { background: #fef3c7; color: #92400e; }
+    .badge-local { background: #fce7f3; color: #9f1239; }
+
+    .party-label {
+        background: #fef3c7;
+        color: #92400e;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    .action-btn {
+        flex: 1;
+        padding: 6px 12px;
+        border: 1px solid #e5e7eb;
+        background: white;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        text-align: center;
+        color: #374151;
+    }
+
+    .action-btn.primary {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Search Header - KEEP EXACTLY AS IS -->
+<div class="search-header">
+    <div class="search-container">
+        <div class="search-bar">
+            <div class="search-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <input type="text"
+                   id="searchInput"
+                   class="search-input"
+                   placeholder="{% trans 'Search candidates...' %}"
+                   value="{{ request.GET.q }}">
+            <button class="search-btn" onclick="performSearch()">
+                {% trans 'Search' %}
+            </button>
+        </div>
+
+        <!-- Filter Button - KEEP AS IS -->
+        <div class="filter-wrapper">
+            <button class="filter-button" onclick="toggleFilterDropdown()">
+                <i class="fas fa-filter"></i>
+            </button>
+
+            <!-- Filter Dropdown - KEEP AS IS -->
+            <div id="filterDropdown" class="filter-dropdown">
+                <!-- Keep all existing filter content -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content - ONLY MODIFYING THE CANDIDATES GRID -->
+<div class="content-wrapper">
+    <div class="candidates-section">
+
+        <!-- Responsive Grid with Alpine.js -->
+        <div x-data="candidateGrid()" x-init="fetchCandidates()" class="flex flex-col items-center">
+            <!-- Candidates Grid (3 rows, responsive columns) -->
+            <div class="candidate-grid-container gap-4 mb-8 w-full">
+                <template x-for="candidate in visibleCandidates" :key="candidate.id">
+                    <div class="candidate-card" @click="window.location.href = candidate.detail_url">
+                        <div class="card-header">
+                            <template x-if="candidate.photo">
+                                <img :src="candidate.photo" :alt="candidate.name" class="candidate-photo">
+                            </template>
+                            <template x-if="!candidate.photo">
+                                <div class="candidate-photo-placeholder">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            </template>
+                            <div class="candidate-info">
+                                <h3 class="candidate-name" x-text="candidate.name"></h3>
+                                <div class="candidate-details">
+                                    <div class="detail-row">
+                                        <span class="level-badge" :class="'badge-' + candidate.position_level" x-text="candidate.position_level"></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span x-text="formatLocation(candidate)"></span>
+                                    </div>
+                                    <div class="detail-row" x-show="candidate.verified">
+                                        <i class="fas fa-check-circle text-green-500"></i>
+                                        <span>Verified</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <a :href="candidate.detail_url" class="action-btn primary" @click.stop="">
+                                <i class="fas fa-user-circle"></i>
+                                View Profile
+                            </a>
+                            <button class="action-btn" @click.stop="shareCandidate(candidate.id)">
+                                <i class="fas fa-share"></i>
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div class="flex justify-between items-center w-full">
+                <!-- Previous Button (only shows after 3+ page loads) -->
+                <button
+                    x-show="showPreviousButton"
+                    @click="loadPrevious()"
+                    class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                    :disabled="!hasPrevious">
+                    <i class="fas fa-chevron-left mr-2"></i> Previous
+                </button>
+                <div x-show="!showPreviousButton" class="w-24"></div>
+
+                <!-- More Button -->
+                <button
+                    x-show="hasMore"
+                    @click="loadMore()"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    More <i class="fas fa-chevron-right ml-2"></i>
+                </button>
+                <div x-show="!hasMore" class="w-24"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+// Alpine.js Component for Candidate Grid
+function candidateGrid() {
+    return {
+        candidates: [],
+        visibleCandidates: [],
+        currentPage: 1,
+        totalPages: 1,
+        pageSize: 12, // 3 rows * 4 columns max
+        hasMore: true,
+        hasPrevious: false,
+        showPreviousButton: false,
+        pageLoadCount: 0,
+        searchQuery: '',
+
+        async fetchCandidates(page = 1) {
+            try {
+                // Get search query from URL or input
+                const urlParams = new URLSearchParams(window.location.search);
+                this.searchQuery = urlParams.get('q') || document.getElementById('searchInput')?.value || '';
+
+                // Calculate dynamic page size based on viewport
+                const cols = this.getColumnCount();
+                this.pageSize = cols * 3; // 3 rows
+
+                const response = await fetch(`/candidates/api/cards/?page=${page}&page_size=${this.pageSize}&q=${encodeURIComponent(this.searchQuery)}`);
+                const data = await response.json();
+
+                this.candidates = data.items || [];
+                this.visibleCandidates = this.candidates;
+                this.currentPage = data.page || 1;
+                this.totalPages = data.num_pages || 1;
+                this.hasMore = data.has_next || false;
+                this.hasPrevious = data.has_previous || false;
+
+                // Track page loads for showing Previous button
+                if (page > this.currentPage) {
+                    this.pageLoadCount++;
+                }
+                this.showPreviousButton = this.pageLoadCount >= 3;
+
+            } catch (error) {
+                console.error('Error fetching candidates:', error);
+                // Fallback to template data if available
+                this.loadFallbackData();
+            }
+        },
+
+        loadMore() {
+            if (this.hasMore) {
+                this.pageLoadCount++;
+                this.fetchCandidates(this.currentPage + 1);
+            }
+        },
+
+        loadPrevious() {
+            if (this.hasPrevious) {
+                this.fetchCandidates(this.currentPage - 1);
+            }
+        },
+
+        getColumnCount() {
+            const width = window.innerWidth;
+            if (width >= 1280) return 4; // xl
+            if (width >= 1024) return 3; // lg
+            if (width >= 640) return 2;  // sm
+            return 1;
+        },
+
+        formatLocation(candidate) {
+            const parts = [];
+            if (candidate.ward) parts.push(`Ward ${candidate.ward}`);
+            if (candidate.municipality) parts.push(candidate.municipality);
+            if (candidate.district) parts.push(candidate.district);
+            if (candidate.province) parts.push(candidate.province);
+            return parts.join(', ') || 'Nepal';
+        },
+
+        shareCandidate(id) {
+            // Implement share functionality
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Check out this candidate',
+                    url: `/candidates/${id}/`
+                });
+            } else {
+                // Fallback to copying URL
+                const url = `${window.location.origin}/candidates/${id}/`;
+                navigator.clipboard.writeText(url);
+                alert('Link copied to clipboard!');
+            }
+        },
+
+        loadFallbackData() {
+            // Use template data as fallback
+            this.candidates = [
+                {% for candidate in candidates %}
+                {
+                    id: {{ candidate.id }},
+                    name: "{{ candidate.full_name }}",
+                    photo: {% if candidate.photo %}"{{ candidate.photo.url }}"{% else %}null{% endif %},
+                    position_level: "{{ candidate.position_level }}",
+                    province: "{% if candidate.province %}{{ candidate.province.name_en }}{% endif %}",
+                    district: "{% if candidate.district %}{{ candidate.district.name_en }}{% endif %}",
+                    municipality: "{% if candidate.municipality %}{{ candidate.municipality.name_en }}{% endif %}",
+                    ward: {% if candidate.ward_number %}{{ candidate.ward_number }}{% else %}null{% endif %},
+                    verified: {% if candidate.verification_status == 'verified' %}true{% else %}false{% endif %},
+                    detail_url: "/candidates/{{ candidate.id }}/"
+                },
+                {% endfor %}
+            ];
+            this.visibleCandidates = this.candidates.slice(0, this.pageSize);
+            this.hasMore = this.candidates.length > this.pageSize;
+        }
+    }
+}
+
+// Keep existing search and filter functions
+function performSearch() {
+    const searchTerm = document.getElementById('searchInput').value;
+    window.location.href = `?q=${encodeURIComponent(searchTerm)}`;
+}
+
+function toggleFilterDropdown() {
+    const dropdown = document.getElementById('filterDropdown');
+    dropdown.classList.toggle('show');
+}
+</script>
+{% endblock %}

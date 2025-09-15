@@ -3,7 +3,7 @@
 ## Project Overview
 A Django-based web application for tracking and displaying independent candidates in Nepal elections. Built with Django 4.2.7, migrated to PostgreSQL database, with comprehensive bilingual support (English/Nepali) and automatic translation capabilities for democratic participation in Nepal.
 
-## Current Project Status (as of 2025-01-15)
+## Current Project Status (as of 2025-01-16)
 
 ### ✅ Completed Features
 
@@ -106,6 +106,15 @@ A Django-based web application for tracking and displaying independent candidate
    - Responsive card layout
    - "Independent" party label for all candidates (translates to "स्वतन्त्र" in Nepali)
 
+#### 11. **Location-Based Ballot System** (NEW - Jan 16, 2025)
+   - **Geolocation Resolution**: Converts GPS coordinates to Nepal administrative regions
+   - **My Ballot Feature**: Shows candidates sorted by location relevance (ward > municipality > district > province)
+   - **Privacy-First**: No storage of user coordinates, one-time location use only
+   - **Manual Fallback**: Complete cascade selection for users who deny location access
+   - **Responsive UI**: Mobile-friendly ballot page with Alpine.js interactivity
+   - **API Endpoints**: `/api/georesolve/` and `/candidates/api/my-ballot/`
+   - **Documentation**: See BALLOT_FEATURE.md for detailed implementation
+
 ## Technical Stack
 
 ### Backend
@@ -143,6 +152,7 @@ httpx==0.13.3
 ├── manage.py                # Django management script
 ├── requirements.txt         # Python dependencies
 ├── CLAUDE.md               # This documentation file
+├── BALLOT_FEATURE.md       # Ballot feature documentation (NEW)
 │
 ├── nepal_election_app/     # Main Django project
 │   ├── __init__.py
@@ -201,7 +211,8 @@ httpx==0.13.3
 │   └── templates/candidates/
 │       ├── feed.html      # Instagram-style candidate feed
 │       ├── list.html      # Candidate listing
-│       └── detail.html    # Candidate profile
+│       ├── detail.html    # Candidate profile
+│       └── ballot.html    # Location-based ballot page (NEW)
 │
 ├── templates/              # Global templates
 │   ├── base.html          # Base template with nav, footer, cookie consent
@@ -754,12 +765,19 @@ This project aims to:
 
 ---
 
-**Last Updated**: 2025-01-15
+**Last Updated**: 2025-01-16
 **Current Working Directory**: ~/electNepal
 **Python Version**: 3.12.3
 **Django Version**: 4.2.7
 **Database**: PostgreSQL 16
-**Status**: Development Phase - 75% Complete
+**Status**: Development Phase - 80% Complete
+
+### Today's Major Update (Jan 16, 2025)
+- ✅ Implemented complete Location-Based Ballot System
+- ✅ Added geolocation resolution for Nepal regions
+- ✅ Created sorted candidate ballot based on user location
+- ✅ Implemented privacy-first approach with manual fallback
+- ✅ Full documentation in BALLOT_FEATURE.md
 
 ### Recent Major Updates
 - ✅ Complete bilingual system implementation

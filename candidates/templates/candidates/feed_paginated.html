@@ -1,0 +1,934 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block title %}Discover Candidates - ElectNepal{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Override base styles */
+    body {
+        background: #f5f7fa;
+    }
+
+    .main-content .container {
+        max-width: 100%;
+        padding: 0;
+    }
+
+    /* Top Search Bar */
+    .search-header {
+        background: transparent;
+        padding: 20px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .search-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .search-bar {
+        display: flex;
+        align-items: center;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        height: 36px;
+        width: 874px;
+        transition: all 0.3s;
+        position: relative;
+    }
+
+    .search-bar:focus-within {
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+    }
+
+    .search-icon {
+        padding: 0 16px;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .search-input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        font-size: 14px;
+        padding: 0;
+        outline: none;
+        height: 100%;
+    }
+
+    .search-input::placeholder {
+        color: #9ca3af;
+    }
+
+    .search-btn {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 0 20px;
+        height: 100%;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+        border-radius: 0 3px 3px 0;
+    }
+
+    .search-btn:hover {
+        background: #5a67d8;
+    }
+
+    /* Filter Button and Dropdown */
+    .filter-wrapper {
+        position: relative;
+    }
+
+    .filter-button {
+        width: 40px;
+        height: 36px;
+        border-radius: 4px;
+        background: white;
+        border: 1px solid #e0e0e0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+    }
+
+    .filter-button:hover {
+        border-color: #667eea;
+        background: #f9fafb;
+    }
+
+    .filter-dropdown {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 8px;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        min-width: 400px;
+    }
+
+    .filter-dropdown.show {
+        display: block;
+    }
+
+    .filter-group {
+        margin-bottom: 12px;
+    }
+
+    .filter-select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .filter-select:hover {
+        border-color: #667eea;
+        background: #f9fafb;
+    }
+
+    .clear-filters-btn {
+        width: 100%;
+        padding: 10px;
+        background: #f3f4f6;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #374151;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .clear-filters-btn:hover {
+        background: #e5e7eb;
+    }
+
+    .province-option:hover {
+        background: #f3f4f6;
+    }
+
+    /* Main Content Container */
+    .content-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+
+    /* Candidates Rows Container */
+    .candidates-rows-container {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Single Row Container */
+    .candidate-row-wrapper {
+        margin-bottom: 30px;
+        position: relative;
+    }
+
+    .candidate-row-wrapper:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Row with Navigation */
+    .candidate-row {
+        display: grid;
+        grid-template-columns: 40px 1fr 40px;
+        align-items: center;
+        gap: 15px;
+    }
+
+    /* Navigation Arrows */
+    .nav-arrow {
+        width: 40px;
+        height: 40px;
+        border: 1px solid #e5e7eb;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #6b7280;
+    }
+
+    .nav-arrow:hover:not(:disabled) {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+
+    .nav-arrow:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+
+    /* Candidates Grid (3 columns) */
+    .candidates-grid-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    /* Candidate Card */
+    .candidate-card {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 20px;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .candidate-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-color: #667eea;
+    }
+
+    .card-header {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .candidate-photo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .candidate-photo-placeholder {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+    }
+
+    .candidate-info {
+        flex: 1;
+    }
+
+    .candidate-name {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 5px;
+    }
+
+    .candidate-details {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .detail-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+
+    .level-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .badge-federal {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .badge-provincial {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .badge-district {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .badge-local {
+        background: #fce7f3;
+        color: #9f1239;
+    }
+
+    .party-label {
+        background: #fef3c7;
+        color: #92400e;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .action-btn {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #e5e7eb;
+        background: white;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        text-align: center;
+        color: #374151;
+    }
+
+    .action-btn.primary {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: #d1d5db;
+        margin-bottom: 20px;
+    }
+
+    .empty-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #6b7280;
+        margin-bottom: 10px;
+    }
+
+    /* Row Indicator */
+    .row-indicator {
+        position: absolute;
+        left: -30px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #9ca3af;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .candidates-grid-row {
+            grid-template-columns: 1fr;
+        }
+
+        .search-bar {
+            width: 100%;
+        }
+
+        .filter-bar {
+            overflow-x: auto;
+        }
+
+        .candidate-row {
+            grid-template-columns: 30px 1fr 30px;
+        }
+
+        .nav-arrow {
+            width: 30px;
+            height: 30px;
+            font-size: 0.875rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Search Header -->
+<div class="search-header">
+    <div class="search-container">
+        <div class="search-bar">
+            <div class="search-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <input type="text"
+                   id="searchInput"
+                   class="search-input"
+                   placeholder="{% trans 'Search candidates...' %}"
+                   value="{{ request.GET.q }}">
+            <button class="search-btn" onclick="performSearch()">
+                {% trans 'Search' %}
+            </button>
+        </div>
+
+        <!-- Filter Button -->
+        <div class="filter-wrapper">
+            <button class="filter-button" onclick="toggleFilterDropdown()">
+                <i class="fas fa-filter"></i>
+            </button>
+
+            <!-- Filter Dropdown -->
+            <div id="filterDropdown" class="filter-dropdown">
+                <h3 style="margin: 0 0 16px 0; font-size: 16px; font-weight: 600;">{% trans 'Filter Candidates' %}</h3>
+
+                <!-- Row 1: Federal -->
+                <div class="filter-group" style="margin-bottom: 12px;">
+                    <button id="federalFilter" class="filter-select" onclick="onFederalClick()"
+                            data-label="{% trans 'Federal' %}"
+                            style="width: 100%; text-align: left;">
+                        <span id="federalText">{% trans 'Federal' %}</span>
+                    </button>
+                </div>
+
+                <!-- Row 2: Province and District -->
+                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                    <div style="flex: 1; position: relative;">
+                        <button id="provinceButton" class="filter-select" onclick="toggleProvinceDropdown()"
+                                data-label="{% trans 'Province' %}"
+                                data-all="{% trans 'All' %}"
+                                style="text-align: left;">
+                            <span id="provinceText">{% trans 'Province' %}</span>
+                        </button>
+                        <!-- Province dropdown menu -->
+                        <div id="provinceDropdown" style="display: none; position: absolute; top: 100%; left: 0; width: 140%; background: white; border: 1px solid #e5e7eb; border-radius: 8px; margin-top: 4px; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <div style="padding: 8px;">
+                                <div class="province-option" onclick="selectProvince('all')" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; margin-bottom: 4px;">
+                                    <strong>{% trans 'All' %}</strong>
+                                </div>
+                                {% get_current_language as LANGUAGE_CODE %}
+                                {% for province in provinces %}
+                                <div class="province-option" onclick="selectProvince('{{ province.id }}', '{% if LANGUAGE_CODE == 'ne' %}{{ province.name_ne }}{% else %}{{ province.name_en }}{% endif %}')" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; margin-bottom: 2px;">
+                                    {% if LANGUAGE_CODE == 'ne' %}{{ province.name_ne }}{% else %}{{ province.name_en }}{% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="flex: 1; position: relative;">
+                        <button id="districtButton" class="filter-select" onclick="toggleDistrictDropdown()"
+                                data-label="{% trans 'District' %}"
+                                data-all="{% trans 'All Districts' %}"
+                                style="text-align: left;">
+                            <span id="districtText">{% trans 'District' %}</span>
+                        </button>
+                        <!-- District dropdown menu -->
+                        <div id="districtDropdown" style="display: none; position: absolute; top: 100%; left: 0; width: 140%; background: white; border: 1px solid #e5e7eb; border-radius: 8px; margin-top: 4px; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-height: 300px; overflow-y: auto;">
+                            <div style="padding: 8px;">
+                                <div id="districtOptions">
+                                    <!-- Options will be populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Municipality and Ward -->
+                <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                    <div style="flex: 1; position: relative;">
+                        <button id="municipalityButton" class="filter-select" onclick="toggleMunicipalityDropdown()"
+                                data-label="{% trans 'Municipality' %}"
+                                data-all="{% trans 'All Municipalities' %}"
+                                style="text-align: left;">
+                            <span id="municipalityText">{% trans 'Municipality' %}</span>
+                        </button>
+                        <!-- Municipality dropdown menu -->
+                        <div id="municipalityDropdown" style="display: none; position: absolute; top: 100%; left: 0; width: 140%; background: white; border: 1px solid #e5e7eb; border-radius: 8px; margin-top: 4px; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-height: 300px; overflow-y: auto;">
+                            <div style="padding: 8px;">
+                                <div id="municipalityOptions">
+                                    <!-- Options will be populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="flex: 1; position: relative;">
+                        <button id="wardButton" class="filter-select" onclick="toggleWardDropdown()"
+                                data-label="{% trans 'Ward' %}"
+                                data-all="{% trans 'All Wards' %}"
+                                data-ward-prefix="{% trans 'Ward' %}"
+                                style="text-align: left;">
+                            <span id="wardText">{% trans 'Ward' %}</span>
+                        </button>
+                        <!-- Ward dropdown menu -->
+                        <div id="wardDropdown" style="display: none; position: absolute; top: 100%; left: 0; width: 140%; background: white; border: 1px solid #e5e7eb; border-radius: 8px; margin-top: 4px; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-height: 300px; overflow-y: auto;">
+                            <div style="padding: 8px;">
+                                <div id="wardOptions">
+                                    <!-- Options will be populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="clear-filters-btn" onclick="clearAllFilters()" style="width: 100%;">
+                    <i class="fas fa-times"></i> {% trans 'Clear' %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="content-wrapper">
+    <div class="candidates-rows-container">
+        <!-- Initialize with empty data structure for 3 rows -->
+        <div id="candidatesContainer">
+            <!-- Row 1 -->
+            <div class="candidate-row-wrapper" data-row="0">
+                <div class="candidate-row">
+                    <button class="nav-arrow" onclick="navigateRow(0, -1)" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="candidates-grid-row" id="row-0">
+                        <!-- 3 candidate cards will be rendered here -->
+                    </div>
+                    <button class="nav-arrow" onclick="navigateRow(0, 1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="candidate-row-wrapper" data-row="1">
+                <div class="candidate-row">
+                    <button class="nav-arrow" onclick="navigateRow(1, -1)" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="candidates-grid-row" id="row-1">
+                        <!-- 3 candidate cards will be rendered here -->
+                    </div>
+                    <button class="nav-arrow" onclick="navigateRow(1, 1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Row 3 -->
+            <div class="candidate-row-wrapper" data-row="2">
+                <div class="candidate-row">
+                    <button class="nav-arrow" onclick="navigateRow(2, -1)" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="candidates-grid-row" id="row-2">
+                        <!-- 3 candidate cards will be rendered here -->
+                    </div>
+                    <button class="nav-arrow" onclick="navigateRow(2, 1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-icon">
+                <i class="fas fa-inbox"></i>
+            </div>
+            <h3 class="empty-title">{% trans "No candidates found" %}</h3>
+            <p>{% trans "Try adjusting your filters or search terms" %}</p>
+        </div>
+    </div>
+</div>
+
+<script>
+// State management
+const state = {
+    allCandidates: [],
+    filteredCandidates: [],
+    rowIndices: [0, 0, 0], // Current starting index for each row
+    rowsPerPage: 3,
+    candidatesPerRow: 3
+};
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadCandidates();
+    initializeFilters();
+});
+
+// Load candidates from API
+async function loadCandidates() {
+    try {
+        const searchParams = new URLSearchParams(window.location.search);
+        const response = await fetch(`/api/nearby-candidates/?${searchParams}`);
+        const data = await response.json();
+
+        state.allCandidates = data.results || [];
+        state.filteredCandidates = [...state.allCandidates];
+
+        // Reset row indices
+        state.rowIndices = [0, 0, 0];
+
+        renderAllRows();
+    } catch (error) {
+        console.error('Error loading candidates:', error);
+        // Load demo data if API fails
+        loadDemoData();
+    }
+}
+
+// Load demo data for testing
+function loadDemoData() {
+    state.allCandidates = [
+        {% for candidate in page_obj %}
+        {
+            id: {{ candidate.id }},
+            name: "{{ candidate.full_name }}",
+            photo: {% if candidate.photo %}"{{ candidate.photo.url }}"{% else %}null{% endif %},
+            level: "{{ candidate.position_level }}",
+            seatNumber: "{{ candidate.position_level|title }}",
+            party: "Independent",
+            location: "{% if candidate.municipality %}{{ candidate.municipality.name_en }}{% elif candidate.district %}{{ candidate.district.name_en }}{% elif candidate.province %}{{ candidate.province.name_en }}{% endif %}"
+        },
+        {% endfor %}
+    ];
+
+    state.filteredCandidates = [...state.allCandidates];
+    renderAllRows();
+}
+
+// Render all rows
+function renderAllRows() {
+    for (let row = 0; row < 3; row++) {
+        renderRow(row);
+    }
+
+    // Show/hide empty state
+    const container = document.getElementById('candidatesContainer');
+    const emptyState = document.getElementById('emptyState');
+
+    if (state.filteredCandidates.length === 0) {
+        container.style.display = 'none';
+        emptyState.style.display = 'block';
+    } else {
+        container.style.display = 'block';
+        emptyState.style.display = 'none';
+    }
+}
+
+// Render a single row
+function renderRow(rowIndex) {
+    const rowElement = document.getElementById(`row-${rowIndex}`);
+    const startIdx = state.rowIndices[rowIndex];
+    const candidates = state.filteredCandidates.slice(startIdx, startIdx + 3);
+
+    // Render candidate cards
+    rowElement.innerHTML = candidates.map(candidate => `
+        <div class="candidate-card" onclick="window.location.href='/candidates/${candidate.id}/'">
+            <div class="card-header">
+                ${candidate.photo ?
+                    `<img src="${candidate.photo}" alt="${candidate.name}" class="candidate-photo">` :
+                    `<div class="candidate-photo-placeholder">
+                        <i class="fas fa-user"></i>
+                    </div>`
+                }
+                <div class="candidate-info">
+                    <h3 class="candidate-name">${candidate.name}</h3>
+                    <div class="candidate-details">
+                        <div class="detail-row">
+                            <span class="level-badge badge-${candidate.level}">${candidate.level}</span>
+                        </div>
+                        <div class="detail-row">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${candidate.location || 'Nepal'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="party-label">${candidate.party}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-actions">
+                <a href="/candidates/${candidate.id}/" class="action-btn primary">
+                    <i class="fas fa-user-circle"></i>
+                    View Profile
+                </a>
+                <button class="action-btn" onclick="event.stopPropagation(); shareCandidate(${candidate.id}, '${candidate.name}')">
+                    <i class="fas fa-share"></i>
+                    Share
+                </button>
+            </div>
+        </div>
+    `).join('');
+
+    // Fill empty slots if less than 3 candidates
+    for (let i = candidates.length; i < 3; i++) {
+        rowElement.innerHTML += '<div style="visibility: hidden;" class="candidate-card"></div>';
+    }
+
+    // Update navigation buttons
+    updateNavigationButtons(rowIndex);
+}
+
+// Navigate row (direction: -1 for left, 1 for right)
+function navigateRow(rowIndex, direction) {
+    const newIndex = state.rowIndices[rowIndex] + (direction * 3);
+
+    if (newIndex >= 0 && newIndex < state.filteredCandidates.length) {
+        state.rowIndices[rowIndex] = newIndex;
+        renderRow(rowIndex);
+    }
+}
+
+// Update navigation button states
+function updateNavigationButtons(rowIndex) {
+    const wrapper = document.querySelector(`.candidate-row-wrapper[data-row="${rowIndex}"]`);
+    const leftBtn = wrapper.querySelector('.nav-arrow:first-child');
+    const rightBtn = wrapper.querySelector('.nav-arrow:last-child');
+
+    // Disable left button if at start
+    leftBtn.disabled = state.rowIndices[rowIndex] === 0;
+
+    // Disable right button if no more candidates
+    rightBtn.disabled = state.rowIndices[rowIndex] + 3 >= state.filteredCandidates.length;
+}
+
+// Toggle filter dropdown
+function toggleFilterDropdown() {
+    const dropdown = document.getElementById('filterDropdown');
+    dropdown.classList.toggle('show');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const filterWrapper = document.querySelector('.filter-wrapper');
+    const dropdown = document.getElementById('filterDropdown');
+
+    if (!filterWrapper.contains(event.target)) {
+        dropdown.classList.remove('show');
+    }
+});
+
+// Federal filter handler
+function onFederalClick() {
+    // Handle federal filter selection
+    console.log('Federal clicked');
+    loadCandidates();
+}
+
+// Province dropdown
+function toggleProvinceDropdown() {
+    const dropdown = document.getElementById('provinceDropdown');
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+}
+
+function selectProvince(id, name) {
+    const button = document.getElementById('provinceText');
+    if (id === 'all') {
+        button.textContent = document.getElementById('provinceButton').dataset.label;
+    } else {
+        button.textContent = name;
+    }
+    document.getElementById('provinceDropdown').style.display = 'none';
+
+    // Load districts for selected province
+    if (id !== 'all') {
+        loadDistricts(id);
+    }
+    loadCandidates();
+}
+
+// District dropdown
+function toggleDistrictDropdown() {
+    const dropdown = document.getElementById('districtDropdown');
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+}
+
+async function loadDistricts(provinceId) {
+    const response = await fetch(`/api/districts/?province=${provinceId}`);
+    const districts = await response.json();
+
+    const container = document.getElementById('districtOptions');
+    container.innerHTML = '<div onclick="selectDistrict(\'all\')" style="padding: 8px 12px; cursor: pointer;"><strong>All Districts</strong></div>';
+
+    districts.forEach(district => {
+        container.innerHTML += `<div onclick="selectDistrict('${district.id}', '${district.name_en}')" style="padding: 8px 12px; cursor: pointer;">${district.name_en}</div>`;
+    });
+}
+
+function selectDistrict(id, name) {
+    const button = document.getElementById('districtText');
+    if (id === 'all') {
+        button.textContent = document.getElementById('districtButton').dataset.label;
+    } else {
+        button.textContent = name;
+        loadMunicipalities(id);
+    }
+    document.getElementById('districtDropdown').style.display = 'none';
+    loadCandidates();
+}
+
+// Municipality dropdown
+function toggleMunicipalityDropdown() {
+    const dropdown = document.getElementById('municipalityDropdown');
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+}
+
+async function loadMunicipalities(districtId) {
+    const response = await fetch(`/api/municipalities/?district=${districtId}`);
+    const municipalities = await response.json();
+
+    const container = document.getElementById('municipalityOptions');
+    container.innerHTML = '<div onclick="selectMunicipality(\'all\')" style="padding: 8px 12px; cursor: pointer;"><strong>All Municipalities</strong></div>';
+
+    municipalities.forEach(muni => {
+        container.innerHTML += `<div onclick="selectMunicipality('${muni.id}', '${muni.name_en}', ${muni.total_wards})" style="padding: 8px 12px; cursor: pointer;">${muni.name_en}</div>`;
+    });
+}
+
+function selectMunicipality(id, name, totalWards) {
+    const button = document.getElementById('municipalityText');
+    if (id === 'all') {
+        button.textContent = document.getElementById('municipalityButton').dataset.label;
+    } else {
+        button.textContent = name;
+        if (totalWards) {
+            loadWards(totalWards);
+        }
+    }
+    document.getElementById('municipalityDropdown').style.display = 'none';
+    loadCandidates();
+}
+
+// Ward dropdown
+function toggleWardDropdown() {
+    const dropdown = document.getElementById('wardDropdown');
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+}
+
+function loadWards(totalWards) {
+    const container = document.getElementById('wardOptions');
+    container.innerHTML = '<div onclick="selectWard(\'all\')" style="padding: 8px 12px; cursor: pointer;"><strong>All Wards</strong></div>';
+
+    for (let i = 1; i <= totalWards; i++) {
+        container.innerHTML += `<div onclick="selectWard(${i})" style="padding: 8px 12px; cursor: pointer;">Ward ${i}</div>`;
+    }
+}
+
+function selectWard(ward) {
+    const button = document.getElementById('wardText');
+    if (ward === 'all') {
+        button.textContent = document.getElementById('wardButton').dataset.label;
+    } else {
+        button.textContent = `Ward ${ward}`;
+    }
+    document.getElementById('wardDropdown').style.display = 'none';
+    loadCandidates();
+}
+
+// Clear all filters
+function clearAllFilters() {
+    document.getElementById('federalText').textContent = document.getElementById('federalFilter').dataset.label;
+    document.getElementById('provinceText').textContent = document.getElementById('provinceButton').dataset.label;
+    document.getElementById('districtText').textContent = document.getElementById('districtButton').dataset.label;
+    document.getElementById('municipalityText').textContent = document.getElementById('municipalityButton').dataset.label;
+    document.getElementById('wardText').textContent = document.getElementById('wardButton').dataset.label;
+
+    document.getElementById('searchInput').value = '';
+
+    // Reset state
+    state.rowIndices = [0, 0, 0];
+    loadCandidates();
+}
+
+// Perform search
+function performSearch() {
+    const searchTerm = document.getElementById('searchInput').value;
+    // Filter candidates based on search
+    loadCandidates();
+}
+
+// Share candidate
+function shareCandidate(id, name) {
+    // Implement share functionality
+    console.log('Share candidate:', id, name);
+}
+</script>
+{% endblock %}

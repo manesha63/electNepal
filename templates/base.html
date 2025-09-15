@@ -60,7 +60,7 @@
 
                 <!-- Center Navigation Links -->
                 <div class="nav-links">
-                    <a href="#" onclick="showComingSoon(); return false;" class="nav-link">{% trans "Ballot" %}</a>
+                    <a href="{% url 'candidates:ballot' %}" class="nav-link">{% trans "Ballot" %}</a>
                     <a href="{% url 'home' %}" class="nav-link">{% trans "Independent Candidates" %}</a>
                     <a href="{% url 'how_to_vote' %}" class="nav-link">{% trans "How to Vote" %}</a>
                     <a href="{% url 'about' %}" class="nav-link">{% trans "About Us" %}</a>

@@ -6,4 +6,5 @@ app_name = 'locations_api'
 urlpatterns = [
     path('districts/', views.DistrictsByProvinceView.as_view(), name='districts_by_province'),
     path('municipalities/', views.MunicipalitiesByDistrictView.as_view(), name='municipalities_by_district'),
+    path('georesolve/', views.geo_resolve, name='geo_resolve'),
 ]

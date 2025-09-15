@@ -1,0 +1,644 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %}{% trans "Ballot" %} - ElectNepal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .ballot-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .ballot-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .ballot-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 1rem;
+    }
+
+    .ballot-subtitle {
+        font-size: 1.125rem;
+        color: #4a5568;
+        margin-bottom: 2rem;
+    }
+
+    .location-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.125rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .location-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+
+    .location-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .manual-selection {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-top: 2rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-select {
+        padding: 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        background: white;
+        transition: border-color 0.2s;
+    }
+
+    .form-select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-input {
+        padding: 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .search-button {
+        padding: 0.75rem 2rem;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .search-button:hover {
+        background: #5a67d8;
+    }
+
+    .candidates-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .candidate-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .candidate-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .candidate-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .candidate-photo {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #e2e8f0;
+    }
+
+    .candidate-info {
+        flex: 1;
+    }
+
+    .candidate-name {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #1a202c;
+        margin-bottom: 0.25rem;
+    }
+
+    .candidate-position {
+        font-size: 0.875rem;
+        color: #718096;
+    }
+
+    .candidate-location {
+        font-size: 0.875rem;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+    }
+
+    .candidate-bio {
+        font-size: 0.875rem;
+        color: #4a5568;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+
+    .candidate-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: #f7fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-right: 0.5rem;
+    }
+
+    .badge-verified {
+        background: #f0fff4;
+        border-color: #9ae6b4;
+        color: #22543d;
+    }
+
+    .badge-party {
+        background: #fef5e7;
+        border-color: #fbd38d;
+        color: #744210;
+    }
+
+    .relevance-indicator {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        background: #edf2f7;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+    }
+
+    .relevance-ward {
+        background: #bee3f8;
+        color: #2c5282;
+    }
+
+    .relevance-municipality {
+        background: #c6f6d5;
+        color: #22543d;
+    }
+
+    .relevance-district {
+        background: #fed7d7;
+        color: #742a2a;
+    }
+
+    .relevance-province {
+        background: #feebc8;
+        color: #7c2d12;
+    }
+
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #e2e8f0;
+        border-top-color: #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .error-message {
+        background: #fed7d7;
+        border: 1px solid #fc8181;
+        color: #742a2a;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+
+    .info-message {
+        background: #bee3f8;
+        border: 1px solid #90cdf4;
+        color: #2c5282;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 2rem 0;
+        color: #a0aec0;
+    }
+
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #e2e8f0;
+    }
+
+    .divider span {
+        padding: 0 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ballot-container" x-data="ballotApp()" x-init="requestLocation()">
+    <!-- Loading state while getting location -->
+    <template x-if="loading && !error">
+        <div class="text-center py-8">
+            <div class="loading-spinner" style="width: 40px; height: 40px; margin: 0 auto;"></div>
+            <p class="mt-4 text-lg text-gray-600">{% trans "Finding candidates in your area..." %}</p>
+            <p class="mt-2 text-sm text-gray-500">{% trans "Please allow location access when prompted" %}</p>
+        </div>
+    </template>
+
+    <!-- Error message -->
+    <template x-if="error">
+        <div class="error-message" x-text="error"></div>
+    </template>
+
+    <!-- Manual selection -->
+    <template x-if="!loading || error">
+        <div class="divider">
+            <span>{% trans "SELECT LOCATION MANUALLY" %}</span>
+        </div>
+    </template>
+
+    <div class="manual-selection" x-show="!loading || error">
+        <h3 class="text-lg font-semibold mb-4">{% trans "Select Your Location" %}</h3>
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">{% trans "Province" %}</label>
+                <select
+                    class="form-select"
+                    x-model="selectedProvince"
+                    @change="loadDistricts()">
+                    <option value="">{% trans "Select Province" %}</option>
+                    {% for province in provinces %}
+                    <option value="{{ province.id }}">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% if LANGUAGE_CODE == 'ne' %}{{ province.name_ne }}{% else %}{{ province.name_en }}{% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{% trans "District" %}</label>
+                <select
+                    class="form-select"
+                    x-model="selectedDistrict"
+                    @change="loadMunicipalities()"
+                    :disabled="!districts.length">
+                    <option value="">{% trans "Select District" %}</option>
+                    <template x-for="district in districts" :key="district.id">
+                        <option :value="district.id" x-text="'{% get_current_language as LANGUAGE_CODE %}' === 'ne' ? district.name_ne : district.name_en"></option>
+                    </template>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{% trans "Municipality" %}</label>
+                <select
+                    class="form-select"
+                    x-model="selectedMunicipality"
+                    @change="updateWardLimit()"
+                    :disabled="!municipalities.length">
+                    <option value="">{% trans "Select Municipality" %}</option>
+                    <template x-for="muni in municipalities" :key="muni.id">
+                        <option :value="muni.id" x-text="'{% get_current_language as LANGUAGE_CODE %}' === 'ne' ? muni.name_ne : muni.name_en"></option>
+                    </template>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{% trans "Ward Number" %} ({% trans "Optional" %})</label>
+                <input
+                    type="number"
+                    class="form-input"
+                    x-model="selectedWard"
+                    :max="maxWards"
+                    min="1"
+                    placeholder="{% trans 'Enter ward number' %}">
+            </div>
+        </div>
+
+        <button
+            @click="searchManual()"
+            class="search-button"
+            :disabled="!selectedProvince">
+            {% trans "Search Candidates" %}
+        </button>
+    </div>
+
+    <!-- Results section -->
+    <template x-if="candidates.length > 0 && !loading">
+        <div>
+            <div class="text-center mb-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">{% trans "Your Ballot" %}</h1>
+                <p class="text-lg text-gray-600">
+                    <span x-text="candidates.length"></span> {% trans "independent candidates in your voting area" %}
+                </p>
+            </div>
+
+            <div class="candidates-grid">
+                <template x-for="candidate in candidates" :key="candidate.id">
+                    <div class="candidate-card">
+                        <!-- Relevance indicator -->
+                        <template x-if="candidate.ward_number === parseInt(selectedWard) && candidate.municipality_id === parseInt(selectedMunicipality)">
+                            <span class="relevance-indicator relevance-ward">{% trans "Your Ward" %}</span>
+                        </template>
+                        <template x-if="candidate.municipality_id === parseInt(selectedMunicipality) && candidate.ward_number !== parseInt(selectedWard)">
+                            <span class="relevance-indicator relevance-municipality">{% trans "Your Municipality" %}</span>
+                        </template>
+                        <template x-if="candidate.district_id === parseInt(selectedDistrict) && candidate.municipality_id !== parseInt(selectedMunicipality)">
+                            <span class="relevance-indicator relevance-district">{% trans "Your District" %}</span>
+                        </template>
+                        <template x-if="candidate.province_id === parseInt(selectedProvince) && candidate.district_id !== parseInt(selectedDistrict)">
+                            <span class="relevance-indicator relevance-province">{% trans "Your Province" %}</span>
+                        </template>
+
+                        <div class="candidate-header">
+                            <img
+                                :src="candidate.photo || '{% static 'images/default-avatar.png' %}'"
+                                :alt="candidate.full_name"
+                                class="candidate-photo"
+                                onerror="this.src='{% static 'images/default-avatar.png' %}'">
+                            <div class="candidate-info">
+                                <h3 class="candidate-name" x-text="candidate.full_name"></h3>
+                                <p class="candidate-position" x-text="candidate.position_display"></p>
+                            </div>
+                        </div>
+
+                        <p class="candidate-location" x-text="candidate.location"></p>
+
+                        <p class="candidate-bio" x-text="candidate.bio"></p>
+
+                        <div>
+                            <template x-if="candidate.verified">
+                                <span class="candidate-badge badge-verified">
+                                    <i class="fas fa-check-circle"></i> {% trans "Verified" %}
+                                </span>
+                            </template>
+                            <span class="candidate-badge badge-party" x-text="candidate.party"></span>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </template>
+
+    <template x-if="searched && candidates.length === 0 && !loading">
+        <div class="text-center py-8">
+            <div class="info-message">
+                <h3 class="text-xl font-semibold mb-2">{% trans "No Candidates Found" %}</h3>
+                <p>{% trans "No independent candidates are currently registered in your area." %}</p>
+                <p class="mt-2">{% trans "Try selecting a different location or check back later." %}</p>
+            </div>
+        </div>
+    </template>
+</div>
+
+<script>
+function ballotApp() {
+    return {
+        loading: false,
+        error: null,
+        searched: false,
+        candidates: [],
+
+        // Location selection
+        selectedProvince: '',
+        selectedDistrict: '',
+        selectedMunicipality: '',
+        selectedWard: '',
+
+        // Dropdown data
+        districts: [],
+        municipalities: [],
+        maxWards: 50,
+
+        // Request user's location
+        async requestLocation() {
+            this.loading = true;
+            this.error = null;
+
+            if (!navigator.geolocation) {
+                this.error = "{% trans 'Geolocation is not supported by your browser.' %}";
+                this.loading = false;
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    await this.resolveLocation(position.coords.latitude, position.coords.longitude);
+                },
+                (error) => {
+                    this.loading = false;
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            this.error = "{% trans 'Location permission denied. Please select your location manually.' %}";
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            this.error = "{% trans 'Location information unavailable. Please select manually.' %}";
+                            break;
+                        case error.TIMEOUT:
+                            this.error = "{% trans 'Location request timed out. Please try again.' %}";
+                            break;
+                        default:
+                            this.error = "{% trans 'Unable to get your location. Please select manually.' %}";
+                    }
+                },
+                {
+                    enableHighAccuracy: false,
+                    timeout: 10000,
+                    maximumAge: 300000
+                }
+            );
+        },
+
+        // Resolve coordinates to location
+        async resolveLocation(lat, lng) {
+            try {
+                const response = await fetch(`/api/georesolve/?lat=${lat}&lng=${lng}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "{% trans 'Could not determine location' %}");
+                }
+
+                // Set location from resolved data
+                if (data.province) {
+                    this.selectedProvince = data.province.id;
+                    await this.loadDistricts();
+                }
+
+                if (data.district) {
+                    this.selectedDistrict = data.district.id;
+                    await this.loadMunicipalities();
+                }
+
+                if (data.municipality) {
+                    this.selectedMunicipality = data.municipality.id;
+                    await this.updateWardLimit();
+                }
+
+                if (data.ward_number) {
+                    this.selectedWard = data.ward_number;
+                }
+
+                // Load candidates
+                await this.loadCandidates();
+
+            } catch (error) {
+                this.error = error.message;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        // Load districts for selected province
+        async loadDistricts() {
+            if (!this.selectedProvince) {
+                this.districts = [];
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/districts/?province=${this.selectedProvince}`);
+                this.districts = await response.json();
+            } catch (error) {
+                console.error('Error loading districts:', error);
+            }
+        },
+
+        // Load municipalities for selected district
+        async loadMunicipalities() {
+            if (!this.selectedDistrict) {
+                this.municipalities = [];
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/municipalities/?district=${this.selectedDistrict}`);
+                this.municipalities = await response.json();
+            } catch (error) {
+                console.error('Error loading municipalities:', error);
+            }
+        },
+
+        // Update ward limit based on selected municipality
+        async updateWardLimit() {
+            if (!this.selectedMunicipality) {
+                this.maxWards = 50;
+                return;
+            }
+
+            const muni = this.municipalities.find(m => m.id == this.selectedMunicipality);
+            if (muni) {
+                this.maxWards = muni.total_wards || 50;
+            }
+        },
+
+        // Search manually with selected location
+        async searchManual() {
+            if (!this.selectedProvince) {
+                this.error = "{% trans 'Please select at least a province' %}";
+                return;
+            }
+
+            await this.loadCandidates();
+        },
+
+        // Load candidates based on location
+        async loadCandidates() {
+            this.loading = true;
+            this.error = null;
+
+            const params = new URLSearchParams({
+                province_id: this.selectedProvince || '',
+                district_id: this.selectedDistrict || '',
+                municipality_id: this.selectedMunicipality || '',
+                ward_number: this.selectedWard || ''
+            });
+
+            try {
+                const response = await fetch(`/candidates/api/my-ballot/?${params}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "{% trans 'Failed to load candidates' %}");
+                }
+
+                this.candidates = data.candidates || [];
+                this.searched = true;
+
+            } catch (error) {
+                this.error = error.message;
+            } finally {
+                this.loading = false;
+            }
+        }
+    }
+}
+</script>
+{% endblock %}
