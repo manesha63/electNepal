@@ -17,17 +17,17 @@
     
     <!-- Features Section -->
     <div class="features-grid animate-on-scroll">
-        <div class="feature-card">
+        <a href="{% url 'candidates:list' %}" class="feature-card" style="text-decoration: none; color: inherit; display: block;">
             <div class="feature-icon">
                 <i class="fas fa-search"></i>
             </div>
-            <h3 class="feature-title">{% trans "Find Candidates" %}</h3>
+            <h3 class="feature-title">{% trans "Find Independent Candidates" %}</h3>
             <p class="feature-description">
                 {% trans "Search and discover independent candidates in your area" %}
             </p>
-        </div>
+        </a>
         
-        <div class="feature-card">
+        <a href="{% url 'how_to_vote' %}" class="feature-card" style="text-decoration: none; color: inherit; display: block;">
             <div class="feature-icon">
                 <i class="fas fa-vote-yea"></i>
             </div>
@@ -35,7 +35,7 @@
             <p class="feature-description">
                 {% trans "Learn about the voting process and your rights" %}
             </p>
-        </div>
+        </a>
     </div>
     
     <!-- Info Section -->
