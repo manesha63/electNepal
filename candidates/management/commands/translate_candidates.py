@@ -4,7 +4,7 @@ Management command to translate candidate content fields
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from candidates.models import Candidate
-from core.translation import translation_service
+from core.mt import mt as translation_service
 
 
 class Command(BaseCommand):
@@ -79,21 +79,13 @@ class Command(BaseCommand):
                                 break
 
                         if needs_translation:
-                            # Perform translation
-                            updated = translation_service.translate_candidate_fields(
-                                candidate, force=force
+                            # Perform translation using the model's own method
+                            candidate.autotranslate_missing()
+                            candidate.save()
+                            translated_count += 1
+                            self.stdout.write(
+                                f'✓ Translated: {candidate.full_name} (ID: {candidate.id})'
                             )
-
-                            if updated:
-                                candidate.save()
-                                translated_count += 1
-                                self.stdout.write(
-                                    f'✓ Translated: {candidate.full_name} (ID: {candidate.id})'
-                                )
-                            else:
-                                self.stdout.write(
-                                    f'- Skipped: {candidate.full_name} (ID: {candidate.id}) - No fields to translate'
-                                )
                         else:
                             self.stdout.write(
                                 f'- Skipped: {candidate.full_name} (ID: {candidate.id}) - Already has translations'

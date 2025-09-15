@@ -133,13 +133,30 @@ class MTClient:
         Simple dictionary-based translation for common terms
         Used as fallback when MT providers are unavailable
         """
-        # Import the existing translation service for dictionary
-        try:
-            from core.translation import TranslationService
-            service = TranslationService()
-            return service._perform_translation(text, 'en', 'ne')
-        except:
-            return text  # Return original if all else fails
+        # Simple dictionary for common terms to avoid circular import
+        translation_dict = {
+            "candidate": "उम्मेदवार",
+            "independent": "स्वतन्त्र",
+            "election": "निर्वाचन",
+            "vote": "मत",
+            "democracy": "लोकतन्त्र",
+            "ward": "वडा",
+            "municipality": "नगरपालिका",
+            "district": "जिल्ला",
+            "province": "प्रदेश",
+            "federal": "संघीय",
+            "parliament": "संसद",
+            "mayor": "मेयर",
+            "representative": "प्रतिनिधि",
+        }
+
+        # Simple word-by-word translation
+        words = text.lower().split()
+        translated_words = []
+        for word in words:
+            translated_words.append(translation_dict.get(word, word))
+
+        return ' '.join(translated_words) if translated_words else text
 
 
 # Singleton instance
