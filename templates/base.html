@@ -102,35 +102,14 @@
                     <span>{% trans "About" %}</span>
                 </a>
                 
-                <div class="sidebar-divider"></div>
-                
-                <a href="mailto:chandmanisha002@gmail.com" class="sidebar-item">
-                    <i class="fas fa-envelope"></i>
-                    <span>{% trans "Contact Us" %}</span>
-                </a>
-                
-                <div class="sidebar-divider"></div>
-                
-                <!-- Language Switcher in Sidebar -->
-                <div class="sidebar-language">
-                    <form method="post" action="{% url 'set_language' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                        <select name="language" onchange="this.form.submit()" class="language-select-sidebar">
-                            {% get_current_language as LANGUAGE_CODE %}
-                            {% get_available_languages as LANGUAGES %}
-                            {% for code, name in LANGUAGES %}
-                                <option value="{{ code }}"{% if code == LANGUAGE_CODE %} selected{% endif %}>
-                                    {% if code == 'ne' %}🇳🇵 {% endif %}{{ name }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </form>
-                </div>
             </div>
             
             <div class="sidebar-footer">
-                <p>&copy; 2025 ElectNepal</p>
+                <a href="mailto:chandmanisha002@gmail.com" class="sidebar-item" style="justify-content: center;">
+                    <i class="fas fa-envelope"></i>
+                    <span>{% trans "Contact Us" %}</span>
+                </a>
+                <p style="margin-top: 15px; opacity: 0.8;">&copy; 2025 ElectNepal</p>
             </div>
         </div>
         
