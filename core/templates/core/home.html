@@ -15,19 +15,6 @@
         {% trans "Your Gateway to Independent Democracy" %}
     </p>
     
-    <!-- Action Buttons -->
-    <div class="action-buttons animate-on-scroll">
-        <a href="{% url 'candidates:list' %}" class="btn btn-primary">
-            <i class="fas fa-users btn-icon"></i>
-            <span>{% trans "Explore Independent Candidates" %}</span>
-        </a>
-        
-        <a href="{% url 'how_to_vote' %}" class="btn btn-secondary">
-            <i class="fas fa-vote-yea btn-icon"></i>
-            <span>{% trans "How to Vote" %}</span>
-        </a>
-    </div>
-    
     <!-- Features Section -->
     <div class="features-grid animate-on-scroll">
         <div class="feature-card">
@@ -37,16 +24,6 @@
             <h3 class="feature-title">{% trans "Find Candidates" %}</h3>
             <p class="feature-description">
                 {% trans "Search and discover independent candidates in your area" %}
-            </p>
-        </div>
-        
-        <div class="feature-card">
-            <div class="feature-icon">
-                <i class="fas fa-user-check"></i>
-            </div>
-            <h3 class="feature-title">{% trans "Verified Profiles" %}</h3>
-            <p class="feature-description">
-                {% trans "All candidate profiles are verified for authenticity" %}
             </p>
         </div>
         
