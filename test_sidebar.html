@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sidebar Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        /* Test the exact CSS */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 0;
+        }
+        
+        .sidebar-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 15px 25px;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        
+        .sidebar-item i {
+            margin-right: 15px;
+            font-size: 20px;
+            width: 25px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .sidebar-item span {
+            flex: 1;
+            display: inline-block;
+        }
+        
+        .register-btn {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 10px 15px 5px 15px;
+            border-radius: 10px;
+        }
+        
+        .register-btn i {
+            display: inline-block !important;
+            margin-right: 15px !important;
+        }
+        
+        .register-btn span {
+            display: inline-block !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h3 style="color: white; padding: 0 25px;">Test Sidebar</h3>
+        
+        <a href="#" class="sidebar-item">
+            <i class="fas fa-users"></i>
+            <span>Independent Candidates</span>
+        </a>
+        
+        <a href="#" class="sidebar-item register-btn">
+            <i class="fas fa-user-plus"></i>
+            <span>Register</span>
+        </a>
+        
+        <a href="#" class="sidebar-item">
+            <i class="fas fa-vote-yea"></i>
+            <span>How to Vote</span>
+        </a>
+    </div>
+    
+    <div style="margin-left: 320px; padding: 20px;">
+        <h1>Sidebar Test Page</h1>
+        <p>Check the sidebar on the right. The Register button should have:</p>
+        <ul>
+            <li>Icon (user-plus) on the left</li>
+            <li>"Register" text to the right of the icon</li>
+            <li>Both on the same horizontal line</li>
+        </ul>
+    </div>
+</body>
+</html>

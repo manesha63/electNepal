@@ -128,38 +128,8 @@
     display: inline-block;
 }
 
-.register-btn {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.1);
-    margin: 10px 15px 5px 15px;
-    border-radius: 10px;
-}
-
-.register-btn i {
-    display: inline-block !important;
-    margin-right: 15px !important;
-}
-
-.register-btn span {
-    display: inline-block !important;
-}
-
-.register-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    padding-left: 35px;
-}
-
-.register-note {
-    display: block;
-    padding-left: 65px;
-    font-size: 11px;
-    opacity: 0.7;
-    font-style: italic;
-    color: white;
-    margin-top: -5px;
-}
+/* Register button uses standard sidebar-item styling */
+/* Note below register is handled inline */
 
 .sidebar-divider {
     height: 1px;
