@@ -1,0 +1,379 @@
+{
+  "provinces": [
+    {
+      "code": "P1",
+      "name_en": "Province No. 1",
+      "name_ne": "प्रदेश नं. १",
+      "districts": [
+        {
+          "code": "D01",
+          "name_en": "Bhojpur",
+          "name_ne": "भोजपुर",
+          "municipalities": [
+            {"code": "M011", "name_en": "Bhojpur", "name_ne": "भोजपुर", "type": "municipality", "wards": 12},
+            {"code": "M012", "name_en": "Shadananda", "name_ne": "षडानन्द", "type": "municipality", "wards": 14},
+            {"code": "M013", "name_en": "Arun", "name_ne": "अरुण", "type": "rural_municipality", "wards": 7}
+          ]
+        },
+        {
+          "code": "D02",
+          "name_en": "Dhankuta",
+          "name_ne": "धनकुटा",
+          "municipalities": [
+            {"code": "M021", "name_en": "Dhankuta", "name_ne": "धनकुटा", "type": "municipality", "wards": 10},
+            {"code": "M022", "name_en": "Pakhribas", "name_ne": "पाख्रिबास", "type": "municipality", "wards": 10},
+            {"code": "M023", "name_en": "Mahalaxmi", "name_ne": "महालक्ष्मी", "type": "municipality", "wards": 9}
+          ]
+        },
+        {
+          "code": "D03",
+          "name_en": "Ilam",
+          "name_ne": "इलाम",
+          "municipalities": [
+            {"code": "M031", "name_en": "Ilam", "name_ne": "इलाम", "type": "municipality", "wards": 12},
+            {"code": "M032", "name_en": "Deumai", "name_ne": "देउमाई", "type": "municipality", "wards": 9},
+            {"code": "M033", "name_en": "Mai", "name_ne": "माई", "type": "municipality", "wards": 10}
+          ]
+        },
+        {
+          "code": "D04",
+          "name_en": "Jhapa",
+          "name_ne": "झापा",
+          "municipalities": [
+            {"code": "M041", "name_en": "Bhadrapur", "name_ne": "भद्रपुर", "type": "municipality", "wards": 10},
+            {"code": "M042", "name_en": "Birtamod", "name_ne": "बिर्तामोड", "type": "municipality", "wards": 10},
+            {"code": "M043", "name_en": "Damak", "name_ne": "दमक", "type": "municipality", "wards": 10}
+          ]
+        },
+        {
+          "code": "D05",
+          "name_en": "Morang",
+          "name_ne": "मोरङ",
+          "municipalities": [
+            {"code": "M051", "name_en": "Biratnagar", "name_ne": "विराटनगर", "type": "metropolitan", "wards": 19},
+            {"code": "M052", "name_en": "Sundar Haraicha", "name_ne": "सुन्दर हरैचा", "type": "municipality", "wards": 12},
+            {"code": "M053", "name_en": "Belbari", "name_ne": "बेलबारी", "type": "municipality", "wards": 11}
+          ]
+        },
+        {
+          "code": "D06",
+          "name_en": "Sunsari",
+          "name_ne": "सुनसरी",
+          "municipalities": [
+            {"code": "M061", "name_en": "Itahari", "name_ne": "इटहरी", "type": "sub_metropolitan", "wards": 20},
+            {"code": "M062", "name_en": "Dharan", "name_ne": "धरान", "type": "sub_metropolitan", "wards": 20},
+            {"code": "M063", "name_en": "Inaruwa", "name_ne": "इनरुवा", "type": "municipality", "wards": 10}
+          ]
+        }
+      ]
+    },
+    {
+      "code": "P2",
+      "name_en": "Madhesh Province",
+      "name_ne": "मधेश प्रदेश",
+      "districts": [
+        {
+          "code": "D07",
+          "name_en": "Saptari",
+          "name_ne": "सप्तरी",
+          "municipalities": [
+            {"code": "M071", "name_en": "Rajbiraj", "name_ne": "राजविराज", "type": "municipality", "wards": 16},
+            {"code": "M072", "name_en": "Kanchanrup", "name_ne": "कञ्चनरुप", "type": "municipality", "wards": 11},
+            {"code": "M073", "name_en": "Saptakoshi", "name_ne": "सप्तकोशी", "type": "municipality", "wards": 11}
+          ]
+        },
+        {
+          "code": "D08",
+          "name_en": "Siraha",
+          "name_ne": "सिरहा",
+          "municipalities": [
+            {"code": "M081", "name_en": "Lahan", "name_ne": "लहान", "type": "municipality", "wards": 17},
+            {"code": "M082", "name_en": "Siraha", "name_ne": "सिरहा", "type": "municipality", "wards": 22},
+            {"code": "M083", "name_en": "Golbazar", "name_ne": "गोलबजार", "type": "municipality", "wards": 13}
+          ]
+        },
+        {
+          "code": "D09",
+          "name_en": "Dhanusha",
+          "name_ne": "धनुषा",
+          "municipalities": [
+            {"code": "M091", "name_en": "Janakpur", "name_ne": "जनकपुर", "type": "sub_metropolitan", "wards": 20},
+            {"code": "M092", "name_en": "Chhireshwarnath", "name_ne": "क्षिरेश्वरनाथ", "type": "municipality", "wards": 11},
+            {"code": "M093", "name_en": "Dhanushadham", "name_ne": "धनुषाधाम", "type": "municipality", "wards": 9}
+          ]
+        },
+        {
+          "code": "D10",
+          "name_en": "Mahottari",
+          "name_ne": "महोत्तरी",
+          "municipalities": [
+            {"code": "M101", "name_en": "Jaleshwar", "name_ne": "जलेश्वर", "type": "municipality", "wards": 12},
+            {"code": "M102", "name_en": "Bardibas", "name_ne": "बर्दिबास", "type": "municipality", "wards": 14},
+            {"code": "M103", "name_en": "Gaushala", "name_ne": "गौशाला", "type": "municipality", "wards": 12}
+          ]
+        },
+        {
+          "code": "D11",
+          "name_en": "Parsa",
+          "name_ne": "पर्सा",
+          "municipalities": [
+            {"code": "M111", "name_en": "Birgunj", "name_ne": "वीरगञ्ज", "type": "metropolitan", "wards": 32},
+            {"code": "M112", "name_en": "Pokhariya", "name_ne": "पोखरिया", "type": "municipality", "wards": 10},
+            {"code": "M113", "name_en": "Bahudarmai", "name_ne": "बहुदरमाई", "type": "municipality", "wards": 9}
+          ]
+        }
+      ]
+    },
+    {
+      "code": "P3",
+      "name_en": "Bagmati Province",
+      "name_ne": "बागमती प्रदेश",
+      "districts": [
+        {
+          "code": "D12",
+          "name_en": "Kathmandu",
+          "name_ne": "काठमाडौं",
+          "municipalities": [
+            {"code": "M121", "name_en": "Kathmandu", "name_ne": "काठमाडौं", "type": "metropolitan", "wards": 32},
+            {"code": "M122", "name_en": "Budhanilkantha", "name_ne": "बूढानीलकण्ठ", "type": "municipality", "wards": 13},
+            {"code": "M123", "name_en": "Tarakeshwar", "name_ne": "तारकेश्वर", "type": "municipality", "wards": 11},
+            {"code": "M124", "name_en": "Gokarneshwar", "name_ne": "गोकर्णेश्वर", "type": "municipality", "wards": 9},
+            {"code": "M125", "name_en": "Kageshwori Manohara", "name_ne": "कागेश्वरी मनोहरा", "type": "municipality", "wards": 9}
+          ]
+        },
+        {
+          "code": "D13",
+          "name_en": "Lalitpur",
+          "name_ne": "ललितपुर",
+          "municipalities": [
+            {"code": "M131", "name_en": "Lalitpur", "name_ne": "ललितपुर", "type": "metropolitan", "wards": 29},
+            {"code": "M132", "name_en": "Godawari", "name_ne": "गोदावरी", "type": "municipality", "wards": 14},
+            {"code": "M133", "name_en": "Mahalaxmi", "name_ne": "महालक्ष्मी", "type": "municipality", "wards": 10}
+          ]
+        },
+        {
+          "code": "D14",
+          "name_en": "Bhaktapur",
+          "name_ne": "भक्तपुर",
+          "municipalities": [
+            {"code": "M141", "name_en": "Bhaktapur", "name_ne": "भक्तपुर", "type": "municipality", "wards": 10},
+            {"code": "M142", "name_en": "Changunarayan", "name_ne": "चाँगुनारायण", "type": "municipality", "wards": 9},
+            {"code": "M143", "name_en": "Madhyapur Thimi", "name_ne": "मध्यपुर थिमि", "type": "municipality", "wards": 9},
+            {"code": "M144", "name_en": "Suryabinayak", "name_ne": "सूर्यविनायक", "type": "municipality", "wards": 10}
+          ]
+        },
+        {
+          "code": "D15",
+          "name_en": "Chitwan",
+          "name_ne": "चितवन",
+          "municipalities": [
+            {"code": "M151", "name_en": "Bharatpur", "name_ne": "भरतपुर", "type": "metropolitan", "wards": 29},
+            {"code": "M152", "name_en": "Ratnanagar", "name_ne": "रत्ननगर", "type": "municipality", "wards": 16},
+            {"code": "M153", "name_en": "Khairahani", "name_ne": "खैरहनी", "type": "municipality", "wards": 13}
+          ]
+        },
+        {
+          "code": "D16",
+          "name_en": "Makwanpur",
+          "name_ne": "मकवानपुर",
+          "municipalities": [
+            {"code": "M161", "name_en": "Hetauda", "name_ne": "हेटौंडा", "type": "sub_metropolitan", "wards": 19},
+            {"code": "M162", "name_en": "Thaha", "name_ne": "थाहा", "type": "municipality", "wards": 12},
+            {"code": "M163", "name_en": "Bhimphedi", "name_ne": "भीमफेदी", "type": "rural_municipality", "wards": 9}
+          ]
+        }
+      ]
+    },
+    {
+      "code": "P4",
+      "name_en": "Gandaki Province",
+      "name_ne": "गण्डकी प्रदेश",
+      "districts": [
+        {
+          "code": "D17",
+          "name_en": "Kaski",
+          "name_ne": "कास्की",
+          "municipalities": [
+            {"code": "M171", "name_en": "Pokhara", "name_ne": "पोखरा", "type": "metropolitan", "wards": 33},
+            {"code": "M172", "name_en": "Annapurna", "name_ne": "अन्नपूर्ण", "type": "rural_municipality", "wards": 11},
+            {"code": "M173", "name_en": "Machhapuchchhre", "name_ne": "माछापुच्छ्रे", "type": "rural_municipality", "wards": 9},
+            {"code": "M174", "name_en": "Madi", "name_ne": "मादी", "type": "rural_municipality", "wards": 12}
+          ]
+        },
+        {
+          "code": "D18",
+          "name_en": "Gorkha",
+          "name_ne": "गोरखा",
+          "municipalities": [
+            {"code": "M181", "name_en": "Gorkha", "name_ne": "गोरखा", "type": "municipality", "wards": 11},
+            {"code": "M182", "name_en": "Palungtar", "name_ne": "पालुङटार", "type": "municipality", "wards": 10},
+            {"code": "M183", "name_en": "Shahid Lakhan", "name_ne": "शहीद लखन", "type": "rural_municipality", "wards": 9}
+          ]
+        },
+        {
+          "code": "D19",
+          "name_en": "Tanahun",
+          "name_ne": "तनहुँ",
+          "municipalities": [
+            {"code": "M191", "name_en": "Bhimad", "name_ne": "भिमाद", "type": "municipality", "wards": 9},
+            {"code": "M192", "name_en": "Bhanu", "name_ne": "भानु", "type": "municipality", "wards": 13},
+            {"code": "M193", "name_en": "Byas", "name_ne": "व्यास", "type": "municipality", "wards": 14}
+          ]
+        },
+        {
+          "code": "D20",
+          "name_en": "Syangja",
+          "name_ne": "स्याङ्जा",
+          "municipalities": [
+            {"code": "M201", "name_en": "Galyang", "name_ne": "गल्याङ", "type": "municipality", "wards": 11},
+            {"code": "M202", "name_en": "Chapakot", "name_ne": "चापाकोट", "type": "municipality", "wards": 10},
+            {"code": "M203", "name_en": "Putalibazar", "name_ne": "पुतलीबजार", "type": "municipality", "wards": 14}
+          ]
+        }
+      ]
+    },
+    {
+      "code": "P5",
+      "name_en": "Lumbini Province",
+      "name_ne": "लुम्बिनी प्रदेश",
+      "districts": [
+        {
+          "code": "D21",
+          "name_en": "Rupandehi",
+          "name_ne": "रुपन्देही",
+          "municipalities": [
+            {"code": "M211", "name_en": "Butwal", "name_ne": "बुटवल", "type": "sub_metropolitan", "wards": 19},
+            {"code": "M212", "name_en": "Siddharthanagar", "name_ne": "सिद्धार्थनगर", "type": "municipality", "wards": 13},
+            {"code": "M213", "name_en": "Tilottama", "name_ne": "तिलोत्तमा", "type": "municipality", "wards": 17},
+            {"code": "M214", "name_en": "Lumbini Sanskritik", "name_ne": "लुम्बिनी सांस्कृतिक", "type": "municipality", "wards": 13}
+          ]
+        },
+        {
+          "code": "D22",
+          "name_en": "Kapilvastu",
+          "name_ne": "कपिलवस्तु",
+          "municipalities": [
+            {"code": "M221", "name_en": "Kapilvastu", "name_ne": "कपिलवस्तु", "type": "municipality", "wards": 10},
+            {"code": "M222", "name_en": "Banganga", "name_ne": "बाणगंगा", "type": "municipality", "wards": 11},
+            {"code": "M223", "name_en": "Buddhabhumi", "name_ne": "बुद्धभूमि", "type": "municipality", "wards": 10}
+          ]
+        },
+        {
+          "code": "D23",
+          "name_en": "Palpa",
+          "name_ne": "पाल्पा",
+          "municipalities": [
+            {"code": "M231", "name_en": "Tansen", "name_ne": "तानसेन", "type": "municipality", "wards": 14},
+            {"code": "M232", "name_en": "Rampur", "name_ne": "रामपुर", "type": "municipality", "wards": 10},
+            {"code": "M233", "name_en": "Rainadevi Chhahara", "name_ne": "रैनादेवी छहरा", "type": "rural_municipality", "wards": 8}
+          ]
+        },
+        {
+          "code": "D24",
+          "name_en": "Dang",
+          "name_ne": "दाङ",
+          "municipalities": [
+            {"code": "M241", "name_en": "Ghorahi", "name_ne": "घोराही", "type": "sub_metropolitan", "wards": 19},
+            {"code": "M242", "name_en": "Tulsipur", "name_ne": "तुलसीपुर", "type": "sub_metropolitan", "wards": 19},
+            {"code": "M243", "name_en": "Lamahi", "name_ne": "लमही", "type": "municipality", "wards": 9}
+          ]
+        }
+      ]
+    },
+    {
+      "code": "P6",
+      "name_en": "Karnali Province",
+      "name_ne": "कर्णाली प्रदेश",
+      "districts": [
+        {
+          "code": "D25",
+          "name_en": "Surkhet",
+          "name_ne": "सुर्खेत",
+          "municipalities": [
+            {"code": "M251", "name_en": "Birendranagar", "name_ne": "वीरेन्द्रनगर", "type": "municipality", "wards": 16},
+            {"code": "M252", "name_en": "Bheriganga", "name_ne": "भेरीगंगा", "type": "municipality", "wards": 13},
+            {"code": "M253", "name_en": "Gurbhakot", "name_ne": "गुर्भाकोट", "type": "municipality", "wards": 14}
+          ]
+        },
+        {
+          "code": "D26",
+          "name_en": "Dailekh",
+          "name_ne": "दैलेख",
+          "municipalities": [
+            {"code": "M261", "name_en": "Narayan", "name_ne": "नारायण", "type": "municipality", "wards": 11},
+            {"code": "M262", "name_en": "Dullu", "name_ne": "दुल्लु", "type": "municipality", "wards": 13},
+            {"code": "M263", "name_en": "Aathabis", "name_ne": "आठबीस", "type": "municipality", "wards": 9}
+          ]
+        },
+        {
+          "code": "D27",
+          "name_en": "Jajarkot",
+          "name_ne": "जाजरकोट",
+          "municipalities": [
+            {"code": "M271", "name_en": "Bheri", "name_ne": "भेरी", "type": "municipality", "wards": 13},
+            {"code": "M272", "name_en": "Chhedagad", "name_ne": "छेडागाड", "type": "municipality", "wards": 13},
+            {"code": "M273", "name_en": "Nalgad", "name_ne": "नलगाड", "type": "municipality", "wards": 13}
+          ]
+        },
+        {
+          "code": "D28",
+          "name_en": "Jumla",
+          "name_ne": "जुम्ला",
+          "municipalities": [
+            {"code": "M281", "name_en": "Chandannath", "name_ne": "चन्दननाथ", "type": "municipality", "wards": 10},
+            {"code": "M282", "name_en": "Kankasundari", "name_ne": "कनकासुन्दरी", "type": "rural_municipality", "wards": 6},
+            {"code": "M283", "name_en": "Sinja", "name_ne": "सिन्जा", "type": "rural_municipality", "wards": 6}
+          ]
+        }
+      ]
+    },
+    {
+      "code": "P7",
+      "name_en": "Sudurpashchim Province",
+      "name_ne": "सुदूरपश्चिम प्रदेश",
+      "districts": [
+        {
+          "code": "D29",
+          "name_en": "Kailali",
+          "name_ne": "कैलाली",
+          "municipalities": [
+            {"code": "M291", "name_en": "Dhangadhi", "name_ne": "धनगढी", "type": "sub_metropolitan", "wards": 19},
+            {"code": "M292", "name_en": "Tikapur", "name_ne": "टीकापुर", "type": "municipality", "wards": 11},
+            {"code": "M293", "name_en": "Ghodaghodi", "name_ne": "घोडाघोडी", "type": "municipality", "wards": 12},
+            {"code": "M294", "name_en": "Lamkichuha", "name_ne": "लम्कीचुहा", "type": "municipality", "wards": 10}
+          ]
+        },
+        {
+          "code": "D30",
+          "name_en": "Kanchanpur",
+          "name_ne": "कञ्चनपुर",
+          "municipalities": [
+            {"code": "M301", "name_en": "Bhimdatta", "name_ne": "भीमदत्त", "type": "municipality", "wards": 19},
+            {"code": "M302", "name_en": "Punarbas", "name_ne": "पुनर्वास", "type": "municipality", "wards": 11},
+            {"code": "M303", "name_en": "Bedkot", "name_ne": "बेदकोट", "type": "municipality", "wards": 10}
+          ]
+        },
+        {
+          "code": "D31",
+          "name_en": "Doti",
+          "name_ne": "डोटी",
+          "municipalities": [
+            {"code": "M311", "name_en": "Dipayal Silgadhi", "name_ne": "दिपायल सिलगढी", "type": "municipality", "wards": 12},
+            {"code": "M312", "name_en": "Shikhar", "name_ne": "शिखर", "type": "municipality", "wards": 11},
+            {"code": "M313", "name_en": "Purbichauki", "name_ne": "पूर्वीचौकी", "type": "rural_municipality", "wards": 7}
+          ]
+        },
+        {
+          "code": "D32",
+          "name_en": "Bajhang",
+          "name_ne": "बझाङ",
+          "municipalities": [
+            {"code": "M321", "name_en": "Jaya Prithvi", "name_ne": "जय पृथ्वी", "type": "municipality", "wards": 11},
+            {"code": "M322", "name_en": "Bungal", "name_ne": "बुंगल", "type": "municipality", "wards": 11},
+            {"code": "M323", "name_en": "Talkot", "name_ne": "तलकोट", "type": "rural_municipality", "wards": 7}
+          ]
+        }
+      ]
+    }
+  ]
+}

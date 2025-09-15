@@ -1,0 +1,137 @@
+{
+  "provinces": [
+    {
+      "code": "P1",
+      "name_en": "Koshi Province",
+      "name_ne": "कोशी प्रदेश",
+      "capital": "Biratnagar",
+      "districts": [
+        {"code": "D01", "name_en": "Bhojpur", "name_ne": "भोजपुर"},
+        {"code": "D02", "name_en": "Dhankuta", "name_ne": "धनकुटा"},
+        {"code": "D03", "name_en": "Ilam", "name_ne": "इलाम"},
+        {"code": "D04", "name_en": "Jhapa", "name_ne": "झापा"},
+        {"code": "D05", "name_en": "Khotang", "name_ne": "खोटाङ"},
+        {"code": "D06", "name_en": "Morang", "name_ne": "मोरङ"},
+        {"code": "D07", "name_en": "Okhaldhunga", "name_ne": "ओखलढुङ्गा"},
+        {"code": "D08", "name_en": "Panchthar", "name_ne": "पाँचथर"},
+        {"code": "D09", "name_en": "Sankhuwasabha", "name_ne": "संखुवासभा"},
+        {"code": "D10", "name_en": "Solukhumbu", "name_ne": "सोलुखुम्बु"},
+        {"code": "D11", "name_en": "Sunsari", "name_ne": "सुनसरी"},
+        {"code": "D12", "name_en": "Taplejung", "name_ne": "ताप्लेजुङ"},
+        {"code": "D13", "name_en": "Terhathum", "name_ne": "तेह्रथुम"},
+        {"code": "D14", "name_en": "Udayapur", "name_ne": "उदयपुर"}
+      ]
+    },
+    {
+      "code": "P2",
+      "name_en": "Madhesh Province",
+      "name_ne": "मधेश प्रदेश",
+      "capital": "Janakpur",
+      "districts": [
+        {"code": "D15", "name_en": "Bara", "name_ne": "बारा"},
+        {"code": "D16", "name_en": "Dhanusha", "name_ne": "धनुषा"},
+        {"code": "D17", "name_en": "Mahottari", "name_ne": "महोत्तरी"},
+        {"code": "D18", "name_en": "Parsa", "name_ne": "पर्सा"},
+        {"code": "D19", "name_en": "Rautahat", "name_ne": "रौतहट"},
+        {"code": "D20", "name_en": "Saptari", "name_ne": "सप्तरी"},
+        {"code": "D21", "name_en": "Sarlahi", "name_ne": "सर्लाही"},
+        {"code": "D22", "name_en": "Siraha", "name_ne": "सिरहा"}
+      ]
+    },
+    {
+      "code": "P3",
+      "name_en": "Bagmati Province",
+      "name_ne": "बागमती प्रदेश",
+      "capital": "Hetauda",
+      "districts": [
+        {"code": "D23", "name_en": "Bhaktapur", "name_ne": "भक्तपुर"},
+        {"code": "D24", "name_en": "Chitwan", "name_ne": "चितवन"},
+        {"code": "D25", "name_en": "Dhading", "name_ne": "धादिङ"},
+        {"code": "D26", "name_en": "Dolakha", "name_ne": "दोलखा"},
+        {"code": "D27", "name_en": "Kathmandu", "name_ne": "काठमाडौं"},
+        {"code": "D28", "name_en": "Kavrepalanchok", "name_ne": "काभ्रेपलाञ्चोक"},
+        {"code": "D29", "name_en": "Lalitpur", "name_ne": "ललितपुर"},
+        {"code": "D30", "name_en": "Makwanpur", "name_ne": "मकवानपुर"},
+        {"code": "D31", "name_en": "Nuwakot", "name_ne": "नुवाकोट"},
+        {"code": "D32", "name_en": "Ramechhap", "name_ne": "रामेछाप"},
+        {"code": "D33", "name_en": "Rasuwa", "name_ne": "रसुवा"},
+        {"code": "D34", "name_en": "Sindhuli", "name_ne": "सिन्धुली"},
+        {"code": "D35", "name_en": "Sindhupalchok", "name_ne": "सिन्धुपाल्चोक"}
+      ]
+    },
+    {
+      "code": "P4",
+      "name_en": "Gandaki Province",
+      "name_ne": "गण्डकी प्रदेश",
+      "capital": "Pokhara",
+      "districts": [
+        {"code": "D36", "name_en": "Baglung", "name_ne": "बागलुङ"},
+        {"code": "D37", "name_en": "Gorkha", "name_ne": "गोरखा"},
+        {"code": "D38", "name_en": "Kaski", "name_ne": "कास्की"},
+        {"code": "D39", "name_en": "Lamjung", "name_ne": "लमजुङ"},
+        {"code": "D40", "name_en": "Manang", "name_ne": "मनाङ"},
+        {"code": "D41", "name_en": "Mustang", "name_ne": "मुस्ताङ"},
+        {"code": "D42", "name_en": "Myagdi", "name_ne": "म्याग्दी"},
+        {"code": "D43", "name_en": "Nawalpur", "name_ne": "नवलपुर"},
+        {"code": "D44", "name_en": "Parbat", "name_ne": "पर्वत"},
+        {"code": "D45", "name_en": "Syangja", "name_ne": "स्याङ्जा"},
+        {"code": "D46", "name_en": "Tanahun", "name_ne": "तनहुँ"}
+      ]
+    },
+    {
+      "code": "P5",
+      "name_en": "Lumbini Province",
+      "name_ne": "लुम्बिनी प्रदेश",
+      "capital": "Butwal",
+      "districts": [
+        {"code": "D47", "name_en": "Arghakhanchi", "name_ne": "अर्घाखाँची"},
+        {"code": "D48", "name_en": "Banke", "name_ne": "बाँके"},
+        {"code": "D49", "name_en": "Bardiya", "name_ne": "बर्दिया"},
+        {"code": "D50", "name_en": "Dang", "name_ne": "दाङ"},
+        {"code": "D51", "name_en": "Gulmi", "name_ne": "गुल्मी"},
+        {"code": "D52", "name_en": "Kapilvastu", "name_ne": "कपिलवस्तु"},
+        {"code": "D53", "name_en": "Nawalparasi West", "name_ne": "नवलपरासी पश्चिम"},
+        {"code": "D54", "name_en": "Palpa", "name_ne": "पाल्पा"},
+        {"code": "D55", "name_en": "Pyuthan", "name_ne": "प्युठान"},
+        {"code": "D56", "name_en": "Rolpa", "name_ne": "रोल्पा"},
+        {"code": "D57", "name_en": "Rupandehi", "name_ne": "रुपन्देही"},
+        {"code": "D58", "name_en": "Eastern Rukum", "name_ne": "पूर्वी रुकुम"}
+      ]
+    },
+    {
+      "code": "P6",
+      "name_en": "Karnali Province",
+      "name_ne": "कर्णाली प्रदेश",
+      "capital": "Birendranagar",
+      "districts": [
+        {"code": "D59", "name_en": "Dailekh", "name_ne": "दैलेख"},
+        {"code": "D60", "name_en": "Dolpa", "name_ne": "डोल्पा"},
+        {"code": "D61", "name_en": "Humla", "name_ne": "हुम्ला"},
+        {"code": "D62", "name_en": "Jajarkot", "name_ne": "जाजरकोट"},
+        {"code": "D63", "name_en": "Jumla", "name_ne": "जुम्ला"},
+        {"code": "D64", "name_en": "Kalikot", "name_ne": "कालिकोट"},
+        {"code": "D65", "name_en": "Mugu", "name_ne": "मुगु"},
+        {"code": "D66", "name_en": "Western Rukum", "name_ne": "पश्चिमी रुकुम"},
+        {"code": "D67", "name_en": "Salyan", "name_ne": "सल्यान"},
+        {"code": "D68", "name_en": "Surkhet", "name_ne": "सुर्खेत"}
+      ]
+    },
+    {
+      "code": "P7",
+      "name_en": "Sudurpashchim Province",
+      "name_ne": "सुदूरपश्चिम प्रदेश",
+      "capital": "Godawari",
+      "districts": [
+        {"code": "D69", "name_en": "Achham", "name_ne": "अछाम"},
+        {"code": "D70", "name_en": "Baitadi", "name_ne": "बैतडी"},
+        {"code": "D71", "name_en": "Bajhang", "name_ne": "बझाङ"},
+        {"code": "D72", "name_en": "Bajura", "name_ne": "बाजुरा"},
+        {"code": "D73", "name_en": "Dadeldhura", "name_ne": "डडेलधुरा"},
+        {"code": "D74", "name_en": "Darchula", "name_ne": "दार्चुला"},
+        {"code": "D75", "name_en": "Doti", "name_ne": "डोटी"},
+        {"code": "D76", "name_en": "Kailali", "name_ne": "कैलाली"},
+        {"code": "D77", "name_en": "Kanchanpur", "name_ne": "कञ्चनपुर"}
+      ]
+    }
+  ]
+}

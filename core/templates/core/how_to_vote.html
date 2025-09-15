@@ -1,1 +1,48 @@
-{% extends 'base.html' %}{% block content %}<h1>How to Vote</h1>{% endblock %}
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "How to Vote" %} - ElectNepal{% endblock %}
+
+{% block content %}
+<div class="info-section">
+    <h1 class="hero-title" style="font-size: 2.5rem; margin-bottom: 2rem;">
+        {% trans "How to Vote in Nepal" %}
+    </h1>
+    
+    <div class="info-content">
+        <h2 class="info-title">{% trans "Voting Requirements" %}</h2>
+        <ul style="list-style: disc; margin-left: 2rem; line-height: 2;">
+            <li>{% trans "Must be a Nepali citizen aged 18 or above" %}</li>
+            <li>{% trans "Must have a valid Voter ID card" %}</li>
+            <li>{% trans "Must be registered in the voter list" %}</li>
+            <li>{% trans "Must vote at your designated polling station" %}</li>
+        </ul>
+        
+        <h2 class="info-title" style="margin-top: 2rem;">{% trans "Voting Process" %}</h2>
+        <ol style="list-style: decimal; margin-left: 2rem; line-height: 2;">
+            <li>{% trans "Go to your designated polling station on election day" %}</li>
+            <li>{% trans "Present your Voter ID card to the election officials" %}</li>
+            <li>{% trans "Receive your ballot papers" %}</li>
+            <li>{% trans "Mark your choice in the voting booth privately" %}</li>
+            <li>{% trans "Fold the ballot and insert it into the ballot box" %}</li>
+            <li>{% trans "Get your finger marked with indelible ink" %}</li>
+        </ol>
+        
+        <h2 class="info-title" style="margin-top: 2rem;">{% trans "Important Notes" %}</h2>
+        <div class="contact-box" style="background: linear-gradient(135deg, #fee2e2, #fecaca);">
+            <p>{% trans "Voting is your constitutional right and civic duty" %}</p>
+            <p>{% trans "Your vote is secret - no one can force you to reveal your choice" %}</p>
+            <p>{% trans "Report any irregularities to election officials immediately" %}</p>
+        </div>
+        
+        <h2 class="info-title" style="margin-top: 2rem;">{% trans "Need Help?" %}</h2>
+        <p>{% trans "For more information about voting procedures or to check your voter registration status, visit the Election Commission of Nepal website or contact your local election office." %}</p>
+        
+        <div style="margin-top: 2rem;">
+            <a href="{% url 'home' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> {% trans "Back to Home" %}
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

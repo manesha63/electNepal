@@ -1,7 +1,140 @@
-{% extends 'base.html' %}{% load i18n %}
-{% block title %}{% trans "Find Independent Candidates in Nepal" %}{% endblock %}
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %}ElectNepal - {% trans "Empowering Democracy in Nepal" %}{% endblock %}
+
 {% block content %}
-<h1 class="text-2xl font-semibold mb-4">{% trans "Democracy Starts with You" %}</h1>
-<p class="mb-6">{% trans "Use the navigation to explore candidates and voter info." %}</p>
-<a href="{% url 'how_to_vote' %}" class="text-blue-700 underline">{% trans "How to Vote" %}</a>
+<div class="hero-content">
+    <!-- Main Title -->
+    <h1 class="hero-title animate-on-scroll">
+        ElectNepal
+    </h1>
+    
+    <!-- Subtitle -->
+    <p class="hero-subtitle animate-on-scroll">
+        {% trans "Your Gateway to Independent Democracy" %}
+    </p>
+    
+    <!-- Action Buttons -->
+    <div class="action-buttons animate-on-scroll">
+        <a href="{% url 'candidates:list' %}" class="btn btn-primary">
+            <i class="fas fa-users btn-icon"></i>
+            <span>{% trans "Explore Independent Candidates" %}</span>
+        </a>
+        
+        <a href="{% url 'how_to_vote' %}" class="btn btn-secondary">
+            <i class="fas fa-vote-yea btn-icon"></i>
+            <span>{% trans "How to Vote" %}</span>
+        </a>
+    </div>
+    
+    <!-- Features Section -->
+    <div class="features-grid animate-on-scroll">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <h3 class="feature-title">{% trans "Find Candidates" %}</h3>
+            <p class="feature-description">
+                {% trans "Search and discover independent candidates in your area" %}
+            </p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-user-check"></i>
+            </div>
+            <h3 class="feature-title">{% trans "Verified Profiles" %}</h3>
+            <p class="feature-description">
+                {% trans "All candidate profiles are verified for authenticity" %}
+            </p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <h3 class="feature-title">{% trans "Voter Education" %}</h3>
+            <p class="feature-description">
+                {% trans "Learn about the voting process and your rights" %}
+            </p>
+        </div>
+    </div>
+    
+    <!-- Info Section -->
+    <div class="info-section animate-on-scroll">
+        <h2 class="info-title">
+            {% trans "About ElectNepal" %}
+        </h2>
+        
+        <div class="info-content">
+            <p>
+                {% trans "ElectNepal is a comprehensive platform designed to strengthen democracy in Nepal by providing a space for independent candidates to connect with voters. We believe in transparent, accessible, and fair elections where every voice matters." %}
+            </p>
+            <p style="margin-top: 1rem;">
+                {% trans "Our platform allows independent candidates to create verified profiles, share their vision, and engage with constituents across all 7 provinces, 77 districts, and 753 municipalities of Nepal." %}
+            </p>
+        </div>
+        
+        <!-- Contact Box -->
+        <div class="contact-box">
+            <h3>
+                <i class="fas fa-envelope"></i> {% trans "Want to Register as a Candidate?" %}
+            </h3>
+            <p>
+                {% trans "If you're an independent candidate looking to create your profile and connect with voters, or if you have any questions about our platform, please reach out to us:" %}
+            </p>
+            <a href="mailto:chandmanisha002@gmail.com" class="contact-email">
+                <i class="fas fa-paper-plane"></i>
+                chandmanisha002@gmail.com
+            </a>
+        </div>
+    </div>
+    
+    <!-- Statistics -->
+    <div class="info-section animate-on-scroll" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe);">
+        <h2 class="info-title">{% trans "Nepal Coverage" %}</h2>
+        <div class="features-grid">
+            <div class="text-center">
+                <div class="text-3xl font-bold text-blue-600">7</div>
+                <div class="text-gray-600">{% trans "Provinces" %}</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-blue-600">77</div>
+                <div class="text-gray-600">{% trans "Districts" %}</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-blue-600">753</div>
+                <div class="text-gray-600">{% trans "Municipalities" %}</div>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-blue-600">6,743</div>
+                <div class="text-gray-600">{% trans "Wards" %}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Additional page-specific styles */
+    .features-grid {
+        margin-top: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+        .hero-title {
+            margin-top: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Page-specific JavaScript
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add any page-specific functionality here
+        console.log('Welcome to ElectNepal!');
+    });
+</script>
 {% endblock %}

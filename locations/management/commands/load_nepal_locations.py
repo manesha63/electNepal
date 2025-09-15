@@ -14,17 +14,39 @@ class Command(BaseCommand):
         fp = opts['file']
         data = json.load(open(fp, 'r', encoding='utf-8'))
         pc = dc = mc = 0
+        
+        # Handle nested structure where districts and municipalities are inside provinces
         for p in data.get('provinces', []):
-            _, created = Province.objects.get_or_create(code=p['code'], defaults={'name_en':p['name_en'],'name_ne':p['name_ne']})
+            province_obj, created = Province.objects.get_or_create(
+                code=p['code'], 
+                defaults={'name_en': p['name_en'], 'name_ne': p['name_ne']}
+            )
             pc += int(created)
-        for d in data.get('districts', []):
-            province = Province.objects.get(code=d['province_code'])
-            _, created = District.objects.get_or_create(code=d['code'], defaults={'province':province,'name_en':d['name_en'],'name_ne':d['name_ne']})
-            dc += int(created)
-        for m in data.get('municipalities', []):
-            district = District.objects.get(code=m['district_code'])
-            _, created = Municipality.objects.get_or_create(code=m['code'], defaults={
-                'district':district,'name_en':m['name_en'],'name_ne':m['name_ne'],
-                'municipality_type':m['type'],'total_wards':m.get('total_wards',9)})
-            mc += int(created)
+            
+            # Process districts for this province
+            for d in p.get('districts', []):
+                district_obj, created = District.objects.get_or_create(
+                    code=d['code'],
+                    defaults={
+                        'province': province_obj,
+                        'name_en': d['name_en'],
+                        'name_ne': d['name_ne']
+                    }
+                )
+                dc += int(created)
+                
+                # Process municipalities for this district
+                for m in d.get('municipalities', []):
+                    _, created = Municipality.objects.get_or_create(
+                        code=m['code'],
+                        defaults={
+                            'district': district_obj,
+                            'name_en': m['name_en'],
+                            'name_ne': m['name_ne'],
+                            'municipality_type': m['type'],
+                            'total_wards': m.get('wards', 9)
+                        }
+                    )
+                    mc += int(created)
+        
         self.stdout.write(self.style.SUCCESS(f"Imported: provinces={pc}, districts={dc}, municipalities={mc}"))

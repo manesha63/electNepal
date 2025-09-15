@@ -1,10 +1,66 @@
-{% extends 'base.html' %}{% block content %}
-<h1 class="text-xl font-semibold mb-4">Candidates</h1>
-<ul class="space-y-2">
-  {% for c in candidates %}
-    <li><a class="text-blue-700 underline" href="{{ c.get_absolute_url }}">{{ c.full_name }}</a></li>
-  {% empty %}
-    <li>No candidates yet.</li>
-  {% endfor %}
-</ul>
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Independent Candidates" %} - ElectNepal{% endblock %}
+
+{% block content %}
+<div class="info-section">
+    <h1 class="hero-title" style="font-size: 2.5rem; margin-bottom: 2rem;">
+        {% trans "Independent Candidates" %}
+    </h1>
+    
+    {% if candidates %}
+        <div class="features-grid">
+            {% for candidate in candidates %}
+            <div class="feature-card" style="text-align: left;">
+                <div class="flex items-center gap-4 mb-3">
+                    {% if candidate.photo %}
+                        <img src="{{ candidate.photo.url }}" alt="{{ candidate.full_name }}" class="w-16 h-16 rounded-full object-cover">
+                    {% else %}
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold">
+                            {{ candidate.full_name|first }}
+                        </div>
+                    {% endif %}
+                    <div>
+                        <h3 class="font-semibold text-lg">{{ candidate.full_name }}</h3>
+                        <p class="text-sm text-gray-600">{{ candidate.get_position_level_display }}</p>
+                    </div>
+                </div>
+                
+                <p class="text-sm text-gray-600 mb-3">
+                    <i class="fas fa-map-marker-alt"></i> {{ candidate.get_display_location }}
+                </p>
+                
+                <a href="{{ candidate.get_absolute_url }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+                    {% trans "View Profile" %} <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-12">
+            <div class="feature-icon mx-auto mb-4" style="width: 80px; height: 80px;">
+                <i class="fas fa-users text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-semibold mb-2 text-gray-700">{% trans "No Candidates Yet" %}</h2>
+            <p class="text-gray-600 mb-6">{% trans "Independent candidates will appear here once they register and are verified." %}</p>
+            
+            <div class="contact-box mx-auto" style="max-width: 600px;">
+                <h3>
+                    <i class="fas fa-user-plus"></i> {% trans "Are you an independent candidate?" %}
+                </h3>
+                <p>{% trans "Register your profile to connect with voters across Nepal." %}</p>
+                <a href="mailto:chandmanisha002@gmail.com" class="contact-email">
+                    <i class="fas fa-envelope"></i> chandmanisha002@gmail.com
+                </a>
+            </div>
+        </div>
+    {% endif %}
+    
+    <div style="margin-top: 3rem; text-align: center;">
+        <a href="{% url 'home' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> {% trans "Back to Home" %}
+        </a>
+    </div>
+</div>
 {% endblock %}
