@@ -1,0 +1,1311 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %}Discover Candidates - ElectNepal{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Override base styles */
+    body {
+        background: #f5f7fa;
+    }
+    
+    .main-content .container {
+        max-width: 100%;
+        padding: 0;
+    }
+    
+    /* Top Search Bar */
+    .search-header {
+        background: transparent;
+        padding: 20px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+    
+    .search-container {
+        max-width: 500px;
+        margin: 0 auto;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .search-bar {
+        display: flex;
+        align-items: center;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        height: 24px; /* ~0.6cm */
+        width: 380px; /* ~10cm */
+        transition: all 0.3s;
+        position: relative;
+    }
+    
+    .search-bar:focus-within {
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+    }
+    
+    .search-icon {
+        padding: 0 12px;
+        color: #6b7280;
+        font-size: 12px;
+    }
+    
+    .search-input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        font-size: 12px;
+        padding: 0;
+        outline: none;
+        height: 100%;
+    }
+    
+    .search-input::placeholder {
+        color: #9ca3af;
+    }
+    
+    .search-btn {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 0 14px;
+        height: 100%;
+        font-size: 11px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+        border-radius: 0 3px 3px 0;
+    }
+    
+    .search-btn:hover {
+        background: #5a67d8;
+    }
+    
+    /* Main Layout Container */
+    .content-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    /* Left Column - Candidates Feed */
+    .candidates-section {
+        min-height: 100vh;
+    }
+    
+    /* Level Filter Pills */
+    .level-filters {
+        background: white;
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .level-pills {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .level-pill {
+        padding: 8px 16px;
+        border: 2px solid #e5e7eb;
+        background: white;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .level-pill:hover {
+        border-color: #667eea;
+    }
+    
+    .level-pill.active {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+    
+    .level-count {
+        background: rgba(0,0,0,0.1);
+        padding: 2px 6px;
+        border-radius: 10px;
+        font-size: 12px;
+    }
+    
+    .level-pill.active .level-count {
+        background: rgba(255,255,255,0.3);
+    }
+    
+    /* Candidate Cards Grid */
+    .candidates-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+        margin-bottom: 40px;
+    }
+    
+    /* Candidate Card */
+    .candidate-card {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    
+    .candidate-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .card-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .candidate-photo {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        object-fit: cover;
+        background: #f3f4f6;
+    }
+    
+    .candidate-photo-placeholder {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+    }
+    
+    .candidate-info {
+        flex: 1;
+    }
+    
+    .candidate-name {
+        font-weight: 600;
+        font-size: 16px;
+        color: #111827;
+        margin-bottom: 4px;
+    }
+    
+    .candidate-details {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .detail-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #6b7280;
+    }
+    
+    .detail-row i {
+        width: 14px;
+        text-align: center;
+        color: #9ca3af;
+    }
+    
+    .level-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .badge-federal {
+        background: #fef3c7;
+        color: #92400e;
+    }
+    
+    .badge-provincial {
+        background: #ede9fe;
+        color: #5b21b6;
+    }
+    
+    .badge-local {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+    
+    .party-label {
+        background: #e5e7eb;
+        color: #374151;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+    }
+    
+    /* Card Actions */
+    .card-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #f3f4f6;
+    }
+    
+    .action-btn {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #e5e7eb;
+        background: white;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        text-decoration: none;
+        color: #374151;
+    }
+    
+    .action-btn:hover {
+        background: #f9fafb;
+        border-color: #667eea;
+        color: #667eea;
+    }
+    
+    .action-btn.primary {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+    
+    .action-btn.primary:hover {
+        background: #5b67d8;
+    }
+    
+    /* Filter Button and Dropdown */
+    .filter-button {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 0 16px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 13px;
+        color: #374151;
+        position: relative;
+    }
+    
+    .filter-button:hover {
+        border-color: #667eea;
+        background: #f9fafb;
+    }
+    
+    .filter-dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        min-width: 280px;
+        z-index: 200;
+        display: none;
+    }
+    
+    .filter-dropdown.active {
+        display: block;
+    }
+    
+    .filter-wrapper {
+        position: relative;
+    }
+    
+    .filter-title {
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 16px;
+        color: #111827;
+    }
+    
+    .filter-group {
+        margin-bottom: 20px;
+    }
+    
+    .filter-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 8px;
+    }
+    
+    .filter-select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .filter-select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .filter-select:disabled {
+        background: #f9fafb;
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+    
+    .clear-filters-btn {
+        width: 100%;
+        padding: 10px;
+        background: #f3f4f6;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #374151;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .clear-filters-btn:hover {
+        background: #e5e7eb;
+    }
+    
+    /* Mobile Filter Button */
+    .mobile-filter-btn {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #667eea;
+        color: white;
+        border: none;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        cursor: pointer;
+        z-index: 99;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Mobile Filter Drawer */
+    .filter-drawer {
+        display: none;
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 320px;
+        height: 100vh;
+        background: white;
+        box-shadow: -2px 0 12px rgba(0,0,0,0.2);
+        z-index: 1000;
+        transition: right 0.3s;
+        overflow-y: auto;
+    }
+    
+    .filter-drawer.open {
+        right: 0;
+    }
+    
+    .drawer-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .drawer-title {
+        font-weight: 600;
+        font-size: 18px;
+    }
+    
+    .drawer-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #6b7280;
+    }
+    
+    .drawer-body {
+        padding: 20px;
+    }
+    
+    /* Loading State */
+    .loading-skeleton {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+        animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 12px;
+        margin: 20px 0;
+    }
+    
+    .empty-icon {
+        font-size: 48px;
+        color: #e5e7eb;
+        margin-bottom: 16px;
+    }
+    
+    .empty-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 8px;
+    }
+    
+    .empty-desc {
+        color: #6b7280;
+        margin-bottom: 20px;
+    }
+    
+    /* Pagination */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin: 40px 0;
+    }
+    
+    .page-btn {
+        padding: 8px 12px;
+        border: 1px solid #e5e7eb;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        min-width: 40px;
+        text-align: center;
+    }
+    
+    .page-btn:hover {
+        border-color: #667eea;
+        background: #f9fafb;
+    }
+    
+    .page-btn.active {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+    
+    .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .content-wrapper {
+            grid-template-columns: 1fr;
+        }
+        
+        .filters-sidebar {
+            display: none;
+        }
+        
+        .mobile-filter-btn {
+            display: flex;
+        }
+    }
+    
+    @media (max-width: 640px) {
+        .candidates-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .search-header {
+            padding: 12px;
+        }
+        
+        .content-wrapper {
+            padding: 12px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Search Header -->
+<div class="search-header">
+    <div class="search-container">
+        <div class="search-bar">
+            <div class="search-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <input type="text" 
+                   id="searchInput" 
+                   class="search-input" 
+                   placeholder="Search candidates..."
+                   value="{{ request.GET.q }}">
+            <button class="search-btn" onclick="performSearch()">
+                Search
+            </button>
+        </div>
+        
+        <!-- Filter Button -->
+        <div class="filter-wrapper">
+            <button class="filter-button" onclick="toggleFilterDropdown()">
+                <i class="fas fa-filter"></i>
+                <span>Filters</span>
+                <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
+            </button>
+            
+            <!-- Filter Dropdown -->
+            <div id="filterDropdown" class="filter-dropdown">
+                <h3 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 600;">Location Filters</h3>
+                
+                <!-- Province Filter -->
+                <div class="filter-group">
+                    <label class="filter-label" for="provinceFilter">Province</label>
+                    <select id="provinceFilter" class="filter-select" onchange="onProvinceChange()">
+                        <option value="">All Provinces</option>
+                        {% for province in provinces %}
+                        <option value="{{ province.id }}">{{ province.name_en }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- District Filter -->
+                <div class="filter-group">
+                    <label class="filter-label" for="districtFilter">District</label>
+                    <select id="districtFilter" class="filter-select" onchange="onDistrictChange()" disabled>
+                        <option value="">Select Province First</option>
+                    </select>
+                </div>
+                
+                <!-- Municipality Filter -->
+                <div class="filter-group">
+                    <label class="filter-label" for="municipalityFilter">Municipality</label>
+                    <select id="municipalityFilter" class="filter-select" onchange="onMunicipalityChange()" disabled>
+                        <option value="">Select District First</option>
+                    </select>
+                </div>
+                
+                <button class="clear-filters-btn" onclick="clearLocationFilters()" style="width: 100%; margin-top: 12px;">
+                    <i class="fas fa-times"></i> Clear Filters
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="content-wrapper">
+    <!-- Left Column - Candidates -->
+    <div class="candidates-section">
+        <!-- Level Filters -->
+        <div class="level-filters">
+            <div class="level-pills">
+                <button class="level-pill active" data-level="all" onclick="filterByLevel('all', this)">
+                    All
+                    <span class="level-count" id="allCount">0</span>
+                </button>
+                <button class="level-pill" data-level="federal" onclick="filterByLevel('federal', this)">
+                    Federal Parliament
+                    <span class="level-count" id="federalCount">0</span>
+                </button>
+                <button class="level-pill" data-level="provincial" onclick="filterByLevel('provincial', this)">
+                    Provincial Assembly
+                    <span class="level-count" id="provincialCount">0</span>
+                </button>
+                <button class="level-pill" data-level="local" onclick="filterByLevel('local', this)">
+                    Local
+                    <span class="level-count" id="localCount">0</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Candidates Grid -->
+        <div id="candidatesGrid" class="candidates-grid">
+            <!-- Candidates will be loaded here -->
+        </div>
+        
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-icon">
+                <i class="fas fa-inbox"></i>
+            </div>
+            <h3 class="empty-title">No candidates found</h3>
+            <p class="empty-desc">Try adjusting your filters or search terms</p>
+            <button class="clear-filters-btn" onclick="clearAllFilters()">Clear all filters</button>
+        </div>
+        
+        <!-- Pagination -->
+        <div id="pagination" class="pagination">
+            <!-- Pagination buttons will be loaded here -->
+        </div>
+    </div>
+    
+</div>
+
+<!-- Mobile Filter Button -->
+<button class="mobile-filter-btn" onclick="openFilterDrawer()">
+    <i class="fas fa-filter"></i>
+</button>
+
+<!-- Mobile Filter Drawer -->
+<div id="filterDrawer" class="filter-drawer">
+    <div class="drawer-header">
+        <h3 class="drawer-title">Filters</h3>
+        <button class="drawer-close" onclick="closeFilterDrawer()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="drawer-body">
+        <!-- Duplicate filters for mobile -->
+        <div class="filter-group">
+            <label class="filter-label">Province</label>
+            <select id="mobileProvinceFilter" class="filter-select" onchange="onProvinceChange(true)">
+                <option value="">All Provinces</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label class="filter-label">District</label>
+            <select id="mobileDistrictFilter" class="filter-select" onchange="onDistrictChange(true)" disabled>
+                <option value="">Select Province First</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label class="filter-label">Municipality</label>
+            <select id="mobileMunicipalityFilter" class="filter-select" onchange="onMunicipalityChange(true)" disabled>
+                <option value="">Select District First</option>
+            </select>
+        </div>
+        
+        <button class="clear-filters-btn" onclick="clearLocationFilters(); closeFilterDrawer();">
+            Clear Filters
+        </button>
+    </div>
+</div>
+
+<script>
+// State Management
+const state = {
+    candidates: [],
+    filters: {
+        provinceId: '',
+        districtId: '',
+        municipalityId: '',
+        level: 'all',
+        q: '',
+        page: 1
+    },
+    counts: {
+        all: 0,
+        federal: 0,
+        provincial: 0,
+        local: 0
+    },
+    isLoading: false,
+    debounceTimer: null
+};
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    initializeFromURL();
+    loadProvinces();
+    loadCandidates();
+    setupSearchDebounce();
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        const filterWrapper = document.querySelector('.filter-wrapper');
+        const filterDropdown = document.getElementById('filterDropdown');
+        if (!filterWrapper.contains(e.target)) {
+            filterDropdown.classList.remove('active');
+        }
+    });
+});
+
+// Toggle filter dropdown
+function toggleFilterDropdown() {
+    const dropdown = document.getElementById('filterDropdown');
+    dropdown.classList.toggle('active');
+}
+
+// Parse URL parameters
+function initializeFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    state.filters = {
+        provinceId: params.get('provinceId') || '',
+        districtId: params.get('districtId') || '',
+        municipalityId: params.get('municipalityId') || '',
+        level: params.get('level') || 'all',
+        q: params.get('q') || '',
+        page: parseInt(params.get('page')) || 1
+    };
+    
+    // Update UI to match URL state
+    if (state.filters.q) {
+        document.getElementById('searchInput').value = state.filters.q;
+    }
+    
+    // Set active level pill
+    document.querySelectorAll('.level-pill').forEach(pill => {
+        pill.classList.toggle('active', pill.dataset.level === state.filters.level);
+    });
+}
+
+// Update URL with current filters
+function updateURL() {
+    const params = new URLSearchParams();
+    Object.keys(state.filters).forEach(key => {
+        if (state.filters[key] && state.filters[key] !== 'all') {
+            params.set(key, state.filters[key]);
+        }
+    });
+    
+    const newURL = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+    window.history.pushState({}, '', newURL);
+}
+
+// Load provinces
+async function loadProvinces() {
+    try {
+        const response = await fetch('/api/districts/');
+        const provinces = await response.json();
+        
+        // Populate province selects
+        const provinceOptions = provinces.map(p => 
+            `<option value="${p.id}">${p.name_en}</option>`
+        ).join('');
+        
+        // Add to desktop filter
+        const desktopSelect = document.getElementById('provinceFilter');
+        if (desktopSelect) {
+            desktopSelect.innerHTML = '<option value="">All Provinces</option>' + provinceOptions;
+            if (state.filters.provinceId) {
+                desktopSelect.value = state.filters.provinceId;
+                loadDistricts(state.filters.provinceId);
+            }
+        }
+        
+        // Add to mobile filter
+        const mobileSelect = document.getElementById('mobileProvinceFilter');
+        if (mobileSelect) {
+            mobileSelect.innerHTML = '<option value="">All Provinces</option>' + provinceOptions;
+            if (state.filters.provinceId) {
+                mobileSelect.value = state.filters.provinceId;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading provinces:', error);
+    }
+}
+
+// Load districts for selected province
+async function loadDistricts(provinceId) {
+    if (!provinceId) {
+        resetDistrictSelect();
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/districts/?province=${provinceId}`);
+        const districts = await response.json();
+        
+        const districtOptions = districts.map(d => 
+            `<option value="${d.id}">${d.name_en}</option>`
+        ).join('');
+        
+        // Update desktop filter
+        const desktopSelect = document.getElementById('districtFilter');
+        if (desktopSelect) {
+            desktopSelect.innerHTML = '<option value="">All Districts</option>' + districtOptions;
+            desktopSelect.disabled = false;
+            if (state.filters.districtId) {
+                desktopSelect.value = state.filters.districtId;
+                loadMunicipalities(state.filters.districtId);
+            }
+        }
+        
+        // Update mobile filter
+        const mobileSelect = document.getElementById('mobileDistrictFilter');
+        if (mobileSelect) {
+            mobileSelect.innerHTML = '<option value="">All Districts</option>' + districtOptions;
+            mobileSelect.disabled = false;
+            if (state.filters.districtId) {
+                mobileSelect.value = state.filters.districtId;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading districts:', error);
+    }
+}
+
+// Load municipalities for selected district
+async function loadMunicipalities(districtId) {
+    if (!districtId) {
+        resetMunicipalitySelect();
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/municipalities/?district=${districtId}`);
+        const municipalities = await response.json();
+        
+        const municipalityOptions = municipalities.map(m => 
+            `<option value="${m.id}">${m.name_en}</option>`
+        ).join('');
+        
+        // Update desktop filter
+        const desktopSelect = document.getElementById('municipalityFilter');
+        if (desktopSelect) {
+            desktopSelect.innerHTML = '<option value="">All Municipalities</option>' + municipalityOptions;
+            desktopSelect.disabled = false;
+            if (state.filters.municipalityId) {
+                desktopSelect.value = state.filters.municipalityId;
+            }
+        }
+        
+        // Update mobile filter
+        const mobileSelect = document.getElementById('mobileMunicipalityFilter');
+        if (mobileSelect) {
+            mobileSelect.innerHTML = '<option value="">All Municipalities</option>' + municipalityOptions;
+            mobileSelect.disabled = false;
+            if (state.filters.municipalityId) {
+                mobileSelect.value = state.filters.municipalityId;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading municipalities:', error);
+    }
+}
+
+// Reset district select
+function resetDistrictSelect() {
+    const selects = ['districtFilter', 'mobileDistrictFilter'];
+    selects.forEach(id => {
+        const select = document.getElementById(id);
+        if (select) {
+            select.innerHTML = '<option value="">Select Province First</option>';
+            select.disabled = true;
+        }
+    });
+    resetMunicipalitySelect();
+}
+
+// Reset municipality select
+function resetMunicipalitySelect() {
+    const selects = ['municipalityFilter', 'mobileMunicipalityFilter'];
+    selects.forEach(id => {
+        const select = document.getElementById(id);
+        if (select) {
+            select.innerHTML = '<option value="">Select District First</option>';
+            select.disabled = true;
+        }
+    });
+}
+
+// Load candidates
+async function loadCandidates() {
+    if (state.isLoading) return;
+    
+    state.isLoading = true;
+    
+    const params = new URLSearchParams();
+    Object.keys(state.filters).forEach(key => {
+        if (state.filters[key]) {
+            params.set(key, state.filters[key]);
+        }
+    });
+    
+    try {
+        // Show loading state
+        document.getElementById('candidatesGrid').innerHTML = 
+            '<div class="loading-skeleton" style="grid-column: 1/-1;">Loading...</div>';
+        
+        const response = await fetch(`/api/nearby-candidates/?${params}`);
+        const data = await response.json();
+        
+        state.candidates = data.candidates || getMockCandidates();
+        updateCounts();
+        renderCandidates();
+        renderPagination(data.total_pages || 1);
+        
+    } catch (error) {
+        console.error('Error loading candidates:', error);
+        state.candidates = getMockCandidates();
+        renderCandidates();
+    } finally {
+        state.isLoading = false;
+    }
+}
+
+// Get mock candidates for testing
+function getMockCandidates() {
+    return [
+        {
+            id: 1,
+            name: 'Ram Prasad Sharma',
+            photo: null,
+            level: 'federal',
+            seatNumber: 'KTM-01',
+            party: 'Independent',
+            location: 'Kathmandu'
+        },
+        {
+            id: 2,
+            name: 'Sita Devi Poudel',
+            photo: null,
+            level: 'provincial',
+            seatNumber: 'BAG-03',
+            party: 'Independent',
+            location: 'Lalitpur'
+        },
+        {
+            id: 3,
+            name: 'Gopal Krishna Shrestha',
+            photo: null,
+            level: 'local',
+            seatNumber: 'Ward-5',
+            party: 'Independent',
+            location: 'Bhaktapur'
+        }
+    ];
+}
+
+// Update counts
+function updateCounts() {
+    const counts = {
+        all: state.candidates.length,
+        federal: state.candidates.filter(c => c.level === 'federal').length,
+        provincial: state.candidates.filter(c => c.level === 'provincial').length,
+        local: state.candidates.filter(c => c.level === 'local').length
+    };
+    
+    document.getElementById('allCount').textContent = counts.all;
+    document.getElementById('federalCount').textContent = counts.federal;
+    document.getElementById('provincialCount').textContent = counts.provincial;
+    document.getElementById('localCount').textContent = counts.local;
+}
+
+// Render candidates
+function renderCandidates() {
+    const grid = document.getElementById('candidatesGrid');
+    const emptyState = document.getElementById('emptyState');
+    
+    const filteredCandidates = state.filters.level === 'all' 
+        ? state.candidates 
+        : state.candidates.filter(c => c.level === state.filters.level);
+    
+    if (filteredCandidates.length === 0) {
+        grid.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+    }
+    
+    grid.style.display = 'grid';
+    emptyState.style.display = 'none';
+    
+    grid.innerHTML = filteredCandidates.map(candidate => `
+        <div class="candidate-card">
+            <div class="card-header">
+                ${candidate.photo ? 
+                    `<img src="${candidate.photo}" alt="${candidate.name}" class="candidate-photo">` :
+                    `<div class="candidate-photo-placeholder">
+                        <i class="fas fa-user"></i>
+                    </div>`
+                }
+                <div class="candidate-info">
+                    <h3 class="candidate-name">${candidate.name}</h3>
+                    <div class="candidate-details">
+                        <div class="detail-row">
+                            <span class="level-badge badge-${candidate.level}">${candidate.level}</span>
+                        </div>
+                        <div class="detail-row">
+                            <i class="fas fa-hashtag"></i>
+                            <span>Seat: ${candidate.seatNumber || 'N/A'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="party-label">${candidate.party}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-actions">
+                <a href="/candidates/${candidate.id}/" class="action-btn primary">
+                    <i class="fas fa-user-circle"></i>
+                    Open Profile
+                </a>
+                <button class="action-btn" onclick="shareCandidate(${candidate.id}, '${candidate.name}')">
+                    <i class="fas fa-share"></i>
+                    Share
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Render pagination
+function renderPagination(totalPages) {
+    const pagination = document.getElementById('pagination');
+    if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+    }
+    
+    let html = '';
+    
+    // Previous button
+    html += `<button class="page-btn" ${state.filters.page <= 1 ? 'disabled' : ''} 
+             onclick="goToPage(${state.filters.page - 1})">
+             <i class="fas fa-chevron-left"></i>
+             </button>`;
+    
+    // Page numbers
+    for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+        html += `<button class="page-btn ${i === state.filters.page ? 'active' : ''}" 
+                 onclick="goToPage(${i})">${i}</button>`;
+    }
+    
+    // Next button
+    html += `<button class="page-btn" ${state.filters.page >= totalPages ? 'disabled' : ''} 
+             onclick="goToPage(${state.filters.page + 1})">
+             <i class="fas fa-chevron-right"></i>
+             </button>`;
+    
+    pagination.innerHTML = html;
+}
+
+// Navigation functions
+function goToPage(page) {
+    state.filters.page = page;
+    updateURL();
+    loadCandidates();
+}
+
+// Filter handlers
+function onProvinceChange(isMobile = false) {
+    const select = document.getElementById(isMobile ? 'mobileProvinceFilter' : 'provinceFilter');
+    state.filters.provinceId = select.value;
+    state.filters.districtId = '';
+    state.filters.municipalityId = '';
+    
+    // Sync desktop and mobile
+    if (!isMobile) {
+        const mobileSelect = document.getElementById('mobileProvinceFilter');
+        if (mobileSelect) mobileSelect.value = select.value;
+    } else {
+        const desktopSelect = document.getElementById('provinceFilter');
+        if (desktopSelect) desktopSelect.value = select.value;
+    }
+    
+    if (select.value) {
+        loadDistricts(select.value);
+    } else {
+        resetDistrictSelect();
+    }
+    
+    updateURL();
+    loadCandidates();
+}
+
+function onDistrictChange(isMobile = false) {
+    const select = document.getElementById(isMobile ? 'mobileDistrictFilter' : 'districtFilter');
+    state.filters.districtId = select.value;
+    state.filters.municipalityId = '';
+    
+    // Sync desktop and mobile
+    if (!isMobile) {
+        const mobileSelect = document.getElementById('mobileDistrictFilter');
+        if (mobileSelect) mobileSelect.value = select.value;
+    } else {
+        const desktopSelect = document.getElementById('districtFilter');
+        if (desktopSelect) desktopSelect.value = select.value;
+    }
+    
+    if (select.value) {
+        loadMunicipalities(select.value);
+    } else {
+        resetMunicipalitySelect();
+    }
+    
+    updateURL();
+    loadCandidates();
+}
+
+function onMunicipalityChange(isMobile = false) {
+    const select = document.getElementById(isMobile ? 'mobileMunicipalityFilter' : 'municipalityFilter');
+    state.filters.municipalityId = select.value;
+    
+    // Sync desktop and mobile
+    if (!isMobile) {
+        const mobileSelect = document.getElementById('mobileMunicipalityFilter');
+        if (mobileSelect) mobileSelect.value = select.value;
+    } else {
+        const desktopSelect = document.getElementById('municipalityFilter');
+        if (desktopSelect) desktopSelect.value = select.value;
+    }
+    
+    updateURL();
+    loadCandidates();
+}
+
+function filterByLevel(level, button) {
+    state.filters.level = level;
+    state.filters.page = 1;
+    
+    // Update active state
+    document.querySelectorAll('.level-pill').forEach(pill => {
+        pill.classList.toggle('active', pill.dataset.level === level);
+    });
+    
+    updateURL();
+    renderCandidates(); // Just re-render, don't reload
+}
+
+// Search functions
+function setupSearchDebounce() {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(state.debounceTimer);
+        state.debounceTimer = setTimeout(() => {
+            state.filters.q = e.target.value;
+            state.filters.page = 1;
+            updateURL();
+            loadCandidates();
+        }, 300);
+    });
+}
+
+function performSearch() {
+    const searchInput = document.getElementById('searchInput');
+    state.filters.q = searchInput.value;
+    state.filters.page = 1;
+    updateURL();
+    loadCandidates();
+}
+
+// Clear functions
+function clearLocationFilters() {
+    state.filters.provinceId = '';
+    state.filters.districtId = '';
+    state.filters.municipalityId = '';
+    
+    document.getElementById('provinceFilter').value = '';
+    document.getElementById('mobileProvinceFilter').value = '';
+    
+    resetDistrictSelect();
+    resetMunicipalitySelect();
+    
+    updateURL();
+    loadCandidates();
+}
+
+function clearAllFilters() {
+    state.filters = {
+        provinceId: '',
+        districtId: '',
+        municipalityId: '',
+        level: 'all',
+        q: '',
+        page: 1
+    };
+    
+    document.getElementById('searchInput').value = '';
+    clearLocationFilters();
+    
+    // Reset level filter
+    document.querySelectorAll('.level-pill').forEach(pill => {
+        pill.classList.toggle('active', pill.dataset.level === 'all');
+    });
+    
+    updateURL();
+    loadCandidates();
+}
+
+// Share function
+async function shareCandidate(candidateId, candidateName) {
+    const url = `${window.location.origin}/candidates/${candidateId}/`;
+    
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: `${candidateName} - ElectNepal`,
+                text: `Check out ${candidateName}'s profile on ElectNepal`,
+                url: url
+            });
+        } catch (err) {
+            console.log('Share cancelled or failed');
+        }
+    } else {
+        // Fallback: copy to clipboard
+        try {
+            await navigator.clipboard.writeText(url);
+            alert('Profile link copied to clipboard!');
+        } catch (err) {
+            console.error('Failed to copy:', err);
+        }
+    }
+}
+
+// Mobile drawer functions
+function openFilterDrawer() {
+    document.getElementById('filterDrawer').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeFilterDrawer() {
+    document.getElementById('filterDrawer').classList.remove('open');
+    document.body.style.overflow = '';
+}
+</script>
+{% endblock %}

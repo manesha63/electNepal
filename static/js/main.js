@@ -312,6 +312,253 @@ function closeRegisterModal() {
     }
 }
 
+// Location-based Candidates functionality
+let userLocation = null;
+let locationPermissionAsked = false;
+
+// Check if location permission has been asked before
+function hasLocationPermissionBeenAsked() {
+    return localStorage.getItem('electnepal_location_asked') === 'true';
+}
+
+// Mark that location permission has been asked
+function markLocationPermissionAsked() {
+    localStorage.setItem('electnepal_location_asked', 'true');
+}
+
+// Request location permission and load candidates
+function requestLocationAndLoadCandidates() {
+    if (!navigator.geolocation) {
+        console.log('Geolocation not supported');
+        loadCandidatesByLocation(null);
+        return;
+    }
+    
+    showLoading();
+    
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            userLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            console.log('User location:', userLocation);
+            hideLoading();
+            loadCandidatesByLocation(userLocation);
+            closeLocationModal();
+        },
+        (error) => {
+            console.error('Location error:', error);
+            hideLoading();
+            // Load candidates without location
+            loadCandidatesByLocation(null);
+            closeLocationModal();
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
+}
+
+// Load candidates based on location
+function loadCandidatesByLocation(location) {
+    const candidateGrid = document.getElementById('candidateGrid');
+    const locationStatus = document.getElementById('locationStatus');
+    
+    if (!candidateGrid) return;
+    
+    showLoading();
+    
+    // Build URL with location parameters
+    let url = '/api/nearby-candidates/';
+    if (location) {
+        url += `?lat=${location.lat}&lng=${location.lng}`;
+    }
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            hideLoading();
+            
+            // Update location status
+            if (locationStatus && data.location) {
+                locationStatus.innerHTML = `
+                    <i class="fas fa-map-marker-alt"></i>
+                    Showing candidates in: <strong>${data.location.municipality}, ${data.location.district}</strong>
+                `;
+                locationStatus.style.display = 'block';
+            }
+            
+            // Display candidates
+            displayCandidates(data.candidates || []);
+        })
+        .catch(error => {
+            console.error('Error loading candidates:', error);
+            hideLoading();
+            showToast('Error loading candidates. Please try again.', 'error');
+        });
+}
+
+// Display candidates in the grid
+function displayCandidates(candidates) {
+    const candidateGrid = document.getElementById('candidateGrid');
+    
+    if (!candidateGrid) return;
+    
+    if (candidates.length === 0) {
+        candidateGrid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                <i class="fas fa-user-slash" style="font-size: 48px; color: #ccc; margin-bottom: 20px;"></i>
+                <p style="color: #666; font-size: 18px;">No candidates found in your area yet.</p>
+                <p style="color: #999; margin-top: 10px;">Try adjusting your filters or search in a different location.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    candidateGrid.innerHTML = candidates.map(candidate => `
+        <div class="candidate-card">
+            ${candidate.photo_url ? 
+                `<img src="${candidate.photo_url}" alt="${candidate.name}" class="candidate-photo">` :
+                `<div class="candidate-photo-placeholder">
+                    <i class="fas fa-user"></i>
+                </div>`
+            }
+            <div class="candidate-info">
+                <h3 class="candidate-name">${candidate.name}</h3>
+                <p class="candidate-position">${candidate.position}</p>
+                <p class="candidate-location">
+                    <i class="fas fa-map-marker-alt"></i> ${candidate.municipality}, ${candidate.district}
+                </p>
+                ${candidate.verified ? 
+                    '<span class="verified-badge"><i class="fas fa-check-circle"></i> Verified</span>' : 
+                    ''
+                }
+                <p class="candidate-bio">${candidate.bio}</p>
+                <a href="/candidates/${candidate.id}/" class="view-profile-btn">View Profile</a>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Close location modal
+function closeLocationModal() {
+    const modal = document.getElementById('locationModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    markLocationPermissionAsked();
+}
+
+// Skip location and load all candidates
+function skipLocation() {
+    closeLocationModal();
+    loadCandidatesByLocation(null);
+}
+
+// Initialize candidates page
+function initCandidatesPage() {
+    // Check if we're on the candidates page
+    const candidatePage = document.querySelector('.candidates-container');
+    if (!candidatePage) return;
+    
+    // Check if location permission has been asked before
+    if (!hasLocationPermissionBeenAsked()) {
+        // Show location modal
+        const modal = document.getElementById('locationModal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+    } else {
+        // Load candidates without asking for location
+        loadCandidatesByLocation(null);
+    }
+    
+    // Initialize search functionality
+    const searchInput = document.getElementById('candidateSearch');
+    if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                searchCandidates(e.target.value);
+            }, 500);
+        });
+    }
+    
+    // Initialize filters
+    const filters = document.querySelectorAll('.filter-checkbox');
+    filters.forEach(filter => {
+        filter.addEventListener('change', applyFilters);
+    });
+}
+
+// Search candidates
+function searchCandidates(query) {
+    const url = `/api/search-candidates/?q=${encodeURIComponent(query)}`;
+    
+    showLoading();
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            hideLoading();
+            displayCandidates(data.results || []);
+        })
+        .catch(error => {
+            console.error('Search error:', error);
+            hideLoading();
+        });
+}
+
+// Apply filters
+function applyFilters() {
+    const filters = {
+        verified: document.getElementById('filterVerified')?.checked,
+        hasManifesto: document.getElementById('filterManifesto')?.checked,
+        localLevel: document.getElementById('filterLocal')?.checked
+    };
+    
+    // Build query string
+    const params = new URLSearchParams();
+    if (filters.verified) params.append('verified', 'true');
+    if (filters.hasManifesto) params.append('has_manifesto', 'true');
+    if (filters.localLevel) params.append('position', 'local');
+    
+    const url = `/candidates/?${params.toString()}`;
+    
+    // Reload page with filters (for server-side filtering)
+    window.location.href = url;
+}
+
+// Add to DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Existing initialization code...
+    // Check if user has already accepted cookies
+    const cookieConsent = localStorage.getItem('electnepal_cookie_consent');
+    
+    if (!cookieConsent) {
+        // Show cookie consent after a short delay
+        setTimeout(() => {
+            showCookieConsent();
+        }, 1000);
+    }
+    
+    // Initialize animations
+    initAnimations();
+    
+    // Initialize smooth scrolling
+    initSmoothScroll();
+    
+    // Initialize mobile menu if needed
+    initMobileMenu();
+    
+    // Initialize candidates page if applicable
+    initCandidatesPage();
+});
+
 // Export functions for use in templates
 window.ElectNepal = {
     acceptCookies,
@@ -321,5 +568,8 @@ window.ElectNepal = {
     hideLoading,
     switchLanguage,
     toggleSidebar,
-    showRegisterInfo
+    showRegisterInfo,
+    requestLocationAndLoadCandidates,
+    skipLocation,
+    closeLocationModal
 };
