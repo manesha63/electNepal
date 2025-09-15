@@ -3,7 +3,7 @@
 ## Project Overview
 A Django-based web application for tracking and displaying independent candidates in Nepal elections. Built with Django 4.2.7, migrated to PostgreSQL database, with comprehensive bilingual support (English/Nepali) and automatic translation capabilities for democratic participation in Nepal.
 
-## Current Project Status (as of 2025-01-16)
+## Current Project Status (as of 2025-01-16 - UPDATED)
 
 ### ✅ Completed Features
 
@@ -98,13 +98,16 @@ A Django-based web application for tracking and displaying independent candidate
    - **Location Names**: All 7 provinces, 77 districts, 753 municipalities in both languages
    - **Smart Fallback**: Shows English content if Nepali translation missing
 
-#### 10. **Candidate Feed System**
-   - Instagram-style candidate feed with filtering
-   - Advanced filter system (Federal/Province/District/Municipality/Ward)
-   - Real-time search with debouncing
-   - Language-aware content display
-   - Responsive card layout
-   - "Independent" party label for all candidates (translates to "स्वतन्त्र" in Nepali)
+#### 10. **Candidate Feed System (Enhanced January 16)**
+   - **Responsive Grid Layout**: Dynamic 1/2/3/4 column grid based on screen size
+   - **Paginated API**: `/candidates/api/cards/` endpoint with Django Paginator
+   - **Alpine.js Integration**: Dynamic loading with "More" and "Previous" buttons
+   - **Smart Pagination**: "Previous" button appears only after 3 page loads
+   - **Centered Layout**: Content centered with 3.5cm margins from page edges
+   - **Enhanced Cards**: Wider candidate profile cards with improved spacing
+   - **Real-time Search**: Integrated with search bar for filtered results
+   - **Language-aware**: All content respects user's language preference
+   - **Template Variations**: feed.html, feed_simple_grid.html, feed_paginated.html
 
 #### 11. **Location-Based Ballot System** (NEW - Jan 16, 2025)
    - **Geolocation Resolution**: Converts GPS coordinates to Nepal administrative regions
@@ -770,7 +773,153 @@ This project aims to:
 **Python Version**: 3.12.3
 **Django Version**: 4.2.7
 **Database**: PostgreSQL 16
-**Status**: Development Phase - 80% Complete
+**Status**: Development Phase - 85% Complete
+
+## How Each Feature Works - Technical Deep Dive
+
+### 1. **Homepage & Candidate Feed**
+**URL**: `/` or `/candidates/`
+**Template**: `candidates/templates/candidates/feed_simple_grid.html`
+**How it works**:
+- Alpine.js component `candidateGrid()` manages state
+- On load, fetches candidates from `/candidates/api/cards/`
+- Responsive grid adjusts columns: 1 (mobile) → 2 (sm) → 3 (lg) → 4 (xl)
+- Pagination: Loads 12 candidates per page (3 rows × 4 max columns)
+- "More" button loads next batch, "Previous" appears after 3 pages
+- Search integrates with API via query parameter
+- Cards display: photo, name, position level, location, verification status
+
+### 2. **Ballot Feature (Location-Based Voting)**
+**URL**: `/candidates/ballot/`
+**How it works**:
+1. User clicks "Ballot" in navigation
+2. Two input methods:
+   - **Automatic**: Browser geolocation → `/api/georesolve/` → location data
+   - **Manual**: Cascade dropdowns (Province → District → Municipality → Ward)
+3. Location sent to `/candidates/api/my-ballot/`
+4. Backend sorts candidates by relevance (Case/When SQL queries)
+5. Returns candidates ordered by location match priority
+6. Alpine.js renders results in responsive grid
+
+### 3. **Bilingual System**
+**How it works**:
+- **URL Structure**: `/` (English), `/ne/` (Nepali)
+- **Static Translation**: 264 strings in `locale/ne/LC_MESSAGES/`
+- **Dynamic Translation**: AutoTranslationMixin on model save
+- **API**: Uses `get_language()` to return correct language fields
+- **Switching**: JavaScript updates URL prefix, Django sets cookie
+- **Fallback**: Shows English if Nepali translation missing
+
+### 4. **Admin Interface**
+**URL**: `/admin/`
+**How it works**:
+- Enhanced ModelAdmin classes with custom list displays
+- Color-coded verification badges (CSS in admin templates)
+- Bulk actions for verification status changes
+- Search fields optimized with database indexes
+- Inline editing for related models (Posts, Events)
+
+### 5. **Location API System**
+**Endpoints**:
+- `/api/districts/?province={id}` - Districts by province
+- `/api/municipalities/?district={id}` - Municipalities by district
+- `/api/georesolve/?lat={}&lng={}` - Coordinate to location
+**How it works**:
+- RESTful JSON APIs using Django's JsonResponse
+- ForeignKey relationships traverse location hierarchy
+- Select_related() for query optimization
+- Returns bilingual data (name_en, name_ne fields)
+
+### 6. **Search & Filter System**
+**How it works**:
+- Search bar sends GET parameter `q` to backend
+- Django Q objects for OR queries across multiple fields
+- Filter dropdown uses Alpine.js for interactivity
+- Filters applied via URL parameters
+- Backend queryset chaining for combined filters
+- Results paginated and returned as JSON
+
+### 7. **Database Architecture**
+**Models Structure**:
+```
+Province (7) → District (77) → Municipality (753) → Wards (6,743)
+                                                ↓
+                                        Candidate (with position_level)
+```
+**Optimization**:
+- Database indexes on foreign keys
+- Unique constraints on codes
+- Select_related/prefetch_related for N+1 prevention
+
+### 8. **Alpine.js State Management**
+**Components**:
+- `candidateGrid()` - Main feed pagination
+- `ballotApp()` - Ballot page state
+- `filterDropdown()` - Filter controls
+**How it works**:
+- Reactive data binding with x-data
+- Fetch API for async data loading
+- Template loops with x-for
+- Conditional rendering with x-show/x-if
+
+### 9. **Responsive Design System**
+**Breakpoints**:
+- Mobile: < 640px (1 column)
+- Tablet: 640-1024px (2 columns)
+- Desktop: 1024-1280px (3 columns)
+- Large: > 1280px (4 columns)
+**Implementation**:
+- Tailwind CSS utility classes
+- CSS Grid with responsive columns
+- Flexbox for component layouts
+- 3.5cm page margins for readability
+
+### 10. **Security Implementation**
+- CSRF tokens on all forms
+- XSS protection headers
+- SQL injection prevention (ORM)
+- Secure password hashing
+- Environment variables for secrets
+- HTTPS ready configuration
+
+## Project Completion Assessment
+
+### ✅ Fully Complete (100%)
+- Database schema and models
+- Location data (all 753 municipalities)
+- Bilingual infrastructure
+- Translation system
+- Admin interface
+- Basic API layer
+
+### 🔄 Mostly Complete (80-90%)
+- Candidate feed system (90%)
+- Ballot feature (85%)
+- Search and filters (85%)
+- Responsive design (90%)
+- Navigation system (90%)
+
+### 📝 Partially Complete (50-70%)
+- Candidate registration (60%)
+- User authentication (50%)
+- Email notifications (30%)
+- Media uploads (40%)
+
+### ❌ Not Started (0-20%)
+- Production deployment (20%)
+- Docker configuration (0%)
+- CI/CD pipeline (0%)
+- Payment integration (0%)
+- Analytics system (0%)
+
+## Overall Project Status: 85% Complete
+
+The core functionality is operational. Main remaining work:
+1. Complete candidate self-registration
+2. Add user authentication
+3. Configure production deployment
+4. Implement caching layer
+5. Add monitoring/analytics
 
 ### Today's Major Update (Jan 16, 2025)
 - ✅ Implemented complete Location-Based Ballot System
