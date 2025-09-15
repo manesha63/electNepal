@@ -236,6 +236,82 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
+// Sidebar toggle function
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const hamburger = document.getElementById('hamburgerMenu');
+    
+    if (sidebar && overlay && hamburger) {
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+        hamburger.classList.toggle('active');
+        
+        // Prevent body scroll when sidebar is open
+        if (sidebar.classList.contains('active')) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    }
+}
+
+// Show register information for independent candidates
+function showRegisterInfo() {
+    toggleSidebar(); // Close sidebar first
+    
+    // Create a better modal instead of alert
+    const modalHtml = `
+        <div id="registerModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px;">
+            <div style="background: white; border-radius: 15px; max-width: 500px; width: 100%; padding: 30px; max-height: 80vh; overflow-y: auto;">
+                <h2 style="color: #667eea; margin-bottom: 20px; font-size: 24px; font-weight: bold;">Register as Independent Candidate</h2>
+                
+                <div style="color: #333; line-height: 1.6;">
+                    <p style="margin-bottom: 15px;"><strong>To register as an Independent Candidate:</strong></p>
+                    
+                    <ol style="margin-left: 20px; margin-bottom: 20px;">
+                        <li style="margin-bottom: 10px;">Send an email to: <a href="mailto:chandmanisha002@gmail.com" style="color: #667eea;">chandmanisha002@gmail.com</a></li>
+                        <li style="margin-bottom: 10px;">Include the following information:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Full Name (in English and Nepali)</li>
+                                <li>Contact Number</li>
+                                <li>Election Position (Federal/Provincial/Local)</li>
+                                <li>Constituency Details</li>
+                                <li>Brief Bio (max 500 words)</li>
+                                <li>Photo (passport size)</li>
+                                <li>Verification Documents</li>
+                            </ul>
+                        </li>
+                        <li style="margin-bottom: 10px;">Wait for verification (usually 2-3 business days)</li>
+                        <li>Once verified, you'll receive login credentials</li>
+                    </ol>
+                    
+                    <p style="background: #fef2f2; color: #991b1b; padding: 10px; border-radius: 5px; margin-top: 20px;">
+                        <strong>Note:</strong> Registration is ONLY for independent candidates, not for voters.
+                    </p>
+                </div>
+                
+                <button onclick="closeRegisterModal()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; margin-top: 20px; font-size: 16px; width: 100%;">
+                    Close
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Add modal to body
+    const modalDiv = document.createElement('div');
+    modalDiv.innerHTML = modalHtml;
+    document.body.appendChild(modalDiv);
+}
+
+// Close register modal
+function closeRegisterModal() {
+    const modal = document.getElementById('registerModal');
+    if (modal && modal.parentElement) {
+        modal.parentElement.remove();
+    }
+}
+
 // Export functions for use in templates
 window.ElectNepal = {
     acceptCookies,
@@ -243,5 +319,7 @@ window.ElectNepal = {
     showToast,
     showLoading,
     hideLoading,
-    switchLanguage
+    switchLanguage,
+    toggleSidebar,
+    showRegisterInfo
 };
