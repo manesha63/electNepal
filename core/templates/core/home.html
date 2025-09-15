@@ -10,34 +10,6 @@
         ElectNepal
     </h1>
     
-    <!-- Subtitle -->
-    <p class="hero-subtitle animate-on-scroll">
-        {% trans "Your Gateway to Independent Democracy" %}
-    </p>
-    
-    <!-- Features Section -->
-    <div class="features-grid animate-on-scroll">
-        <a href="{% url 'candidates:list' %}" class="feature-card" style="text-decoration: none; color: inherit; display: block;">
-            <div class="feature-icon">
-                <i class="fas fa-users"></i>
-            </div>
-            <h3 class="feature-title">{% trans "Independent Candidates" %}</h3>
-            <p class="feature-description">
-                {% trans "Search and discover independent candidates in your area" %}
-            </p>
-        </a>
-        
-        <a href="{% url 'how_to_vote' %}" class="feature-card" style="text-decoration: none; color: inherit; display: block;">
-            <div class="feature-icon">
-                <i class="fas fa-vote-yea"></i>
-            </div>
-            <h3 class="feature-title">{% trans "How to Vote" %}</h3>
-            <p class="feature-description">
-                {% trans "Learn about the voting process and your rights" %}
-            </p>
-        </a>
-    </div>
-    
     <!-- Info Section -->
     <div class="info-section animate-on-scroll">
         <h2 class="info-title">
@@ -53,19 +25,6 @@
             </p>
         </div>
         
-        <!-- Contact Box -->
-        <div class="contact-box">
-            <h3>
-                <i class="fas fa-envelope"></i> {% trans "Want to Register as a Candidate?" %}
-            </h3>
-            <p>
-                {% trans "If you're an independent candidate looking to create your profile and connect with voters, or if you have any questions about our platform, please reach out to us:" %}
-            </p>
-            <a href="mailto:chandmanisha002@gmail.com" class="contact-email">
-                <i class="fas fa-paper-plane"></i>
-                chandmanisha002@gmail.com
-            </a>
-        </div>
     </div>
     
     <!-- Statistics -->
@@ -88,6 +47,22 @@
                 <div class="text-3xl font-bold text-blue-600">6,743</div>
                 <div class="text-gray-600">{% trans "Wards" %}</div>
             </div>
+        </div>
+    </div>
+
+    <!-- Contact Box - Moved to Bottom -->
+    <div class="info-section animate-on-scroll">
+        <div class="contact-box">
+            <h3>
+                <i class="fas fa-envelope"></i> {% trans "Want to Register as a Candidate?" %}
+            </h3>
+            <p>
+                {% trans "If you're an independent candidate looking to create your profile and connect with voters, or if you have any questions about our platform, please reach out to us:" %}
+            </p>
+            <a href="mailto:chandmanisha002@gmail.com" class="contact-email">
+                <i class="fas fa-paper-plane"></i>
+                chandmanisha002@gmail.com
+            </a>
         </div>
     </div>
 </div>

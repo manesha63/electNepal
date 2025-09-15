@@ -54,6 +54,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',
             ],
         },
     },
@@ -85,3 +86,18 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Import email settings
 from .email import *
+
+# Machine Translation Settings
+MT_ENGINE = config('MT_ENGINE', default='libre')  # 'google', 'azure', 'libre', or 'fallback'
+LIBRE_MT_URL = config('LIBRE_MT_URL', default='http://localhost:5000/translate')
+AZURE_MT_ENDPOINT = config('AZURE_MT_ENDPOINT', default='')
+AZURE_MT_KEY = config('AZURE_MT_KEY', default='')
+AZURE_MT_REGION = config('AZURE_MT_REGION', default='')
+
+# Cache configuration for MT results
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}

@@ -1,4 +1,172 @@
-{% extends 'base.html' %}{% block content %}
-<h1 class="text-2xl font-semibold mb-2">{{ candidate.full_name }}</h1>
-<p>{{ candidate.get_position_level_display }}</p>
+{% extends 'base.html' %}
+{% load i18n i18n_extras static %}
+
+{% block title %}{{ candidate.full_name }} - ElectNepal{% endblock %}
+
+{% block content %}
+<div class="candidate-detail">
+    <div class="info-section">
+        <!-- Candidate Header -->
+        <div class="candidate-header">
+            <div class="flex items-start gap-6">
+                {% if candidate.photo %}
+                    <img src="{{ candidate.photo.url }}" alt="{{ candidate.full_name }}" class="w-32 h-32 rounded-lg object-cover">
+                {% else %}
+                    <div class="w-32 h-32 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
+                        {{ candidate.full_name|first }}
+                    </div>
+                {% endif %}
+
+                <div class="flex-1">
+                    <h1 class="text-3xl font-bold mb-2">{{ candidate.full_name }}</h1>
+                    <p class="text-lg text-gray-600 mb-2">{{ candidate.get_position_level_display }}</p>
+                    <p class="text-gray-600 mb-4">
+                        <i class="fas fa-map-marker-alt"></i> {{ candidate.get_display_location }}
+                    </p>
+
+                    {% if candidate.is_verified %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            <i class="fas fa-check-circle mr-2"></i> {% trans "Verified" %}
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Biography Section -->
+        {% if candidate.bio_en or candidate.bio_ne %}
+        <div class="section mt-8">
+            <h2 class="text-xl font-semibold mb-3">
+                {% trans "Biography" %}
+                {% mt_badge candidate "bio" %}
+            </h2>
+            <div class="content-text">
+                {% tdb candidate.bio_en candidate.bio_ne %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Education Section -->
+        {% if candidate.education_en or candidate.education_ne %}
+        <div class="section mt-6">
+            <h2 class="text-xl font-semibold mb-3">
+                <i class="fas fa-graduation-cap mr-2"></i> {% trans "Education" %}
+                {% mt_badge candidate "education" %}
+            </h2>
+            <div class="content-text">
+                {% tdb candidate.education_en candidate.education_ne %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Experience Section -->
+        {% if candidate.experience_en or candidate.experience_ne %}
+        <div class="section mt-6">
+            <h2 class="text-xl font-semibold mb-3">
+                <i class="fas fa-briefcase mr-2"></i> {% trans "Experience" %}
+                {% mt_badge candidate "experience" %}
+            </h2>
+            <div class="content-text">
+                {% tdb candidate.experience_en candidate.experience_ne %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Manifesto Section -->
+        {% if candidate.manifesto_en or candidate.manifesto_ne %}
+        <div class="section mt-6">
+            <h2 class="text-xl font-semibold mb-3">
+                <i class="fas fa-scroll mr-2"></i> {% trans "Manifesto" %}
+                {% mt_badge candidate "manifesto" %}
+            </h2>
+            <div class="content-text">
+                {% tdb candidate.manifesto_en candidate.manifesto_ne %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Contact Information -->
+        <div class="section mt-8">
+            <h2 class="text-xl font-semibold mb-3">
+                <i class="fas fa-address-card mr-2"></i> {% trans "Contact Information" %}
+            </h2>
+            <div class="flex flex-wrap gap-4">
+                {% if candidate.website %}
+                <a href="{{ candidate.website }}" target="_blank" class="contact-link">
+                    <i class="fas fa-globe"></i> {% trans "Website" %}
+                </a>
+                {% endif %}
+
+                {% if candidate.facebook_url %}
+                <a href="{{ candidate.facebook_url }}" target="_blank" class="contact-link">
+                    <i class="fab fa-facebook"></i> {% trans "Facebook" %}
+                </a>
+                {% endif %}
+
+                {% if candidate.donation_link %}
+                <a href="{{ candidate.donation_link }}" target="_blank" class="contact-link">
+                    <i class="fas fa-donate"></i> {% trans "Support Campaign" %}
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="mt-8">
+            <a href="{% url 'home' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left mr-2"></i> {% trans "Back to Candidates" %}
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .candidate-detail {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .section {
+        border-top: 1px solid #e5e7eb;
+        padding-top: 1.5rem;
+    }
+
+    .content-text {
+        color: #4b5563;
+        line-height: 1.8;
+        white-space: pre-wrap;
+    }
+
+    .contact-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: #f3f4f6;
+        border-radius: 0.5rem;
+        color: #1f2937;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+
+    .contact-link:hover {
+        background: #e5e7eb;
+    }
+
+    .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        background: #6b7280;
+        color: white;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+
+    .btn-secondary:hover {
+        background: #4b5563;
+    }
+</style>
 {% endblock %}

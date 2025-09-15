@@ -4,19 +4,25 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 from candidates import views as candidate_views
+from core import views as core_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),
     path('api/', include('locations.urls', namespace='locations_api')),
-    
+
+    # Language switching
+    path('set-language/', core_views.set_language, name='set_language'),
+
     # Candidate API endpoints (outside i18n for consistent URLs)
     path('api/nearby-candidates/', candidate_views.nearby_candidates_api, name='nearby_candidates_api'),
     path('api/search-candidates/', candidate_views.search_candidates_api, name='search_candidates_api'),
 ]
 
 urlpatterns += i18n_patterns(
-    path('', include('core.urls')),
+    path('', candidate_views.CandidateListView.as_view(), name='home'),  # Candidates list as home
+    path('about/', core_views.HomeView.as_view(), name='about'),  # About page (old home)
+    path('how-to-vote/', core_views.HowToVoteView.as_view(), name='how_to_vote'),  # How to Vote page
     path('candidates/', include('candidates.urls')),
     prefix_default_language=False
 )

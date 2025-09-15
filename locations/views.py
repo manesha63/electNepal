@@ -15,6 +15,15 @@ class DistrictsByProvinceView(View):
 class MunicipalitiesByDistrictView(View):
     def get(self, request):
         did = request.GET.get('district')
+        mid = request.GET.get('id')  # For getting specific municipality
+
+        if mid:
+            # Get specific municipality by ID
+            qs = Municipality.objects.filter(id=mid).values(
+                'id', 'name_en', 'name_ne', 'municipality_type', 'total_wards'
+            )
+            return JsonResponse(list(qs), safe=False)
+
         if not did:
             return JsonResponse([], safe=False)
         qs = Municipality.objects.filter(district_id=did).values(

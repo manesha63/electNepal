@@ -23,7 +23,6 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
     
     <!-- Tailwind CSS (for additional utility classes) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -56,65 +55,26 @@
         <nav class="navbar">
             <div class="navbar-container">
                 <a href="{% url 'home' %}" class="logo">
-                    <span class="logo-icon">E</span>
                     <span>ElectNepal</span>
                 </a>
-                
-                <!-- Hamburger Menu Button -->
-                <button class="hamburger-menu" id="hamburgerMenu" onclick="toggleSidebar()" aria-label="Menu">
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                </button>
+
+                <!-- Center Navigation Links -->
+                <div class="nav-links">
+                    <a href="#" onclick="showComingSoon(); return false;" class="nav-link">{% trans "Ballot" %}</a>
+                    <a href="{% url 'home' %}" class="nav-link">{% trans "Independent Candidates" %}</a>
+                    <a href="{% url 'how_to_vote' %}" class="nav-link">{% trans "How to Vote" %}</a>
+                    <a href="{% url 'about' %}" class="nav-link">{% trans "About Us" %}</a>
+                </div>
+
+                <!-- Language Switcher -->
+                <div class="language-switcher">
+                    <button class="lang-btn" onclick="switchLanguage()">
+                        <span id="currentLang">{% if request.LANGUAGE_CODE == 'ne' %}{% trans "English" %}{% else %}{% trans "Nepali" %}{% endif %}</span>
+                    </button>
+                </div>
             </div>
         </nav>
         
-        <!-- Sidebar Menu -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <h3>ElectNepal</h3>
-                <button class="close-btn" onclick="toggleSidebar()" aria-label="Close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <div class="sidebar-menu">
-                <a href="{% url 'candidates:list' %}" class="sidebar-item">
-                    <i class="fas fa-users"></i>
-                    <span>{% trans "Independent Candidates" %}</span>
-                </a>
-                
-                <a href="#" class="sidebar-item" onclick="showRegisterInfo(); return false;">
-                    <i class="fas fa-user-plus"></i>
-                    <span>{% trans "Register" %}</span>
-                </a>
-                <small style="display: block; padding-left: 65px; font-size: 11px; opacity: 0.7; font-style: italic; color: white; margin-top: -10px; margin-bottom: 15px;">{% trans "Independent Candidates Only" %}</small>
-                
-                <div class="sidebar-divider"></div>
-                
-                <a href="{% url 'how_to_vote' %}" class="sidebar-item">
-                    <i class="fas fa-vote-yea"></i>
-                    <span>{% trans "How to Vote" %}</span>
-                </a>
-                
-                <a href="{% url 'about' %}" class="sidebar-item">
-                    <i class="fas fa-info-circle"></i>
-                    <span>{% trans "About" %}</span>
-                </a>
-                
-            </div>
-            
-            <div class="sidebar-footer">
-                <a href="mailto:chandmanisha002@gmail.com" class="sidebar-item" style="justify-content: center;">
-                    <i class="fas fa-envelope"></i>
-                    <span>{% trans "Contact Us" %}</span>
-                </a>
-                <p style="margin-top: 15px; opacity: 0.8;">&copy; 2025 ElectNepal</p>
-            </div>
-        </div>
-        
-        <!-- Overlay for sidebar -->
-        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
         
         <!-- Main Content -->
         <main class="main-content">
@@ -130,14 +90,25 @@
             <p class="footer-text">© 2024 ElectNepal. {% trans "All rights reserved." %}</p>
             <p class="footer-text">{% trans "Empowering Democracy in Nepal" %}</p>
             <div class="footer-links">
-                <a href="{% url 'about' %}" class="footer-link">{% trans "About" %}</a>
+                <a href="{% url 'about' %}" class="footer-link">{% trans "About Us" %}</a>
                 <a href="mailto:chandmanisha002@gmail.com" class="footer-link">{% trans "Contact" %}</a>
                 <a href="#" class="footer-link">{% trans "Privacy" %}</a>
             </div>
         </div>
     </footer>
     {% endblock %}
-    
+
+    <!-- Coming Soon Modal -->
+    <div id="comingSoonModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 2rem; border-radius: 0.5rem; max-width: 400px; text-align: center;">
+            <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">{% trans "Coming Soon" %}</h2>
+            <p style="color: #6b7280; margin-bottom: 1.5rem;">{% trans "The Ballot feature is currently under development and will be available soon." %}</p>
+            <button onclick="hideComingSoon()" style="background: #4b5563; color: white; padding: 0.5rem 1.5rem; border-radius: 0.25rem; border: none; cursor: pointer;">
+                {% trans "OK" %}
+            </button>
+        </div>
+    </div>
+
     <!-- Loading Indicator -->
     <div id="loader" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
         <div class="text-white text-xl">Loading...</div>

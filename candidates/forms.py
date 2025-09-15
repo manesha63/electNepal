@@ -92,7 +92,7 @@ class CandidateRegistrationForm(forms.ModelForm):
 
 class CandidateUpdateForm(forms.ModelForm):
     """Form for candidates to update their profile"""
-    
+
     class Meta:
         model = Candidate
         fields = [
@@ -111,6 +111,27 @@ class CandidateUpdateForm(forms.ModelForm):
             'manifesto_en': forms.Textarea(attrs={'rows': 5}),
             'manifesto_ne': forms.Textarea(attrs={'rows': 5}),
         }
+
+    def clean(self):
+        """
+        Clear machine translation flags when user manually edits Nepali fields
+        """
+        cleaned_data = super().clean()
+
+        # Check each Nepali field - if it has content and changed, it's human-edited
+        mt_flag_pairs = [
+            ('bio_ne', 'is_mt_bio_ne'),
+            ('education_ne', 'is_mt_education_ne'),
+            ('experience_ne', 'is_mt_experience_ne'),
+            ('manifesto_ne', 'is_mt_manifesto_ne'),
+        ]
+
+        for ne_field, mt_flag in mt_flag_pairs:
+            if ne_field in self.changed_data and cleaned_data.get(ne_field):
+                # User edited this field, clear the MT flag
+                cleaned_data[mt_flag] = False
+
+        return cleaned_data
 
 
 class CandidatePostForm(forms.ModelForm):

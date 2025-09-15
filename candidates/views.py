@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.translation import get_language
 from .models import Candidate, CandidateEvent
 from locations.models import Province, District, Municipality
 import json
@@ -48,12 +49,15 @@ class CandidateListView(ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+
+        # Add current language for template
+        context['current_language'] = get_language()
+
         # Add upcoming events
         context['upcoming_events'] = CandidateEvent.objects.filter(
             event_date__gte=timezone.now()
         ).select_related('candidate').order_by('event_date')[:5]
-        
+
         # Add location data if available
         if self.request.GET.get('district'):
             try:
@@ -61,10 +65,10 @@ class CandidateListView(ListView):
                 context['current_location'] = district
             except District.DoesNotExist:
                 pass
-        
+
         # Add provinces for location selector
         context['provinces'] = Province.objects.all()
-        
+
         return context
 
 
@@ -95,12 +99,16 @@ def nearby_candidates_api(request):
     lng = request.GET.get('lng')
     page = int(request.GET.get('page', 1))
     per_page = 10
-    
+
+    # Get current language
+    current_lang = get_language()
+    is_nepali = current_lang == 'ne'
+
     # Get candidates at different levels
     queryset = Candidate.objects.filter(
         verification_status='verified'
     ).select_related('district', 'municipality', 'province')
-    
+
     # If location provided, prioritize local candidates
     if lat and lng:
         # In production, use geocoding to get actual location
@@ -109,13 +117,13 @@ def nearby_candidates_api(request):
     else:
         # Mix candidates from all levels
         queryset = queryset.order_by('-created_at')
-    
+
     # Pagination
     start = (page - 1) * per_page
     end = start + per_page
     candidates = queryset[start:end]
     has_more = queryset.count() > end
-    
+
     candidates_data = []
     for candidate in candidates:
         # Determine level based on position
@@ -124,21 +132,35 @@ def nearby_candidates_api(request):
             level = 'provincial'
         elif candidate.position_level in ['federal']:
             level = 'federal'
-        
+
+        # Get location name in correct language
+        if candidate.municipality:
+            location = candidate.municipality.name_ne if is_nepali else candidate.municipality.name_en
+        elif candidate.district:
+            location = candidate.district.name_ne if is_nepali else candidate.district.name_en
+        else:
+            location = ""
+
+        # Get bio, education, experience in correct language
+        bio = candidate.bio_ne if is_nepali and candidate.bio_ne else candidate.bio_en
+        education = candidate.education_ne if is_nepali and candidate.education_ne else candidate.education_en
+        experience = candidate.experience_ne if is_nepali and candidate.experience_ne else candidate.experience_en
+
         candidates_data.append({
             'id': candidate.id,
             'name': candidate.full_name,
             'verified': candidate.verification_status == 'verified',
             'level': level,
             'position': candidate.get_position_level_display(),
-            'location': f"{candidate.municipality.name_en if candidate.municipality else candidate.district.name_en}",
-            'bio': candidate.bio_en if candidate.bio_en else '',
+            'location': location,
+            'bio': bio if bio else '',
             'tags': [],  # Add relevant tags based on manifesto
             'photo': candidate.photo.url if candidate.photo else None,
             'likes': 0,  # Placeholder for future feature
             'supporters': 0,  # Placeholder for future feature
-            'education': candidate.education_en,
-            'experience': candidate.experience_en
+            'education': education if education else '',
+            'experience': experience if experience else '',
+            'party': 'Independent'  # All independent candidates for now
         })
     
     # Location data

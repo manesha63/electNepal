@@ -1,9 +1,9 @@
 # ElectNepal - Project Documentation
 
 ## Project Overview
-A Django-based web application for tracking and displaying independent candidates in Nepal elections. Built with Django 4.2.7, migrated to PostgreSQL database, with bilingual support (English/Nepali) for democratic participation in Nepal.
+A Django-based web application for tracking and displaying independent candidates in Nepal elections. Built with Django 4.2.7, migrated to PostgreSQL database, with comprehensive bilingual support (English/Nepali) and automatic translation capabilities for democratic participation in Nepal.
 
-## Current Project Status (as of 2025-01-14)
+## Current Project Status (as of 2025-01-15)
 
 ### ✅ Completed Features
 
@@ -79,14 +79,32 @@ A Django-based web application for tracking and displaying independent candidate
 #### 7. **Forms and Validation**
    - `CandidateRegistrationForm` - Complete validation
    - `CandidateUpdateForm` - Profile updates
-   - `CandidatePostForm` - Blog post creation
-   - `CandidateEventForm` - Event management
+   - `CandidatePostForm` - Blog post creation with bilingual support
+   - `CandidateEventForm` - Event management with bilingual support
    - Nepal phone number validation (+977 format)
 
 #### 8. **Testing**
    - Comprehensive test suite with 14 tests
    - All tests passing after fixes
    - Coverage for models, views, and forms
+
+#### 9. **Complete Bilingual System (English/Nepali)**
+   - **Automatic Translation**: All candidate content auto-translates to Nepali on save
+   - **Language-Aware API**: Returns content based on user's language preference
+   - **Bilingual Models**: All content models have _en and _ne field variants
+   - **Machine Translation**: Integration with Google Translate API
+   - **Political Dictionary**: 70+ political terms with accurate translations
+   - **Dynamic UI Translation**: All UI elements switch languages dynamically
+   - **Location Names**: All 7 provinces, 77 districts, 753 municipalities in both languages
+   - **Smart Fallback**: Shows English content if Nepali translation missing
+
+#### 10. **Candidate Feed System**
+   - Instagram-style candidate feed with filtering
+   - Advanced filter system (Federal/Province/District/Municipality/Ward)
+   - Real-time search with debouncing
+   - Language-aware content display
+   - Responsive card layout
+   - "Independent" party label for all candidates (translates to "स्वतन्त्र" in Nepali)
 
 ## Technical Stack
 
@@ -112,6 +130,8 @@ python-decouple==3.8
 dj-database-url==2.1.0
 gunicorn==21.2.0
 redis==5.0.1
+googletrans==4.0.0-rc1
+httpx==0.13.3
 ```
 
 ## Current Project Structure
@@ -164,20 +184,24 @@ redis==5.0.1
 │           └── load_nepal_locations.py  # Data loader command
 │
 ├── candidates/             # Candidate management
-│   ├── models.py          # Candidate, Post, Event models
-│   ├── views.py           # List and detail views
+│   ├── models.py          # Bilingual Candidate, Post, Event models
+│   ├── views.py           # Language-aware views and APIs
 │   ├── urls.py            # Candidate URL patterns
-│   ├── admin.py           # Enhanced admin with badges
+│   ├── admin.py           # Enhanced admin with bilingual fields
 │   ├── apps.py            # App configuration
 │   ├── forms.py           # Registration and update forms
 │   ├── tests.py           # Comprehensive test suite
-│   ├── migrations/        # Including constraint migration
+│   ├── translation.py     # Auto-translation system and services
+│   ├── migrations/        # Including bilingual field migrations
 │   ├── management/
 │   │   └── commands/
-│   │       └── load_demo_candidates.py  # Demo data loader
+│   │       ├── load_demo_candidates.py  # Demo data loader
+│   │       ├── translate_candidates.py  # Bulk translation command
+│   │       └── backfill_bilingual.py   # Bilingual data backfill
 │   └── templates/candidates/
-│       ├── list.html      # Candidate listing (needs enhancement)
-│       └── detail.html    # Candidate profile (needs enhancement)
+│       ├── feed.html      # Instagram-style candidate feed
+│       ├── list.html      # Candidate listing
+│       └── detail.html    # Candidate profile
 │
 ├── templates/              # Global templates
 │   ├── base.html          # Base template with nav, footer, cookie consent
@@ -300,6 +324,223 @@ DB_PORT=5432
 6. **Docker Configuration**: Containerization for deployment
 7. **Production Deployment**: Nginx, Gunicorn, SSL setup
 
+## Bilingual Implementation (English/Nepali)
+
+### Overview
+ElectNepal implements comprehensive bilingual support (English/Nepali) using Django's i18n framework combined with automatic machine translation services for dynamic content. The system ensures all user-generated content is automatically translated, eliminating manual translation work.
+
+### Architecture Components
+
+#### 1. Django i18n Configuration
+**Location**: `nepal_election_app/settings/base.py`
+```python
+LANGUAGE_CODE = 'en'
+LANGUAGES = [
+    ('en', 'English'),
+    ('ne', 'नेपाली'),
+]
+USE_I18N = True
+LOCALE_PATHS = [BASE_DIR / 'locale']
+```
+- LocaleMiddleware for language detection
+- i18n context processor for template access
+
+#### 2. URL Language Prefixes
+**Location**: `nepal_election_app/urls.py`
+```python
+urlpatterns += i18n_patterns(
+    path('', candidate_views.CandidateListView.as_view(), name='home'),
+    path('about/', core_views.HomeView.as_view(), name='about'),
+    prefix_default_language=False  # English URLs without /en/ prefix
+)
+```
+- English: `/about/`, `/candidates/`
+- Nepali: `/ne/about/`, `/ne/candidates/`
+
+#### 3. Translation Files
+**Location**: `locale/ne/LC_MESSAGES/`
+- `django.po`: Source translations (264 entries)
+- `django.mo`: Compiled binary translations
+- Covers UI elements, navigation, forms, messages
+
+#### 4. Template Translation
+**Usage**: `templates/base.html`
+```django
+{% load i18n %}
+<a href="{% url 'home' %}">{% trans "Independent Candidates" %}</a>
+```
+- All user-facing text wrapped in `{% trans %}` tags
+- Dynamic language detection from request
+
+#### 5. JavaScript Language Switcher
+**Location**: `static/js/main.js`
+```javascript
+function setLanguage(lang) {
+    // Remove existing language prefix
+    let currentPath = window.location.pathname;
+    currentPath = currentPath.replace(/^\/ne\//, '/');
+
+    // Add new language prefix for Nepali
+    if (lang === 'ne') {
+        window.location.href = '/ne' + currentPath;
+    } else {
+        window.location.href = currentPath;
+    }
+}
+```
+
+#### 6. Automatic Translation System
+**Location**: `candidates/translation.py`
+- **AutoTranslationMixin**: Automatic translation on model save
+- **Google Translate Integration**: Using googletrans library
+- **Political Dictionary**: 139 political/administrative terms
+- **Smart Translation**: Only translates empty Nepali fields
+- **Machine Translation Flags**: Tracks auto-translated content (is_mt_*)
+- **Bulk Translation**: Management command for existing data
+
+#### 7. Bilingual Database Models
+**Candidate Model**: `candidates/models.py`
+```python
+class Candidate(AutoTranslationMixin, models.Model):
+    TRANSLATABLE_FIELDS = ['bio', 'education', 'experience', 'manifesto']
+
+    bio_en = models.TextField()
+    bio_ne = models.TextField(blank=True)
+    is_mt_bio_ne = models.BooleanField(default=False)
+    # Similar fields for education, experience, manifesto
+
+    def save(self, *args, **kwargs):
+        self.autotranslate_missing()  # Auto-translate before saving
+        super().save(*args, **kwargs)
+```
+
+**CandidatePost & CandidateEvent Models**:
+- Bilingual fields: title_en/ne, content_en/ne, description_en/ne
+- Machine translation flags for each field
+- Auto-translation on save via mixin
+
+### How Automatic Bilingual System Works
+
+1. **User Visits Site**
+   - Browser sends request to Django
+   - URL pattern checked for language prefix (`/ne/` or none)
+
+2. **Django Processes Request**
+   - LocaleMiddleware detects language from URL/cookie/headers
+   - Sets `request.LANGUAGE_CODE`
+   - Activates appropriate translation catalog
+
+3. **URL Resolution**
+   - `i18n_patterns` handles language-specific URLs
+   - Generates correct URLs with `{% url %}` tag
+
+4. **Template Rendering**
+   - `{% trans %}` tags lookup translations from `.mo` files
+   - Falls back to English if translation missing
+   - Context processor provides language info
+
+5. **Content Display**
+   - Static text: From compiled .mo translation files
+   - Dynamic content: From bilingual database fields (_en/_ne)
+   - Auto-translation: Happens on model save, not runtime
+   - API Response: Language-aware based on get_language()
+
+6. **Language Switching**
+   - User clicks language button
+   - JavaScript updates URL with/without `/ne/` prefix
+   - Page reloads with new language
+   - Cookie saves preference
+
+### Translation Management
+
+#### Manual Commands for Development
+```bash
+# Extract translatable strings
+python manage.py makemessages -l ne
+
+# Edit locale/ne/LC_MESSAGES/django.po
+# Add translations for msgstr=""
+
+# Compile translations
+python manage.py compilemessages
+```
+
+#### Auto-translate Candidate Content
+```bash
+# Translate all existing candidates
+python manage.py translate_candidates
+
+# Backfill bilingual fields for models
+python manage.py backfill_bilingual
+
+# Check translation status
+python manage.py shell
+>>> from candidates.models import Candidate
+>>> c = Candidate.objects.first()
+>>> c.is_mt_bio_ne  # Check if machine translated
+```
+
+#### How Auto-Translation Works
+1. **On Save**: When a candidate saves their profile
+2. **Check Fields**: System checks each translatable field
+3. **Translate if Empty**: If English exists but Nepali is empty, auto-translate
+4. **Set Flag**: Mark as machine translated (is_mt_*=True)
+5. **Never Overwrite**: Existing Nepali content is never replaced
+
+### Current Translation Coverage
+
+- **UI Elements**: ✅ Complete (264 strings translated)
+- **Navigation**: ✅ Complete
+- **Forms/Buttons**: ✅ Complete
+- **Filter System**: ✅ Complete (Province/District/Municipality/Ward)
+- **Candidate Cards**: ✅ Complete (all labels and actions)
+- **Error Messages**: ⚠️ Partial
+- **Help Text**: ⚠️ Partial
+- **Candidate Content**: ✅ Auto-translation on save
+- **Location Names**: ✅ All 837 locations (7+77+753) bilingual
+- **Political Terms**: ✅ 139 terms dictionary
+
+### Testing Bilingual Functionality
+
+#### UI Translation Testing
+
+```bash
+# Test English version
+curl http://localhost:8000/
+
+# Test Nepali version
+curl http://localhost:8000/ne/
+
+# Check translation in shell
+python manage.py shell
+>>> from django.utils.translation import gettext as _
+>>> _('Filter Candidates')
+'उम्मेदवारहरू फिल्टर गर्नुहोस्'
+>>> _('Province')
+'प्रदेश'
+```
+
+#### Content Auto-Translation Testing
+```python
+# Test auto-translation
+python manage.py shell
+>>> from candidates.models import Candidate
+>>> from django.contrib.auth.models import User
+>>> u = User.objects.create_user('test', 'test@test.com', 'pass')
+>>> c = Candidate.objects.create(
+...     user=u,
+...     full_name='Test Candidate',
+...     bio_en='I am a test candidate',
+...     position_level='ward',
+...     province_id=1,
+...     district_id=1
+... )
+>>> c.bio_ne  # Should be auto-translated
+'म एक परीक्षण उम्मेदवार हुँ'
+>>> c.is_mt_bio_ne  # Should be True
+True
+```
+
 ## Known Issues & Technical Debt
 
 ### 🔴 Critical Issues (Fixed)
@@ -311,9 +552,9 @@ DB_PORT=5432
 ### 🟡 Important Issues
 1. **Incomplete Templates**: About and HowToVote pages need content
 2. **No Static File Collection**: Need to run collectstatic for production
-3. **Missing Translations**: Nepali translations not implemented
-4. **Limited Candidate Views**: List/detail templates are minimal
-5. **No Media Upload**: Photo upload not configured
+3. **Limited Candidate Views**: Detail template needs enhancement
+4. **No Media Upload**: Photo upload not configured
+5. **Translation API Limits**: Google Translate has rate limits
 
 ### 🟢 Minor Issues
 1. **Duplicate Settings Files**: Multiple settings in backup
@@ -339,10 +580,12 @@ DB_PORT=5432
 # Create filter UI components
 ```
 
-### 3. **Add Nepali Translations** (2-3 days)
+### 3. **Complete Translation Coverage** (1 day)
 ```bash
+# Extract any new strings
 python manage.py makemessages -l ne
-# Translate .po files
+# Review and translate remaining strings
+# Compile translations
 python manage.py compilemessages
 ```
 
@@ -511,9 +754,16 @@ This project aims to:
 
 ---
 
-**Last Updated**: 2025-01-14
+**Last Updated**: 2025-01-15
 **Current Working Directory**: ~/electNepal
 **Python Version**: 3.12.3
 **Django Version**: 4.2.7
 **Database**: PostgreSQL 16
-**Status**: Development Phase - 60% Complete
+**Status**: Development Phase - 75% Complete
+
+### Recent Major Updates
+- ✅ Complete bilingual system implementation
+- ✅ Automatic translation for all candidate content
+- ✅ Language-aware API responses
+- ✅ Fixed all filter dropdown translations
+- ✅ Added machine translation tracking

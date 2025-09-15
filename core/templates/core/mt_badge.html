@@ -1,0 +1,22 @@
+{% load i18n %}
+{% if is_mt %}
+<span class="mt-badge" title="{% trans 'This content was automatically translated. Please review for accuracy.' %}">
+    <i class="fas fa-language"></i>
+    <small>{% trans "Auto-translated" %}</small>
+</span>
+<style>
+    .mt-badge {
+        display: inline-block;
+        background: #ffa500;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        margin-left: 8px;
+        vertical-align: middle;
+    }
+    .mt-badge i {
+        margin-right: 4px;
+    }
+</style>
+{% endif %}

@@ -79,14 +79,14 @@ class CandidateAdmin(admin.ModelAdmin):
 
 @admin.register(CandidatePost)
 class CandidatePostAdmin(admin.ModelAdmin):
-    list_display = ['title', 'candidate', 'is_published', 'created_at']
+    list_display = ['title_en', 'candidate', 'is_published', 'created_at']
     list_filter = ['is_published', 'created_at', 'candidate']
-    search_fields = ['title', 'content', 'candidate__full_name']
+    search_fields = ['title_en', 'title_ne', 'content_en', 'content_ne', 'candidate__full_name']
     date_hierarchy = 'created_at'
-    
+
     fieldsets = (
         (None, {
-            'fields': ('candidate', 'title', 'content', 'is_published')
+            'fields': ('candidate', 'title_en', 'title_ne', 'content_en', 'content_ne', 'is_published')
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),
@@ -98,15 +98,15 @@ class CandidatePostAdmin(admin.ModelAdmin):
 
 @admin.register(CandidateEvent)
 class CandidateEventAdmin(admin.ModelAdmin):
-    list_display = ['title', 'candidate', 'event_date', 'location', 'is_published']
+    list_display = ['title_en', 'candidate', 'event_date', 'location_en', 'is_published']
     list_filter = ['is_published', 'event_date', 'candidate']
-    search_fields = ['title', 'description', 'location', 'candidate__full_name']
+    search_fields = ['title_en', 'title_ne', 'description_en', 'description_ne', 'location_en', 'location_ne', 'candidate__full_name']
     date_hierarchy = 'event_date'
-    
+
     fieldsets = (
         (None, {
-            'fields': ('candidate', 'title', 'description', 'event_date', 
-                      'location', 'is_published')
+            'fields': ('candidate', 'title_en', 'title_ne', 'description_en', 'description_ne', 'event_date',
+                      'location_en', 'location_ne', 'is_published')
         }),
         ('Timestamps', {
             'fields': ('created_at',),
