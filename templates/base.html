@@ -81,8 +81,16 @@
             <div class="sidebar-menu">
                 <a href="{% url 'candidates:list' %}" class="sidebar-item">
                     <i class="fas fa-users"></i>
-                    <span>{% trans "Candidates" %}</span>
+                    <span>{% trans "Independent Candidates" %}</span>
                 </a>
+                
+                <a href="#" class="sidebar-item register-btn" onclick="showRegisterInfo(); return false;">
+                    <i class="fas fa-user-plus"></i>
+                    <span>{% trans "Register" %}</span>
+                    <small class="register-note">{% trans "Independent Candidates Only" %}</small>
+                </a>
+                
+                <div class="sidebar-divider"></div>
                 
                 <a href="{% url 'how_to_vote' %}" class="sidebar-item">
                     <i class="fas fa-vote-yea"></i>
@@ -95,12 +103,6 @@
                 </a>
                 
                 <div class="sidebar-divider"></div>
-                
-                <a href="#" class="sidebar-item register-btn" onclick="showRegisterInfo(); return false;">
-                    <i class="fas fa-user-plus"></i>
-                    <span>{% trans "Register" %}</span>
-                    <small class="register-note">{% trans "For Independent Candidates" %}</small>
-                </a>
                 
                 <a href="mailto:chandmanisha002@gmail.com" class="sidebar-item">
                     <i class="fas fa-envelope"></i>
