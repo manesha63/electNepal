@@ -10,9 +10,11 @@ from .translation import AutoTranslationMixin
 def candidate_photo_path(instance, filename):
     return f'candidates/{instance.user.username}/{filename}'
 
-
+# Temporary function to fix migration issue - will be removed after migration
 def verification_doc_path(instance, filename):
     return f'verification/{instance.user.username}/{filename}'
+
+
 
 
 class Candidate(AutoTranslationMixin, models.Model):
@@ -21,11 +23,6 @@ class Candidate(AutoTranslationMixin, models.Model):
         ('local_executive', 'Local Executive (Mayor/Chairperson)'),
         ('provincial', 'Provincial Assembly'),
         ('federal', 'Federal Parliament'),
-    ]
-    VERIFICATION_STATUS = [
-        ('pending', 'Pending Verification'),
-        ('verified', 'Verified'),
-        ('rejected', 'Verification Rejected'),
     ]
 
     # Fields that should be auto-translated
@@ -64,11 +61,6 @@ class Candidate(AutoTranslationMixin, models.Model):
     )
     constituency_code = models.CharField(max_length=50, blank=True)
 
-    verification_status = models.CharField(max_length=20, choices=VERIFICATION_STATUS, default='pending')
-    verification_document = models.FileField(upload_to=verification_doc_path, blank=True)
-    verification_notes = models.TextField(blank=True)
-    verified_at = models.DateTimeField(null=True, blank=True)
-    verified_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='verified_candidates')
 
     website = models.URLField(blank=True)
     facebook_url = models.URLField(blank=True)
@@ -80,7 +72,6 @@ class Candidate(AutoTranslationMixin, models.Model):
     class Meta:
         ordering = ['-created_at']
         indexes = [
-            models.Index(fields=['verification_status']),
             models.Index(fields=['position_level', 'district']),
             models.Index(fields=['province', 'district', 'municipality']),
             models.Index(fields=['full_name']),
@@ -99,8 +90,7 @@ class Candidate(AutoTranslationMixin, models.Model):
     def get_absolute_url(self):
         return reverse('candidates:detail', kwargs={'pk': self.pk})
 
-    def is_verified(self):
-        return self.verification_status == 'verified'
+
 
     def get_display_location(self):
         parts = [self.municipality.name_en if self.municipality else self.district.name_en]

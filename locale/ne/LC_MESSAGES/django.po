@@ -17,10 +17,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: candidates/templates/candidates/detail.html:29
-#: candidates/templates/candidates/main.html:571
-msgid "Verified"
-msgstr "प्रमाणित"
 
 #: candidates/templates/candidates/detail.html:40
 msgid "Biography"
@@ -164,8 +160,8 @@ msgstr "अहिलेसम्म कुनै उम्मेदवार छ
 
 #: candidates/templates/candidates/list.html:46
 msgid ""
-"Independent candidates will appear here once they register and are verified."
-msgstr "स्वतन्त्र उम्मेदवारहरू दर्ता र प्रमाणित भएपछि यहाँ देखा पर्नेछन्।"
+"Independent candidates will appear here once they register."
+msgstr "स्वतन्त्र उम्मेदवारहरू दर्ता भएपछि यहाँ देखा पर्नेछन्।"
 
 #: candidates/templates/candidates/list.html:50
 msgid "Are you an independent candidate?"
@@ -204,9 +200,6 @@ msgstr ""
 msgid "Quick Filters"
 msgstr ""
 
-#: candidates/templates/candidates/main.html:477
-msgid "Verified Candidates Only"
-msgstr ""
 
 #: candidates/templates/candidates/main.html:481
 msgid "Has Manifesto"

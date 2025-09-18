@@ -8,7 +8,8 @@
 <style>
     /* Keep all existing styles from original feed.html */
     body {
-        background: #f5f7fa;
+        background: #FBFBFB;
+        color: #1F2937;
     }
 
     .main-content .container {
@@ -37,7 +38,7 @@
         display: flex;
         align-items: center;
         background: white;
-        border: 1px solid #e0e0e0;
+        border: 1px solid #E6E6E6;
         border-radius: 4px;
         height: 36px;
         width: 874px;
@@ -46,8 +47,8 @@
     }
 
     .search-bar:focus-within {
-        border-color: #667eea;
-        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        border-color: #60A5FA;
+        box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.1);
     }
 
     .search-icon {
@@ -71,7 +72,7 @@
     }
 
     .search-btn {
-        background: #667eea;
+        background: #60A5FA;
         color: white;
         border: none;
         padding: 0 20px;
@@ -84,7 +85,7 @@
     }
 
     .search-btn:hover {
-        background: #5a67d8;
+        background: #93C5FD;
     }
 
     /* Filter Button - UNCHANGED */
@@ -97,7 +98,7 @@
         height: 36px;
         border-radius: 4px;
         background: white;
-        border: 1px solid #e0e0e0;
+        border: 1px solid #E6E6E6;
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -106,8 +107,8 @@
     }
 
     .filter-button:hover {
-        border-color: #667eea;
-        background: #f9fafb;
+        border-color: #60A5FA;
+        background: #F3F4F6;
     }
 
     .filter-dropdown {
@@ -117,7 +118,7 @@
         right: 0;
         margin-top: 8px;
         background: white;
-        border: 1px solid #e5e7eb;
+        border: 1px solid #E6E6E6;
         border-radius: 12px;
         padding: 20px;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
@@ -162,56 +163,98 @@
         }
     }
 
-    /* Candidate Card - Keep original styling */
+    /* Candidate Card - WeVote style */
     .candidate-card {
-        background: white;
+        background: linear-gradient(to bottom, #EBEBEB, #EDEDED);
+        border: 1px solid #E6E6E6;
         border-radius: 12px;
-        padding: 20px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         transition: all 0.2s;
         cursor: pointer;
         min-width: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
     }
 
     .candidate-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        background: linear-gradient(to bottom, #F3F4F6, #E5E7EB);
     }
 
     .card-header {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 12px;
+        width: 100%;
     }
 
     .candidate-photo {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
+        width: 100%;
+        height: 200px;
         object-fit: cover;
     }
 
     .candidate-photo-placeholder {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(135deg, #E2E2E2, #D1D5DB);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-size: 1.5rem;
+        color: #6B7280;
+        font-size: 3rem;
     }
 
     .candidate-info {
         flex: 1;
+        padding: 16px;
+        text-align: center;
+    }
+
+    .candidate-name-link {
+        text-decoration: none;
+        display: block;
+    }
+
+    .candidate-name-link:hover .candidate-name {
+        color: #60A5FA;
     }
 
     .candidate-name {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #1F2937;
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .candidate-office {
         font-size: 1rem;
-        font-weight: 600;
-        color: #111827;
+        color: #1F2937;
         margin-bottom: 4px;
+        font-weight: 500;
+    }
+
+    .candidate-seat {
+        font-size: 0.875rem;
+        color: #374151;
+        margin-bottom: 4px;
+        font-weight: 500;
+    }
+
+    .candidate-location {
+        font-size: 0.875rem;
+        color: #4B5563;
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        font-weight: 500;
+    }
+
+    .candidate-location i {
+        font-size: 0.625rem;
     }
 
     .candidate-details {
@@ -235,8 +278,8 @@
         text-transform: capitalize;
     }
 
-    .badge-federal { background: #dbeafe; color: #1e40af; }
-    .badge-provincial { background: #dcfce7; color: #166534; }
+    .badge-federal { background: #DBEAFE; color: #60A5FA; }
+    .badge-provincial { background: #DCFCE7; color: #22C55E; }
     .badge-district { background: #fef3c7; color: #92400e; }
     .badge-local { background: #fce7f3; color: #9f1239; }
 
@@ -250,30 +293,34 @@
     }
 
     .card-actions {
-        display: flex;
-        gap: 8px;
-        margin-top: 12px;
+        padding: 12px 16px 16px;
+        margin-top: auto;
+        text-align: center;
     }
 
     .action-btn {
-        flex: 1;
-        padding: 6px 12px;
-        border: 1px solid #e5e7eb;
-        background: white;
-        border-radius: 6px;
-        font-size: 0.75rem;
+        background: none;
+        border: none;
+        font-size: 0.875rem;
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s;
         text-decoration: none;
-        text-align: center;
-        color: #374151;
+        color: #6B7280;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px;
+    }
+
+    .action-btn:hover {
+        color: #60A5FA;
     }
 
     .action-btn.primary {
-        background: #667eea;
+        background: #60A5FA;
         color: white;
-        border-color: #667eea;
+        border-color: #60A5FA;
     }
 
     .action-btn:hover {
@@ -335,28 +382,23 @@
                                     <i class="fas fa-user"></i>
                                 </div>
                             </template>
-                            <div class="candidate-info">
+                        </div>
+                        <div class="candidate-info">
+                            <a :href="candidate.detail_url" class="candidate-name-link">
                                 <h3 class="candidate-name" x-text="candidate.name"></h3>
-                                <div class="candidate-details">
-                                    <div class="detail-row">
-                                        <span class="level-badge" :class="'badge-' + candidate.position_level" x-text="candidate.position_level"></span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        <span x-text="formatLocation(candidate)"></span>
-                                    </div>
-                                    <div class="detail-row" x-show="candidate.verified">
-                                        <i class="fas fa-check-circle text-green-500"></i>
-                                        <span>Verified</span>
-                                    </div>
-                                </div>
+                            </a>
+                            <div class="candidate-office">
+                                <span>Office: </span><span x-text="getOfficeTitle(candidate.position_level)"></span>
+                            </div>
+                            <div class="candidate-seat">
+                                <span>Seat: </span><span x-text="getSeatDescription(candidate.position_level)"></span>
+                            </div>
+                            <div class="candidate-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>From: </span><span x-text="formatLocation(candidate)"></span>
                             </div>
                         </div>
                         <div class="card-actions">
-                            <a :href="candidate.detail_url" class="action-btn primary" @click.stop="">
-                                <i class="fas fa-user-circle"></i>
-                                View Profile
-                            </a>
                             <button class="action-btn" @click.stop="shareCandidate(candidate.id)">
                                 <i class="fas fa-share"></i>
                                 Share
@@ -463,11 +505,37 @@ function candidateGrid() {
 
         formatLocation(candidate) {
             const parts = [];
-            if (candidate.ward) parts.push(`Ward ${candidate.ward}`);
+            if (candidate.ward) parts.push(`${candidate.ward}`);
             if (candidate.municipality) parts.push(candidate.municipality);
             if (candidate.district) parts.push(candidate.district);
             if (candidate.province) parts.push(candidate.province);
             return parts.join(', ') || 'Nepal';
+        },
+
+        getOfficeTitle(position_level) {
+            const officeTitles = {
+                'federal': 'Federal Parliament',
+                'provincial': 'Provincial Assembly',
+                'mayor': 'Municipality',
+                'deputy_mayor': 'Municipality',
+                'ward': 'Ward',
+                'local': 'Local Government',
+                'local_executive': 'Municipality/Rural Municipality'
+            };
+            return officeTitles[position_level] || 'Independent';
+        },
+
+        getSeatDescription(position_level) {
+            const seatTitles = {
+                'federal': 'Member of Parliament',
+                'provincial': 'Provincial Assembly Member',
+                'mayor': 'Mayor',
+                'deputy_mayor': 'Deputy Mayor',
+                'ward': 'Ward Chairperson',
+                'local': 'Local Representative',
+                'local_executive': 'Mayor/Chairperson'
+            };
+            return seatTitles[position_level] || position_level;
         },
 
         shareCandidate(id) {
@@ -498,7 +566,6 @@ function candidateGrid() {
                     district: "{% if candidate.district %}{{ candidate.district.name_en }}{% endif %}",
                     municipality: "{% if candidate.municipality %}{{ candidate.municipality.name_en }}{% endif %}",
                     ward: {% if candidate.ward_number %}{{ candidate.ward_number }}{% else %}null{% endif %},
-                    verified: {% if candidate.verification_status == 'verified' %}true{% else %}false{% endif %},
                     detail_url: "/candidates/{{ candidate.id }}/"
                 },
                 {% endfor %}

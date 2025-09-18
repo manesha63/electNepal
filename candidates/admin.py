@@ -5,13 +5,13 @@ from .models import Candidate, CandidatePost, CandidateEvent
 
 @admin.register(Candidate)
 class CandidateAdmin(admin.ModelAdmin):
-    list_display = ['full_name', 'position_level', 'province', 'district', 
-                    'municipality', 'verification_status_badge', 'created_at']
-    list_filter = ['verification_status', 'position_level', 'province', 
+    list_display = ['full_name', 'position_level', 'province', 'district',
+                    'municipality', 'created_at']
+    list_filter = ['position_level', 'province',
                    'district', 'created_at']
     search_fields = ['full_name', 'user__username', 'user__email', 
                      'phone_number', 'constituency_code']
-    readonly_fields = ['created_at', 'updated_at', 'verified_at']
+    readonly_fields = ['created_at', 'updated_at']
     
     fieldsets = (
         ('User Information', {
@@ -33,10 +33,6 @@ class CandidateAdmin(admin.ModelAdmin):
             'fields': ('position_level', 'province', 'district', 'municipality', 
                       'ward_number', 'constituency_code')
         }),
-        ('Verification', {
-            'fields': ('verification_status', 'verification_document', 
-                      'verification_notes', 'verified_at', 'verified_by')
-        }),
         ('Online Presence', {
             'fields': ('website', 'facebook_url', 'donation_link')
         }),
@@ -46,35 +42,7 @@ class CandidateAdmin(admin.ModelAdmin):
         }),
     )
     
-    def verification_status_badge(self, obj):
-        colors = {
-            'pending': 'orange',
-            'verified': 'green',
-            'rejected': 'red'
-        }
-        return format_html(
-            '<span style="background-color: {}; color: white; padding: 3px 10px; border-radius: 3px;">{}</span>',
-            colors.get(obj.verification_status, 'gray'),
-            obj.get_verification_status_display()
-        )
-    verification_status_badge.short_description = 'Status'
     
-    actions = ['verify_candidates', 'reject_candidates']
-    
-    def verify_candidates(self, request, queryset):
-        updated = queryset.filter(verification_status='pending').update(
-            verification_status='verified',
-            verified_by=request.user
-        )
-        self.message_user(request, f'{updated} candidates verified.')
-    verify_candidates.short_description = 'Verify selected candidates'
-    
-    def reject_candidates(self, request, queryset):
-        updated = queryset.filter(verification_status='pending').update(
-            verification_status='rejected'
-        )
-        self.message_user(request, f'{updated} candidates rejected.')
-    reject_candidates.short_description = 'Reject selected candidates'
 
 
 @admin.register(CandidatePost)

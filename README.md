@@ -4,13 +4,15 @@ A Django-based web application for tracking and displaying independent candidate
 
 ## 🌟 Features
 
-- **Bilingual Support**: Complete English/Nepali translation system
-- **Auto-Translation**: Automatic content translation using machine learning
-- **Candidate Management**: Comprehensive profiles with verification system
-- **Location-Based Filtering**: Search by Province, District, Municipality, Ward
+- **Bilingual Support**: Complete English/Nepali translation system with automatic content translation
+- **WeVote-Inspired UI**: Professional grayscale design with light blue accents
+- **Candidate Management**: Comprehensive profiles with standardized template format
+- **Location-Based Ballot**: Geolocation-aware candidate discovery system
 - **Responsive Design**: Mobile-friendly interface with Tailwind CSS
-- **PostgreSQL Database**: Robust data management with 753 municipalities
+- **PostgreSQL Database**: Complete Nepal administrative data (7 provinces, 77 districts, 753 municipalities, 6,743 wards)
 - **Admin Dashboard**: Enhanced Django admin for content management
+- **Real-time Search**: Dynamic candidate filtering with pagination
+- **Privacy-First**: No tracking, minimal cookies, secure data handling
 
 ## 🚀 Quick Start
 
@@ -66,18 +68,47 @@ python manage.py runserver
 
 Visit http://127.0.0.1:8000 to see the application.
 
+## 📁 Project Structure
+
+```
+electNepal/
+├── nepal_election_app/     # Main Django project
+│   ├── settings/          # Split settings (base, local, production)
+│   └── urls.py           # URL configuration with i18n
+├── candidates/           # Candidate management app
+│   ├── models.py        # Bilingual candidate models
+│   ├── views.py         # API and web views
+│   ├── templates/       # Candidate templates
+│   └── management/      # Custom commands
+├── locations/           # Nepal administrative data
+│   ├── models.py        # Province, District, Municipality
+│   └── views.py         # Location API endpoints
+├── core/                # Core functionality
+│   └── templates/       # Home, About pages
+├── static/              # Static assets
+│   ├── css/            # Custom styles + colors.css
+│   └── js/             # Alpine.js components
+├── templates/           # Global templates
+├── locale/              # Translation files
+└── data/                # Location data JSONs
+```
+
 ## 📊 Project Status
 
-**Current Phase**: Development (75% Complete)
+**Current Phase**: Development (85% Complete)
+**Last Updated**: January 19, 2025
 
 ### ✅ Completed
-- Core Django infrastructure
-- PostgreSQL database migration
-- Complete Nepal administrative data (7 provinces, 77 districts, 753 municipalities)
-- Bilingual system implementation
-- Candidate management system
-- API endpoints for location filtering
-- Responsive UI with Tailwind CSS
+- Core Django infrastructure with PostgreSQL
+- Complete Nepal administrative data (7 provinces, 77 districts, 753 municipalities, 6,743 wards)
+- Bilingual system with auto-translation
+- Candidate management with standardized profiles
+- Location-based ballot system with geolocation
+- WeVote-inspired UI redesign
+- API endpoints for filtering and search
+- Responsive design with Tailwind CSS
+- Verification system removal
+- Professional grayscale color scheme
 
 ### 🔄 In Progress
 - Candidate registration workflow

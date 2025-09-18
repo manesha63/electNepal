@@ -1,172 +1,239 @@
 {% extends 'base.html' %}
-{% load i18n i18n_extras static %}
+{% load i18n static %}
 
-{% block title %}{{ candidate.full_name }} - ElectNepal{% endblock %}
+{% block title %}{{ candidate.full_name }} - {% trans "Independent Candidate" %} - ElectNepal{% endblock %}
 
 {% block content %}
-<div class="candidate-detail">
-    <div class="info-section">
-        <!-- Candidate Header -->
-        <div class="candidate-header">
-            <div class="flex items-start gap-6">
-                {% if candidate.photo %}
-                    <img src="{{ candidate.photo.url }}" alt="{{ candidate.full_name }}" class="w-32 h-32 rounded-lg object-cover">
-                {% else %}
-                    <div class="w-32 h-32 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
-                        {{ candidate.full_name|first }}
-                    </div>
-                {% endif %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Main Profile Container -->
+    <div class="bg-white rounded-xl border border-gray-300 shadow-lg overflow-hidden p-8">
+        <!-- Top Section with Photo and Location Info -->
+        <div class="flex flex-col lg:flex-row gap-8 mb-8">
+            <!-- Left Side - Photo and Name -->
+            <div>
+                <!-- Photo -->
+                <div class="mb-4">
+                    {% if candidate.photo %}
+                        <img src="{{ candidate.photo.url }}" alt="{{ candidate.full_name }}"
+                             class="rounded-lg shadow-xl object-cover" style="width: 8.5cm; height: 9cm;">
+                    {% else %}
+                        <div class="rounded-lg border border-gray-300 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center" style="width: 8.5cm; height: 9cm;">
+                            <span class="text-gray-700 text-6xl font-bold">{{ candidate.full_name|first }}</span>
+                        </div>
+                    {% endif %}
+                </div>
 
-                <div class="flex-1">
-                    <h1 class="text-3xl font-bold mb-2">{{ candidate.full_name }}</h1>
-                    <p class="text-lg text-gray-600 mb-2">{{ candidate.get_position_level_display }}</p>
-                    <p class="text-gray-600 mb-4">
-                        <i class="fas fa-map-marker-alt"></i> {{ candidate.get_display_location }}
-                    </p>
+                <!-- Name below photo -->
+                <h1 class="text-2xl font-bold text-gray-800 mb-2 text-center" style="width: 8.5cm;">{{ candidate.full_name }}</h1>
 
-                    {% if candidate.is_verified %}
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                            <i class="fas fa-check-circle mr-2"></i> {% trans "Verified" %}
-                        </span>
+                <!-- Position below name -->
+                <div class="text-lg font-semibold text-gray-700 mb-2 text-center" style="width: 8.5cm;">
+                    <span class="text-gray-500">Office:</span> {{ candidate.get_position_level_display }}
+                </div>
+
+                <!-- Seat/Position below office -->
+                <div class="text-lg font-semibold text-gray-700 mb-2 text-center" style="width: 8.5cm;">
+                    <span class="text-gray-500">Seat:</span>
+                    {% if candidate.position_level == 'federal' %}
+                        Member of Parliament
+                    {% elif candidate.position_level == 'provincial' %}
+                        Provincial Assembly Member
+                    {% elif candidate.position_level == 'mayor' %}
+                        Mayor
+                    {% elif candidate.position_level == 'deputy_mayor' %}
+                        Deputy Mayor
+                    {% elif candidate.position_level == 'ward' %}
+                        Ward Chairperson
+                    {% elif candidate.position_level == 'local' %}
+                        Local Representative
+                    {% else %}
+                        {{ candidate.get_position_level_display }}
                     {% endif %}
                 </div>
             </div>
-        </div>
 
-        <!-- Biography Section -->
-        {% if candidate.bio_en or candidate.bio_ne %}
-        <div class="section mt-8">
-            <h2 class="text-xl font-semibold mb-3">
-                {% trans "Biography" %}
-                {% mt_badge candidate "bio" %}
-            </h2>
-            <div class="content-text">
-                {% tdb candidate.bio_en candidate.bio_ne %}
+            <!-- Right Side - Location, Education, Experience -->
+            <div class="flex-1">
+                <!-- Location Info -->
+                <div class="mb-6">
+                    <div class="text-lg font-semibold text-gray-800">
+                        <span class="text-gray-400">From:</span>
+                        {% if candidate.ward_number %}{{ candidate.ward_number }}, {% endif %}
+                        {% if candidate.municipality %}{{ candidate.municipality.name_en }}, {% endif %}
+                        {% if candidate.district %}{{ candidate.district.name_en }}, {% endif %}
+                        {% if candidate.province %}{{ candidate.province.name_en }}{% endif %}
+                    </div>
+                </div>
+
+
+                <!-- Education -->
+                {% if candidate.education_en or candidate.education_ne %}
+                <div class="mb-6">
+                    <h2 class="text-lg font-bold text-gray-800 mb-3">
+                        {% trans "Education" %}
+                    </h2>
+                    <div class="text-gray-600 text-sm leading-relaxed">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% if LANGUAGE_CODE == 'ne' and candidate.education_ne %}
+                            {{ candidate.education_ne|linebreaksbr }}
+                        {% else %}
+                            {{ candidate.education_en|linebreaksbr }}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Past Experience -->
+                {% if candidate.experience_en or candidate.experience_ne %}
+                <div>
+                    <h2 class="text-lg font-bold text-gray-800 mb-3">
+                        {% trans "Past Experience" %}
+                    </h2>
+                    <div class="text-gray-600 text-sm leading-relaxed" id="experience-content">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% if LANGUAGE_CODE == 'ne' and candidate.experience_ne %}
+                            {{ candidate.experience_ne|linebreaksbr }}
+                        {% else %}
+                            {{ candidate.experience_en|linebreaksbr }}
+                        {% endif %}
+                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            var expDiv = document.getElementById('experience-content');
+                            if (expDiv) {
+                                expDiv.innerHTML = expDiv.innerHTML.replace(
+                                    /Key Achievements:/g,
+                                    '<span class="font-bold text-base block mt-2">Key Achievements:</span>'
+                                );
+                            }
+                        });
+                    </script>
+                </div>
+                {% endif %}
             </div>
         </div>
-        {% endif %}
 
-        <!-- Education Section -->
-        {% if candidate.education_en or candidate.education_ne %}
-        <div class="section mt-6">
-            <h2 class="text-xl font-semibold mb-3">
-                <i class="fas fa-graduation-cap mr-2"></i> {% trans "Education" %}
-                {% mt_badge candidate "education" %}
-            </h2>
-            <div class="content-text">
-                {% tdb candidate.education_en candidate.education_ne %}
+        <!-- Full Width Section - Motivation and Manifesto -->
+        <div class="border-t border-gray-300 pt-8">
+            <!-- Personal Motivation -->
+            {% if candidate.bio_en or candidate.bio_ne %}
+            <div class="mb-8">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">
+                    {% trans "Motivation" %}
+                </h2>
+                <div class="text-gray-600 leading-relaxed">
+                    {% get_current_language as LANGUAGE_CODE %}
+                    {% if LANGUAGE_CODE == 'ne' and candidate.bio_ne %}
+                        {{ candidate.bio_ne|linebreaksbr }}
+                    {% else %}
+                        {{ candidate.bio_en|linebreaksbr }}
+                    {% endif %}
+                </div>
             </div>
-        </div>
-        {% endif %}
+            {% endif %}
 
-        <!-- Experience Section -->
-        {% if candidate.experience_en or candidate.experience_ne %}
-        <div class="section mt-6">
-            <h2 class="text-xl font-semibold mb-3">
-                <i class="fas fa-briefcase mr-2"></i> {% trans "Experience" %}
-                {% mt_badge candidate "experience" %}
-            </h2>
-            <div class="content-text">
-                {% tdb candidate.experience_en candidate.experience_ne %}
+            <!-- Political Manifesto -->
+            {% if candidate.manifesto_en or candidate.manifesto_ne %}
+            <div>
+                <h2 class="text-xl font-bold text-gray-800 mb-4">
+                    {% trans "Political Manifesto" %}
+                </h2>
+                <div class="text-gray-600 leading-relaxed">
+                    {% get_current_language as LANGUAGE_CODE %}
+                    {% if LANGUAGE_CODE == 'ne' and candidate.manifesto_ne %}
+                        {{ candidate.manifesto_ne|linebreaksbr }}
+                    {% else %}
+                        {{ candidate.manifesto_en|linebreaksbr }}
+                    {% endif %}
+                </div>
             </div>
+            {% endif %}
         </div>
-        {% endif %}
 
-        <!-- Manifesto Section -->
-        {% if candidate.manifesto_en or candidate.manifesto_ne %}
-        <div class="section mt-6">
-            <h2 class="text-xl font-semibold mb-3">
-                <i class="fas fa-scroll mr-2"></i> {% trans "Manifesto" %}
-                {% mt_badge candidate "manifesto" %}
-            </h2>
-            <div class="content-text">
-                {% tdb candidate.manifesto_en candidate.manifesto_ne %}
+    </div>
+
+    <!-- Additional Information Cards -->
+    <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Campaign Events -->
+        {% if candidate_events %}
+        <div class="bg-white rounded-xl border border-gray-300 shadow-md p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-calendar-alt mr-2 text-gray-600"></i>
+                {% trans "Upcoming Events" %}
+            </h3>
+            <div class="space-y-3">
+                {% for event in candidate_events %}
+                <div class="border-l-4 border-blue-600 pl-4 py-2">
+                    <div class="font-medium text-gray-800">{{ event.title_en }}</div>
+                    <div class="text-sm text-gray-400">
+                        {{ event.event_date|date:"M d, Y" }}
+                    </div>
+                    {% if event.location_en %}
+                    <div class="text-sm text-gray-400">
+                        {{ event.location_en }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
             </div>
         </div>
         {% endif %}
 
         <!-- Contact Information -->
-        <div class="section mt-8">
-            <h2 class="text-xl font-semibold mb-3">
-                <i class="fas fa-address-card mr-2"></i> {% trans "Contact Information" %}
-            </h2>
-            <div class="flex flex-wrap gap-4">
+        {% if candidate.user.email or candidate.phone_number or candidate.website or candidate.facebook_url %}
+        <div class="bg-white rounded-xl border border-gray-300 shadow-md p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-address-card mr-2 text-gray-600"></i>
+                {% trans "Contact" %}
+            </h3>
+            <div class="space-y-3">
+                {% if candidate.user.email %}
+                <div>
+                    <span class="text-sm text-gray-400">Email:</span>
+                    <div class="text-gray-800">{{ candidate.user.email }}</div>
+                </div>
+                {% endif %}
+
+                {% if candidate.phone_number %}
+                <div>
+                    <span class="text-sm text-gray-400">Phone:</span>
+                    <div class="text-gray-800">{{ candidate.phone_number }}</div>
+                </div>
+                {% endif %}
+
                 {% if candidate.website %}
-                <a href="{{ candidate.website }}" target="_blank" class="contact-link">
-                    <i class="fas fa-globe"></i> {% trans "Website" %}
-                </a>
+                <div>
+                    <span class="text-sm text-gray-400">Website:</span>
+                    <div>
+                        <a href="{{ candidate.website }}" target="_blank" class="text-gray-600 hover:text-blue-400">
+                            {{ candidate.website|slice:"8:" }}
+                        </a>
+                    </div>
+                </div>
                 {% endif %}
 
                 {% if candidate.facebook_url %}
-                <a href="{{ candidate.facebook_url }}" target="_blank" class="contact-link">
-                    <i class="fab fa-facebook"></i> {% trans "Facebook" %}
-                </a>
-                {% endif %}
-
-                {% if candidate.donation_link %}
-                <a href="{{ candidate.donation_link }}" target="_blank" class="contact-link">
-                    <i class="fas fa-donate"></i> {% trans "Support Campaign" %}
-                </a>
+                <div>
+                    <span class="text-sm text-gray-400">Social Media:</span>
+                    <div>
+                        <a href="{{ candidate.facebook_url }}" target="_blank" class="text-gray-600 hover:text-blue-400">
+                            Facebook Profile
+                        </a>
+                    </div>
+                </div>
                 {% endif %}
             </div>
         </div>
+        {% endif %}
 
-        <!-- Back Button -->
-        <div class="mt-8">
-            <a href="{% url 'home' %}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left mr-2"></i> {% trans "Back to Candidates" %}
-            </a>
-        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="mt-12 flex justify-center">
+        <a href="{% url 'candidates:list' %}"
+           class="inline-flex items-center px-6 py-3 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 font-medium rounded-lg transition-colors">
+            {% trans "Back" %}
+        </a>
     </div>
 </div>
-
-<style>
-    .candidate-detail {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 2rem 1rem;
-    }
-
-    .section {
-        border-top: 1px solid #e5e7eb;
-        padding-top: 1.5rem;
-    }
-
-    .content-text {
-        color: #4b5563;
-        line-height: 1.8;
-        white-space: pre-wrap;
-    }
-
-    .contact-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        background: #f3f4f6;
-        border-radius: 0.5rem;
-        color: #1f2937;
-        text-decoration: none;
-        transition: background 0.2s;
-    }
-
-    .contact-link:hover {
-        background: #e5e7eb;
-    }
-
-    .btn-secondary {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.75rem 1.5rem;
-        background: #6b7280;
-        color: white;
-        border-radius: 0.5rem;
-        text-decoration: none;
-        transition: background 0.2s;
-    }
-
-    .btn-secondary:hover {
-        background: #4b5563;
-    }
-</style>
 {% endblock %}

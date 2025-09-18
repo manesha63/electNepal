@@ -202,11 +202,6 @@
         margin-right: 0.5rem;
     }
 
-    .badge-verified {
-        background: #f0fff4;
-        border-color: #9ae6b4;
-        color: #22543d;
-    }
 
     .badge-party {
         background: #fef5e7;
@@ -434,11 +429,6 @@
                         <p class="candidate-bio" x-text="candidate.bio"></p>
 
                         <div>
-                            <template x-if="candidate.verified">
-                                <span class="candidate-badge badge-verified">
-                                    <i class="fas fa-check-circle"></i> {% trans "Verified" %}
-                                </span>
-                            </template>
                             <span class="candidate-badge badge-party" x-text="candidate.party"></span>
                         </div>
                     </div>

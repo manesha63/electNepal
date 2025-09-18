@@ -77,24 +77,57 @@ function initSmoothScroll() {
 
 // Mobile Menu Toggle
 function initMobileMenu() {
-    const menuToggle = document.getElementById('mobileMenuToggle');
-    const mobileMenu = document.getElementById('mobileMenu');
-    
-    if (menuToggle && mobileMenu) {
-        menuToggle.addEventListener('click', () => {
-            mobileMenu.classList.toggle('show');
-            menuToggle.classList.toggle('active');
+    // Create mobile menu functionality for navigation
+    const navbar = document.querySelector('.navbar-container');
+    const navLinks = document.querySelector('.nav-links');
+
+    if (navbar && navLinks && window.innerWidth <= 767) {
+        // Add click handler to the navbar container (using the ::after pseudo element area)
+        navbar.addEventListener('click', function(e) {
+            // Check if click is on the hamburger menu area (right side of navbar)
+            const rect = this.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const rightArea = rect.width - 60; // 60px from right edge
+
+            if (clickX > rightArea) {
+                navLinks.classList.toggle('mobile-active');
+                e.stopPropagation();
+            }
         });
-        
+
         // Close menu when clicking outside
         document.addEventListener('click', (e) => {
-            if (!menuToggle.contains(e.target) && !mobileMenu.contains(e.target)) {
-                mobileMenu.classList.remove('show');
-                menuToggle.classList.remove('active');
+            if (!navbar.contains(e.target) && !navLinks.contains(e.target)) {
+                navLinks.classList.remove('mobile-active');
             }
+        });
+
+        // Close menu when clicking a link
+        navLinks.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('mobile-active');
+            });
         });
     }
 }
+
+// Handle window resize
+let resizeTimer;
+window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+        // Re-initialize mobile menu if window size changes
+        if (window.innerWidth <= 767) {
+            initMobileMenu();
+        } else {
+            // Remove mobile classes on larger screens
+            const navLinks = document.querySelector('.nav-links');
+            if (navLinks) {
+                navLinks.classList.remove('mobile-active');
+            }
+        }
+    }, 250);
+});
 
 // Language Switcher Enhancement
 function switchLanguage(lang) {
@@ -315,9 +348,9 @@ function displayCandidates(candidates) {
     if (candidates.length === 0) {
         candidateGrid.innerHTML = `
             <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
-                <i class="fas fa-user-slash" style="font-size: 48px; color: #ccc; margin-bottom: 20px;"></i>
-                <p style="color: #666; font-size: 18px;">No candidates found in your area yet.</p>
-                <p style="color: #999; margin-top: 10px;">Try adjusting your filters or search in a different location.</p>
+                <i class="fas fa-user-slash" style="font-size: 48px; color: #E2E2E2; margin-bottom: 20px;"></i>
+                <p style="color: #6B7280; font-size: 18px;">No candidates found in your area yet.</p>
+                <p style="color: #9CA3AF; margin-top: 10px;">Try adjusting your filters or search in a different location.</p>
             </div>
         `;
         return;
@@ -332,17 +365,14 @@ function displayCandidates(candidates) {
                 </div>`
             }
             <div class="candidate-info">
-                <h3 class="candidate-name">${candidate.name}</h3>
+                <a href="/candidates/${candidate.id}/" class="candidate-name-link">
+                    <h3 class="candidate-name">${candidate.name}</h3>
+                </a>
                 <p class="candidate-position">${candidate.position}</p>
                 <p class="candidate-location">
                     <i class="fas fa-map-marker-alt"></i> ${candidate.municipality}, ${candidate.district}
                 </p>
-                ${candidate.verified ? 
-                    '<span class="verified-badge"><i class="fas fa-check-circle"></i> Verified</span>' : 
-                    ''
-                }
                 <p class="candidate-bio">${candidate.bio}</p>
-                <a href="/candidates/${candidate.id}/" class="view-profile-btn">View Profile</a>
             </div>
         </div>
     `).join('');
@@ -421,19 +451,17 @@ function searchCandidates(query) {
 // Apply filters
 function applyFilters() {
     const filters = {
-        verified: document.getElementById('filterVerified')?.checked,
         hasManifesto: document.getElementById('filterManifesto')?.checked,
         localLevel: document.getElementById('filterLocal')?.checked
     };
-    
+
     // Build query string
     const params = new URLSearchParams();
-    if (filters.verified) params.append('verified', 'true');
     if (filters.hasManifesto) params.append('has_manifesto', 'true');
     if (filters.localLevel) params.append('position', 'local');
-    
+
     const url = `/candidates/?${params.toString()}`;
-    
+
     // Reload page with filters (for server-side filtering)
     window.location.href = url;
 }

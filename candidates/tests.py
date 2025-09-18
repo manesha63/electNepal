@@ -42,7 +42,6 @@ class CandidateModelTest(TestCase):
             municipality=self.municipality
         )
         self.assertEqual(candidate.full_name, 'Test Candidate')
-        self.assertEqual(candidate.verification_status, 'pending')
         self.assertIsNotNone(candidate.created_at)
 
     def test_candidate_str_method(self):
@@ -111,8 +110,7 @@ class CandidateViewTest(TestCase):
             district=self.district,
             municipality=self.municipality,
             bio_en='Test bio in English',
-            bio_ne='नेपालीमा परीक्षण बायो',
-            verification_status='verified'
+            bio_ne='नेपालीमा परीक्षण बायो'
         )
 
     def test_candidate_list_view(self):

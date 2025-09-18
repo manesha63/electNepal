@@ -19,8 +19,7 @@ class CandidateRegistrationForm(forms.ModelForm):
             'bio_en', 'bio_ne', 'education_en', 'education_ne',
             'experience_en', 'experience_ne', 'manifesto_en', 'manifesto_ne',
             'position_level', 'province', 'district', 'municipality',
-            'ward_number', 'constituency_code', 'website', 'facebook_url',
-            'verification_document'
+            'ward_number', 'constituency_code', 'website', 'facebook_url'
         ]
         widgets = {
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
@@ -82,7 +81,6 @@ class CandidateRegistrationForm(forms.ModelForm):
         # Create candidate profile
         candidate = super().save(commit=False)
         candidate.user = user
-        candidate.verification_status = 'pending'
         
         if commit:
             candidate.save()

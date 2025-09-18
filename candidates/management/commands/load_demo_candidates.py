@@ -78,7 +78,6 @@ class Command(BaseCommand):
                         'district': district,
                         'municipality': municipality,
                         'ward_number': candidate_data.get('ward_number'),
-                        'verification_status': candidate_data.get('verification_status', 'pending'),
                         'website': candidate_data.get('website', ''),
                         'facebook_url': candidate_data.get('facebook_url', ''),
                         'donation_link': candidate_data.get('donation_link', ''),
@@ -88,44 +87,43 @@ class Command(BaseCommand):
                 if created:
                     candidates_created += 1
                     
-                    # Add some demo posts for verified candidates
-                    if candidate.verification_status == 'verified':
-                        CandidatePost.objects.create(
-                            candidate=candidate,
-                            title="My Vision for Our Community",
-                            content=f"As your candidate, I am committed to bringing positive change to our community. {candidate.manifesto_en}",
-                            is_published=True
-                        )
-                        
-                        CandidatePost.objects.create(
-                            candidate=candidate,
-                            title="Campaign Launch Event Success",
-                            content="Thank you to everyone who joined our campaign launch. Your support means everything. Together, we will build a better future!",
-                            is_published=True
-                        )
-                        
-                        # Add demo events
-                        from datetime import timedelta
-                        future_date = timezone.now() + timedelta(days=random.randint(5, 30))
-                        
-                        CandidateEvent.objects.create(
-                            candidate=candidate,
-                            title="Community Town Hall Meeting",
-                            description="Join us for an open discussion about local issues and solutions. Everyone is welcome!",
-                            event_date=future_date,
-                            location=f"{municipality.name_en if municipality else district.name_en} Community Center",
-                            is_published=True
-                        )
-                        
-                        future_date2 = timezone.now() + timedelta(days=random.randint(35, 60))
-                        CandidateEvent.objects.create(
-                            candidate=candidate,
-                            title="Youth Engagement Program",
-                            description="Special session focused on youth employment and education opportunities.",
-                            event_date=future_date2,
-                            location=f"{district.name_en} Youth Center",
-                            is_published=True
-                        )
+                    # Add some demo posts for all candidates
+                    CandidatePost.objects.create(
+                        candidate=candidate,
+                        title="My Vision for Our Community",
+                        content=f"As your candidate, I am committed to bringing positive change to our community. {candidate.manifesto_en}",
+                        is_published=True
+                    )
+
+                    CandidatePost.objects.create(
+                        candidate=candidate,
+                        title="Campaign Launch Event Success",
+                        content="Thank you to everyone who joined our campaign launch. Your support means everything. Together, we will build a better future!",
+                        is_published=True
+                    )
+
+                    # Add demo events
+                    from datetime import timedelta
+                    future_date = timezone.now() + timedelta(days=random.randint(5, 30))
+
+                    CandidateEvent.objects.create(
+                        candidate=candidate,
+                        title="Community Town Hall Meeting",
+                        description="Join us for an open discussion about local issues and solutions. Everyone is welcome!",
+                        event_date=future_date,
+                        location=f"{municipality.name_en if municipality else district.name_en} Community Center",
+                        is_published=True
+                    )
+
+                    future_date2 = timezone.now() + timedelta(days=random.randint(35, 60))
+                    CandidateEvent.objects.create(
+                        candidate=candidate,
+                        title="Youth Engagement Program",
+                        description="Special session focused on youth employment and education opportunities.",
+                        event_date=future_date2,
+                        location=f"{district.name_en} Youth Center",
+                        is_published=True
+                    )
                 else:
                     candidates_updated += 1
 

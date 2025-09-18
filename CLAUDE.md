@@ -3,7 +3,13 @@
 ## Project Overview
 A Django-based web application for tracking and displaying independent candidates in Nepal elections. Built with Django 4.2.7, migrated to PostgreSQL database, with comprehensive bilingual support (English/Nepali) and automatic translation capabilities for democratic participation in Nepal.
 
-## Current Project Status (as of 2025-01-16 - UPDATED)
+## CRITICAL: Candidate Profile Template Standard
+**ALL candidate profiles MUST use the exact template defined in CANDIDATE_PROFILE_TEMPLATE.md**
+- See `/home/manesha/electNepal/CANDIDATE_PROFILE_TEMPLATE.md` for the mandatory template
+- This template is the ONLY acceptable format for candidate profiles
+- Any deviation from this template is NOT permitted
+
+## Current Project Status (as of 2025-01-19 - UPDATED)
 
 ### ✅ Completed Features
 
@@ -110,6 +116,23 @@ A Django-based web application for tracking and displaying independent candidate
    - **Template Variations**: feed.html, feed_simple_grid.html, feed_paginated.html
 
 #### 11. **Location-Based Ballot System** (NEW - Jan 16, 2025)
+   - **Geolocation Resolution**: Converts GPS coordinates to Nepal administrative regions
+   - **My Ballot Feature**: Shows candidates sorted by location relevance (ward > municipality > district > province)
+   - **Privacy-First**: No storage of user coordinates, one-time location use only
+   - **Manual Fallback**: Complete cascade selection for users who deny location access
+   - **Responsive UI**: Mobile-friendly ballot page with Alpine.js interactivity
+   - **API Endpoints**: `/api/georesolve/` and `/candidates/api/my-ballot/`
+   - **Documentation**: See BALLOT_FEATURE.md for detailed implementation
+
+#### 12. **UI/UX Redesign with WeVote-Inspired Theme** (NEW - Jan 19, 2025)
+   - **Color Scheme**: Professional grayscale palette inspired by WeVote design
+   - **Background**: #FBFBFB (Gray-50) for main pages
+   - **Card Design**: Gradient from #EBEBEB to #EDEDED with subtle shadows
+   - **Typography**: Enhanced readability with darker text (#1F2937)
+   - **Blue Accents**: Light blue #60A5FA for links and interactive elements
+   - **Verification Removal**: Complete removal of all verification functionality
+   - **Profile Template**: Standardized candidate profile format (see CANDIDATE_PROFILE_TEMPLATE.md)
+   - **Responsive Cards**: Improved candidate display cards with better contrast
    - **Geolocation Resolution**: Converts GPS coordinates to Nepal administrative regions
    - **My Ballot Feature**: Shows candidates sorted by location relevance (ward > municipality > district > province)
    - **Privacy-First**: No storage of user coordinates, one-time location use only

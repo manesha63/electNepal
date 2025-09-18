@@ -21,15 +21,12 @@ class CandidateListView(ListView):
         queryset = Candidate.objects.all()
 
         # Get filter parameters
-        verified_only = self.request.GET.get('verified', 'true') == 'true'
         search = self.request.GET.get('search', '')
         district_id = self.request.GET.get('district')
         municipality_id = self.request.GET.get('municipality')
         position_level = self.request.GET.get('position')
 
         # Apply filters
-        if verified_only:
-            queryset = queryset.filter(verification_status='verified')
 
         if search:
             queryset = queryset.filter(
@@ -80,9 +77,7 @@ class CandidateDetailView(DetailView):
     context_object_name = 'candidate'
     
     def get_queryset(self):
-        return Candidate.objects.filter(
-            verification_status='verified'
-        ).select_related('province', 'district', 'municipality')
+        return Candidate.objects.select_related('province', 'district', 'municipality')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -107,9 +102,7 @@ def nearby_candidates_api(request):
     is_nepali = current_lang == 'ne'
 
     # Get candidates at different levels
-    queryset = Candidate.objects.filter(
-        verification_status='verified'
-    ).select_related('district', 'municipality', 'province')
+    queryset = Candidate.objects.select_related('district', 'municipality', 'province')
 
     # If location provided, prioritize local candidates
     if lat and lng:
@@ -151,7 +144,6 @@ def nearby_candidates_api(request):
         candidates_data.append({
             'id': candidate.id,
             'name': candidate.full_name,
-            'verified': candidate.verification_status == 'verified',
             'level': level,
             'position': candidate.get_position_level_display(),
             'location': location,
@@ -189,7 +181,7 @@ def search_candidates_api(request):
     district_id = request.GET.get('district')
     municipality_id = request.GET.get('municipality')
     
-    queryset = Candidate.objects.filter(verification_status='verified')
+    queryset = Candidate.objects.all()
     
     if search_term:
         queryset = queryset.filter(
@@ -212,8 +204,7 @@ def search_candidates_api(request):
             'id': candidate.id,
             'name': candidate.full_name,
             'position': candidate.get_position_level_display(),
-            'location': f"{candidate.municipality.name_en if candidate.municipality else ''}, {candidate.district.name_en if candidate.district else ''}",
-            'verified': candidate.verification_status == 'verified'
+            'location': f"{candidate.municipality.name_en if candidate.municipality else ''}, {candidate.district.name_en if candidate.district else ''}"
         })
     
     return JsonResponse({'results': results})
@@ -267,7 +258,7 @@ def my_ballot(request):
             pass
 
     # Query candidates with the filters
-    queryset = Candidate.objects.filter(filters).filter(verification_status='verified')
+    queryset = Candidate.objects.filter(filters)
 
     # Create relevance ranking based on location match
     ranking_conditions = []
@@ -308,9 +299,9 @@ def my_ballot(request):
                 default=Value(9),
                 output_field=IntegerField()
             )
-        ).order_by('relevance', '-verified_at', 'full_name')
+        ).order_by('relevance', '-created_at', 'full_name')
     else:
-        queryset = queryset.order_by('-verified_at', 'full_name')
+        queryset = queryset.order_by('-created_at', 'full_name')
 
     # Select related for efficiency
     queryset = queryset.select_related('province', 'district', 'municipality')
@@ -354,8 +345,6 @@ def my_ballot(request):
             'location': location_display,
             'bio': bio_text[:200] + '...' if len(bio_text) > 200 else bio_text,
             'photo': candidate.photo.url if candidate.photo else None,
-            'status': candidate.verification_status,
-            'verified': candidate.verification_status == 'verified',
             'party': 'Independent' if not is_nepali else 'स्वतन्त्र'
         })
 
@@ -387,7 +376,7 @@ def candidate_cards_api(request):
     page_size = max(1, min(int(request.GET.get('page_size', 9)), 48))
 
     # Build queryset
-    qs = Candidate.objects.filter(verification_status='verified').select_related('province', 'district', 'municipality')
+    qs = Candidate.objects.select_related('province', 'district', 'municipality')
 
     # Apply search filter if provided
     if q:
@@ -397,8 +386,8 @@ def candidate_cards_api(request):
             Q(bio_ne__icontains=q)
         )
 
-    # Order by verification and name
-    qs = qs.order_by('-verified_at', 'full_name')
+    # Order by creation date and name
+    qs = qs.order_by('-created_at', 'full_name')
 
     # Paginate
     paginator = Paginator(qs, page_size)
@@ -415,7 +404,6 @@ def candidate_cards_api(request):
             "district": c.district.name_en if c.district else None,
             "municipality": c.municipality.name_en if c.municipality else None,
             "ward": c.ward_number,
-            "verified": c.verification_status == "verified",
             "detail_url": f"/candidates/{c.id}/",
         }
 

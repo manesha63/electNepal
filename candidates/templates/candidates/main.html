@@ -351,21 +351,6 @@
         background: #e5e7eb;
     }
     
-    /* Verified Badge */
-    .verified-badge {
-        display: inline-flex;
-        align-items: center;
-        background: rgba(255,255,255,0.2);
-        padding: 3px 8px;
-        border-radius: 12px;
-        font-size: 12px;
-        margin-left: 5px;
-    }
-    
-    .verified-badge i {
-        margin-right: 3px;
-        color: #10b981;
-    }
     
     /* No Results */
     .no-results {
@@ -473,10 +458,6 @@
             </div>
             <div class="filter-options">
                 <label class="filter-option">
-                    <input type="checkbox" id="verifiedOnly" onchange="applyFilters()">
-                    <span>{% trans "Verified Candidates Only" %}</span>
-                </label>
-                <label class="filter-option">
                     <input type="checkbox" id="withManifesto" onchange="applyFilters()">
                     <span>{% trans "Has Manifesto" %}</span>
                 </label>
@@ -565,12 +546,6 @@
                     </div>
                     <h3 class="candidate-name">
                         {{ candidate.full_name }}
-                        {% if candidate.verification_status == 'verified' %}
-                        <span class="verified-badge">
-                            <i class="fas fa-check-circle"></i>
-                            {% trans "Verified" %}
-                        </span>
-                        {% endif %}
                     </h3>
                     <p class="candidate-position">{{ candidate.get_position_level_display }}</p>
                 </div>
@@ -805,18 +780,16 @@ function searchCandidates() {
 
 // Apply filters
 function applyFilters() {
-    const verifiedOnly = document.getElementById('verifiedOnly').checked;
     const withManifesto = document.getElementById('withManifesto').checked;
     const localLevel = document.getElementById('localLevel').checked;
-    
+
     // Apply filter logic
     // This would typically make an API call with filter parameters
-    console.log('Applying filters:', { verifiedOnly, withManifesto, localLevel });
+    console.log('Applying filters:', { withManifesto, localLevel });
 }
 
 // Clear filters
 function clearFilters() {
-    document.getElementById('verifiedOnly').checked = false;
     document.getElementById('withManifesto').checked = false;
     document.getElementById('localLevel').checked = false;
     applyFilters();
