@@ -397,12 +397,12 @@
 
             <div class="candidates-grid">
                 <template x-for="candidate in candidates" :key="candidate.id">
-                    <div class="candidate-card" @click="window.location.href = candidate.detail_url">
+                    <div class="candidate-card">
                         <!-- Relevance indicator -->
-                        <template x-if="candidate.ward === parseInt(selectedWard) && candidate.municipality_id === parseInt(selectedMunicipality)">
+                        <template x-if="candidate.ward_number === parseInt(selectedWard) && candidate.municipality_id === parseInt(selectedMunicipality)">
                             <span class="relevance-indicator relevance-ward">{% trans "Your Ward" %}</span>
                         </template>
-                        <template x-if="candidate.municipality_id === parseInt(selectedMunicipality) && candidate.ward !== parseInt(selectedWard)">
+                        <template x-if="candidate.municipality_id === parseInt(selectedMunicipality) && candidate.ward_number !== parseInt(selectedWard)">
                             <span class="relevance-indicator relevance-municipality">{% trans "Your Municipality" %}</span>
                         </template>
                         <template x-if="candidate.district_id === parseInt(selectedDistrict) && candidate.municipality_id !== parseInt(selectedMunicipality)">
@@ -412,36 +412,24 @@
                             <span class="relevance-indicator relevance-province">{% trans "Your Province" %}</span>
                         </template>
 
-                        <div class="card-header">
-                            <template x-if="candidate.photo">
-                                <img :src="candidate.photo" :alt="candidate.name" class="candidate-photo">
-                            </template>
-                            <template x-if="!candidate.photo">
-                                <div class="candidate-photo-placeholder">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                            </template>
-                        </div>
-                        <div class="candidate-info">
-                            <a :href="candidate.detail_url" class="candidate-name-link">
-                                <h3 class="candidate-name" x-text="candidate.name"></h3>
-                            </a>
-                            <div class="candidate-office">
-                                <span>{% trans "Office:" %} </span><span x-text="getOfficeTitle(candidate.position_level)"></span>
-                            </div>
-                            <div class="candidate-seat">
-                                <span>{% trans "Seat:" %} </span><span x-text="getSeatDescription(candidate.position_level)"></span>
-                            </div>
-                            <div class="candidate-location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>{% trans "From:" %} </span><span x-text="formatLocation(candidate)"></span>
+                        <div class="candidate-header">
+                            <img
+                                :src="candidate.photo || '{% static 'images/default-avatar.png' %}'"
+                                :alt="candidate.full_name"
+                                class="candidate-photo"
+                                onerror="this.src='{% static 'images/default-avatar.png' %}'">
+                            <div class="candidate-info">
+                                <h3 class="candidate-name" x-text="candidate.full_name"></h3>
+                                <p class="candidate-position" x-text="candidate.position_display"></p>
                             </div>
                         </div>
-                        <div class="card-actions">
-                            <button class="action-btn" @click.stop="shareCandidate(candidate.id)">
-                                <i class="fas fa-share"></i>
-                                {% trans "Share" %}
-                            </button>
+
+                        <p class="candidate-location" x-text="candidate.location"></p>
+
+                        <p class="candidate-bio" x-text="candidate.bio"></p>
+
+                        <div>
+                            <span class="candidate-badge badge-party" x-text="candidate.party"></span>
                         </div>
                     </div>
                 </template>
@@ -638,71 +626,6 @@ function ballotApp() {
                 this.error = error.message;
             } finally {
                 this.loading = false;
-            }
-        },
-
-        // Helper functions for displaying candidate cards
-        formatLocation(candidate) {
-            const parts = [];
-            // Ward should be an integer, display as "Ward X"
-            if (candidate.ward && typeof candidate.ward === 'number') {
-                parts.push(`Ward ${candidate.ward}`);
-            }
-            // Municipality, District, Province should be strings
-            if (candidate.municipality && typeof candidate.municipality === 'string') {
-                parts.push(candidate.municipality);
-            }
-            if (candidate.district && typeof candidate.district === 'string') {
-                parts.push(candidate.district);
-            }
-            if (candidate.province && typeof candidate.province === 'string') {
-                parts.push(candidate.province);
-            }
-            return parts.join(', ') || 'Nepal';
-        },
-
-        getOfficeTitle(position_level) {
-            const officeTitles = {
-                'federal': "{% trans 'Federal Parliament' %}",
-                'provincial': "{% trans 'Provincial Assembly' %}",
-                'mayor': "{% trans 'Municipality' %}",
-                'deputy_mayor': "{% trans 'Municipality' %}",
-                'ward': "{% trans 'Ward' %}",
-                'local': "{% trans 'Local Government' %}",
-                'local_executive': "{% trans 'Municipality/Rural Municipality' %}"
-            };
-            return officeTitles[position_level] || "{% trans 'Independent' %}";
-        },
-
-        getSeatDescription(position_level) {
-            const seatTitles = {
-                'federal': "{% trans 'Member of Parliament' %}",
-                'provincial': "{% trans 'Provincial Assembly Member' %}",
-                'mayor': "{% trans 'Mayor' %}",
-                'deputy_mayor': "{% trans 'Deputy Mayor' %}",
-                'ward': "{% trans 'Ward Chairperson' %}",
-                'local': "{% trans 'Local Representative' %}",
-                'local_executive': "{% trans 'Mayor/Chairperson' %}"
-            };
-            return seatTitles[position_level] || position_level;
-        },
-
-        shareCandidate(candidateId) {
-            const shareUrl = `${window.location.origin}/candidates/${candidateId}/`;
-            const shareText = "{% trans 'Check out this independent candidate' %}";
-
-            if (navigator.share) {
-                navigator.share({
-                    title: shareText,
-                    url: shareUrl
-                }).catch(err => console.log('Error sharing:', err));
-            } else {
-                // Fallback to copying URL
-                navigator.clipboard.writeText(shareUrl).then(() => {
-                    alert("{% trans 'Link copied to clipboard!' %}");
-                }).catch(err => {
-                    alert("{% trans 'Could not copy link' %}");
-                });
             }
         }
     }

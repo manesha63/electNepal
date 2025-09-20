@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.views import View
 from django.views.decorators.http import require_GET
+from django.utils.translation import gettext as _
 from .models import Province, District, Municipality
 
 
@@ -47,7 +48,7 @@ def geo_resolve(request):
 
     # Basic boundary check for Nepal (roughly 26.3-30.5 N, 80-88.2 E)
     if not (26.3 <= lat <= 30.5 and 80 <= lng <= 88.2):
-        return JsonResponse({'error': 'Location outside Nepal boundaries'}, status=404)
+        return JsonResponse({'error': _('Location outside Nepal boundaries')}, status=404)
 
     # Simple region-based approximation for provinces
     # This is a temporary solution until we have proper polygon boundaries

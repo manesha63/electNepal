@@ -13,10 +13,6 @@ urlpatterns = [
 
     # Language switching
     path('set-language/', core_views.set_language, name='set_language'),
-
-    # Candidate API endpoints (outside i18n for consistent URLs)
-    path('api/nearby-candidates/', candidate_views.nearby_candidates_api, name='nearby_candidates_api'),
-    path('api/search-candidates/', candidate_views.search_candidates_api, name='search_candidates_api'),
 ]
 
 urlpatterns += i18n_patterns(

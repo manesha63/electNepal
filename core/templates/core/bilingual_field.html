@@ -1,0 +1,18 @@
+{% load i18n %}
+{% if value %}
+<div class="bilingual-field-wrapper">
+    {% if label %}
+    <h3 class="field-label text-lg font-bold text-gray-900 mb-2">
+        {{ label }}
+        {% if is_mt %}
+        <span class="ml-2 text-xs text-gray-500 italic">
+            ({% trans "Auto-translated" %})
+        </span>
+        {% endif %}
+    </h3>
+    {% endif %}
+    <div class="field-content text-gray-700">
+        {{ value|linebreaksbr }}
+    </div>
+</div>
+{% endif %}

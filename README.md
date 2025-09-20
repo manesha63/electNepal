@@ -1,35 +1,41 @@
-# ElectNepal 🇳🇵
+# ElectNepal - Empowering Democracy in Nepal 🇳🇵
 
-A Django-based web application for tracking and displaying independent candidates in Nepal elections with comprehensive bilingual support (English/Nepali).
+[![Django](https://img.shields.io/badge/Django-4.2.7-green.svg)](https://www.djangoproject.com/)
+[![Python](https://img.shields.io/badge/Python-3.12.3-blue.svg)](https://www.python.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://www.postgresql.org/)
+[![Status](https://img.shields.io/badge/Status-90%25%20Complete-yellow.svg)]()
+[![Bilingual](https://img.shields.io/badge/Bilingual-EN%2FNE-success.svg)]()
 
-## 🌟 Features
+## 🎯 Project Overview
 
-- **Bilingual Support**: Complete English/Nepali translation system with automatic content translation
-- **WeVote-Inspired UI**: Professional grayscale design with light blue accents
-- **Candidate Management**: Comprehensive profiles with standardized template format
-- **Location-Based Ballot**: Geolocation-aware candidate discovery system
-- **Responsive Design**: Mobile-friendly interface with Tailwind CSS
-- **PostgreSQL Database**: Complete Nepal administrative data (7 provinces, 77 districts, 753 municipalities, 6,743 wards)
-- **Admin Dashboard**: Enhanced Django admin for content management
-- **Real-time Search**: Dynamic candidate filtering with pagination
-- **Privacy-First**: No tracking, minimal cookies, secure data handling
+ElectNepal is a comprehensive Django-based web application for tracking and displaying independent candidates in Nepal elections. Built with a strong focus on bilingual support (English/Nepali), the platform enables democratic participation by providing transparent candidate information to all Nepali citizens.
+
+### ✨ Key Features
+
+- **100% Automated Bilingual System** - Write once in English, display everywhere in both languages
+- **Complete Nepal Administrative Data** - All 7 provinces, 77 districts, 753 municipalities
+- **Candidate Management** - Comprehensive profiles with automatic translation
+- **Location-Based Ballot System** - Find candidates based on your location
+- **Responsive Design** - Mobile-friendly interface with modern UI/UX
+- **API-First Architecture** - RESTful APIs with language awareness
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.12+
+
+- Python 3.12.3+
 - PostgreSQL 16+
-- Git
+- Virtual environment (venv)
 
 ### Installation
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/YOUR_USERNAME/electNepal.git
+git clone https://github.com/yourusername/electNepal.git
 cd electNepal
 ```
 
-2. **Create virtual environment**
+2. **Create and activate virtual environment**
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
@@ -61,125 +67,193 @@ python manage.py load_nepal_locations --file data/nepal_locations.json
 python manage.py createsuperuser
 ```
 
-8. **Run development server**
+8. **Run the development server**
 ```bash
-python manage.py runserver
+python manage.py runserver 0.0.0.0:8000
 ```
 
-Visit http://127.0.0.1:8000 to see the application.
+Access the application:
+- English: http://localhost:8000/
+- Nepali: http://localhost:8000/ne/
+- Admin: http://localhost:8000/admin/
+
+## 🌐 Bilingual System
+
+### How It Works
+
+The bilingual system is **100% automated**. Developers only write content in English, and the system automatically:
+- Translates all content to Nepali using Google Translate API
+- Caches translations for performance
+- Displays the correct language based on user preference
+- Falls back gracefully if translation fails
+
+### Key Components
+
+1. **BilingualModel** - Base class for all content models
+2. **AutoTranslationMixin** - Automatic translation on save
+3. **Template Tags** - `{% load bilingual %}` for UI translations
+4. **Language-Aware APIs** - Returns data based on URL prefix
+
+For detailed documentation, see [BILINGUAL_SYSTEM_DOCUMENTATION.md](BILINGUAL_SYSTEM_DOCUMENTATION.md)
 
 ## 📁 Project Structure
 
 ```
 electNepal/
 ├── nepal_election_app/     # Main Django project
-│   ├── settings/          # Split settings (base, local, production)
-│   └── urls.py           # URL configuration with i18n
-├── candidates/           # Candidate management app
-│   ├── models.py        # Bilingual candidate models
-│   ├── views.py         # API and web views
-│   ├── templates/       # Candidate templates
-│   └── management/      # Custom commands
-├── locations/           # Nepal administrative data
-│   ├── models.py        # Province, District, Municipality
-│   └── views.py         # Location API endpoints
-├── core/                # Core functionality
-│   └── templates/       # Home, About pages
-├── static/              # Static assets
-│   ├── css/            # Custom styles + colors.css
-│   └── js/             # Alpine.js components
-├── templates/           # Global templates
-├── locale/              # Translation files
-└── data/                # Location data JSONs
+├── core/                   # Core application
+├── locations/              # Nepal administrative data
+├── candidates/             # Candidate management
+├── templates/              # Global templates
+├── static/                 # Static assets
+├── locale/                 # Translation files
+├── data/                   # Location data files
+└── media/                  # User uploads
 ```
 
-## 📊 Project Status
+## 🛠️ Technical Stack
 
-**Current Phase**: Development (85% Complete)
-**Last Updated**: January 19, 2025
-
-### ✅ Completed
-- Core Django infrastructure with PostgreSQL
-- Complete Nepal administrative data (7 provinces, 77 districts, 753 municipalities, 6,743 wards)
-- Bilingual system with auto-translation
-- Candidate management with standardized profiles
-- Location-based ballot system with geolocation
-- WeVote-inspired UI redesign
-- API endpoints for filtering and search
-- Responsive design with Tailwind CSS
-- Verification system removal
-- Professional grayscale color scheme
-
-### 🔄 In Progress
-- Candidate registration workflow
-- Email notification system
-- Search and filtering enhancements
-
-### 📝 Planned
-- Candidate dashboard
-- Social media integration
-- Campaign finance tracking
-- Docker configuration
-- Production deployment
-
-## 🏗️ Tech Stack
-
-- **Backend**: Django 4.2.7, Python 3.12
+### Backend
+- **Framework**: Django 4.2.7
 - **Database**: PostgreSQL 16
-- **Frontend**: Tailwind CSS, Alpine.js
-- **Translation**: Google Translate API, Django i18n
-- **Deployment**: Gunicorn, Nginx (production ready)
+- **Translation**: Google Translate API (googletrans)
+- **Cache**: 30-day translation caching
 
-## 🌐 Bilingual System
+### Frontend
+- **CSS**: Tailwind CSS (via CDN)
+- **JavaScript**: Alpine.js
+- **Fonts**: Inter, Noto Sans Devanagari
+- **Icons**: Font Awesome 6
 
-The application automatically translates all content between English and Nepali:
+## 📊 Current Status
 
-- 264+ UI strings translated
-- Auto-translation for user-generated content
-- Machine translation tracking
-- Smart fallback system
-- Never overwrites human translations
+### ✅ Completed (90%)
 
-## 📁 Project Structure
+- ✅ Core infrastructure and database
+- ✅ Complete location data (753 municipalities)
+- ✅ Bilingual system (100% operational)
+- ✅ Candidate management system
+- ✅ API endpoints with language awareness
+- ✅ Responsive UI/UX design
+- ✅ Admin interface
+- ✅ Location-based ballot system
 
+### 🔄 In Progress (10%)
+
+- [ ] User authentication system
+- [ ] Email notifications
+- [ ] Production deployment
+- [ ] Docker configuration
+
+## 📝 API Documentation
+
+### Candidate API
 ```
-electNepal/
-├── candidates/          # Candidate management app
-├── locations/          # Nepal administrative data
-├── core/              # Core functionality
-├── locale/            # Translation files
-├── static/            # CSS, JavaScript
-├── templates/         # HTML templates
-├── nepal_election_app/ # Main Django project
-└── data/             # Location data files
+GET /candidates/api/cards/         # English candidates
+GET /ne/candidates/api/cards/      # Nepali candidates
 ```
+
+### Location API
+```
+GET /api/districts/?province={id}
+GET /api/municipalities/?district={id}
+```
+
+### Ballot API
+```
+GET /candidates/api/my-ballot/?province_id={}&district_id={}&municipality_id={}&ward_number={}
+```
+
+## 🧪 Testing
+
+Run the test suite:
+```bash
+python manage.py test
+```
+
+Run specific app tests:
+```bash
+python manage.py test candidates
+python manage.py test locations
+```
+
+## 🔧 Management Commands
+
+### Translate all content
+```bash
+python manage.py ensure_all_translations
+```
+
+### Load demo candidates
+```bash
+python manage.py load_demo_candidates
+```
+
+### Validate bilingual compliance
+```bash
+python manage.py shell
+>>> from core.bilingual_validator import run_validation
+>>> run_validation()
+```
+
+## 📈 Performance
+
+- Translation caching: 30 days per unique text
+- Database indexes on foreign keys
+- Optimized queries with select_related/prefetch_related
+- Pagination for large datasets
 
 ## 🔒 Security
 
-- Environment variables for sensitive data
 - CSRF protection enabled
-- XSS protection configured
+- XSS protection headers
+- SQL injection prevention (ORM)
+- Environment variables for secrets
 - Secure password hashing
-- SQL injection prevention
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+We welcome contributions! Please follow these guidelines:
+
+1. Fork the repository
+2. Create a feature branch
+3. Follow existing code conventions
+4. Ensure bilingual compliance (never hardcode translations)
+5. Write tests for new features
+6. Submit a pull request
+
+### Development Guidelines
+
+- **ALWAYS** inherit from `BilingualModel` for content models
+- **NEVER** manually write Nepali translations
+- **ALWAYS** use `{% trans %}` tags for UI text
+- **NEVER** hardcode text in templates
+
+## 📚 Documentation
+
+- [CLAUDE.md](CLAUDE.md) - Detailed technical documentation
+- [BILINGUAL_SYSTEM_DOCUMENTATION.md](BILINGUAL_SYSTEM_DOCUMENTATION.md) - Bilingual system guide
+- [CANDIDATE_PROFILE_TEMPLATE.md](CANDIDATE_PROFILE_TEMPLATE.md) - Candidate profile standard
+- [BALLOT_FEATURE.md](BALLOT_FEATURE.md) - Ballot system documentation
+
+## 👥 Team
+
+- **Developer Contact**: chandmanisha002@gmail.com
+- **Project Status**: Active Development
+- **Last Updated**: September 20, 2025
 
 ## 📄 License
 
-This project is currently private. License to be determined.
-
-## 📧 Contact
-
-For questions or support, contact: chandmanisha002@gmail.com
+This project is proprietary software. All rights reserved.
 
 ## 🙏 Acknowledgments
 
-- Django community
-- Nepal government for administrative data
-- Contributors and testers
+- Django community for the excellent framework
+- Google Translate for powering our bilingual system
+- All contributors and testers
 
 ---
 
-**Developed with ❤️ for democratic participation in Nepal**
+**ElectNepal - Empowering Democracy in Nepal** 🇳🇵
+
+*Making informed voting decisions accessible to all Nepali citizens*

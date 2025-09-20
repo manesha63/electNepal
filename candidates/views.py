@@ -333,18 +333,24 @@ def my_ballot(request):
 
         location_display = ', '.join(location_parts) if location_parts else ''
 
+        # Preserve language prefix in detail URL
+        lang_prefix = '/ne' if is_nepali else ''
+
         candidates_data.append({
             'id': candidate.id,
-            'full_name': candidate.full_name,
+            'name': candidate.full_name,  # Changed to match candidate_cards_api
+            'photo': candidate.photo.url if candidate.photo else '/static/images/default-avatar.png',
             'position_level': candidate.position_level,
-            'position_display': candidate.get_position_level_display(),
+            'province': province_name if candidate.province else None,
+            'district': district_name if candidate.district else None,
+            'municipality': municipality_name if candidate.municipality else None,
+            'ward': candidate.ward_number,  # Changed to match candidate_cards_api
+            'detail_url': f'{lang_prefix}/candidates/{candidate.id}/',  # Preserve language prefix
+            # Additional fields for ballot page
             'province_id': candidate.province_id,
             'district_id': candidate.district_id,
             'municipality_id': candidate.municipality_id,
-            'ward_number': candidate.ward_number,
-            'location': location_display,
             'bio': bio_text[:200] + '...' if len(bio_text) > 200 else bio_text,
-            'photo': candidate.photo.url if candidate.photo else None,
             'party': 'Independent' if not is_nepali else 'स्वतन्त्र'
         })
 
@@ -375,6 +381,12 @@ def candidate_cards_api(request):
     # "batch" = 3 rows * variable columns; front-end sends page_size
     page_size = max(1, min(int(request.GET.get('page_size', 9)), 48))
 
+    # Get filter parameters
+    province_id = request.GET.get('province')
+    district_id = request.GET.get('district')
+    municipality_id = request.GET.get('municipality')
+    position_level = request.GET.get('position')
+
     # Build queryset
     qs = Candidate.objects.select_related('province', 'district', 'municipality')
 
@@ -386,6 +398,16 @@ def candidate_cards_api(request):
             Q(bio_ne__icontains=q)
         )
 
+    # Apply location filters
+    if province_id:
+        qs = qs.filter(province_id=province_id)
+    if district_id:
+        qs = qs.filter(district_id=district_id)
+    if municipality_id:
+        qs = qs.filter(municipality_id=municipality_id)
+    if position_level:
+        qs = qs.filter(position_level=position_level)
+
     # Order by creation date and name
     qs = qs.order_by('-created_at', 'full_name')
 
@@ -395,16 +417,23 @@ def candidate_cards_api(request):
 
     def candidate_to_dict(c):
         """Convert candidate to dictionary for JSON response."""
+        from django.utils.translation import get_language
+        lang = get_language()
+        is_nepali = lang == 'ne'
+
+        # Preserve language prefix in detail URL
+        lang_prefix = '/ne' if is_nepali else ''
+
         return {
             "id": c.id,
             "name": c.full_name,
             "photo": c.photo.url if c.photo else "/static/images/default-avatar.png",
             "position_level": c.position_level,
-            "province": c.province.name_en if c.province else None,
-            "district": c.district.name_en if c.district else None,
-            "municipality": c.municipality.name_en if c.municipality else None,
+            "province": getattr(c.province, 'name_ne' if is_nepali else 'name_en', None) if c.province else None,
+            "district": getattr(c.district, 'name_ne' if is_nepali else 'name_en', None) if c.district else None,
+            "municipality": getattr(c.municipality, 'name_ne' if is_nepali else 'name_en', None) if c.municipality else None,
             "ward": c.ward_number,
-            "detail_url": f"/candidates/{c.id}/",
+            "detail_url": f"{lang_prefix}/candidates/{c.id}/",
         }
 
     return JsonResponse({

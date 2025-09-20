@@ -355,9 +355,81 @@
                 <i class="fas fa-filter"></i>
             </button>
 
-            <!-- Filter Dropdown - KEEP AS IS -->
-            <div id="filterDropdown" class="filter-dropdown">
-                <!-- Keep all existing filter content -->
+            <!-- Filter Dropdown with hierarchical location search -->
+            <div id="filterDropdown" class="filter-dropdown" x-data="filterComponent()" x-init="init()">
+                <h3 class="text-lg font-semibold mb-4">{% trans "Filter Candidates" %}</h3>
+
+                <div class="space-y-4">
+                    <!-- Province Selection -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{% trans "Province" %}</label>
+                        <select
+                            x-model="selectedProvince"
+                            @change="loadDistricts()"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">{% trans "All Provinces" %}</option>
+                            <template x-for="province in provinces" :key="province.id">
+                                <option :value="province.id" x-text="currentLanguage === 'ne' ? province.name_ne : province.name_en"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <!-- District Selection -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{% trans "District" %}</label>
+                        <select
+                            x-model="selectedDistrict"
+                            @change="loadMunicipalities()"
+                            :disabled="!districts.length"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100">
+                            <option value="">{% trans "All Districts" %}</option>
+                            <template x-for="district in districts" :key="district.id">
+                                <option :value="district.id" x-text="currentLanguage === 'ne' ? district.name_ne : district.name_en"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <!-- Municipality Selection -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{% trans "Municipality" %}</label>
+                        <select
+                            x-model="selectedMunicipality"
+                            :disabled="!municipalities.length"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100">
+                            <option value="">{% trans "All Municipalities" %}</option>
+                            <template x-for="municipality in municipalities" :key="municipality.id">
+                                <option :value="municipality.id" x-text="currentLanguage === 'ne' ? municipality.name_ne : municipality.name_en"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <!-- Position Level -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{% trans "Position Level" %}</label>
+                        <select
+                            x-model="selectedPosition"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">{% trans "All Positions" %}</option>
+                            <option value="federal">{% trans "Federal Parliament" %}</option>
+                            <option value="provincial">{% trans "Provincial Assembly" %}</option>
+                            <option value="local_executive">{% trans "Mayor/Chairperson" %}</option>
+                            <option value="ward">{% trans "Ward Representative" %}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex gap-2">
+                    <button
+                        @click="applyFilters()"
+                        class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                        {% trans "Apply Filters" %}
+                    </button>
+                    <button
+                        @click="clearFilters()"
+                        class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                        {% trans "Clear" %}
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -388,20 +460,20 @@
                                 <h3 class="candidate-name" x-text="candidate.name"></h3>
                             </a>
                             <div class="candidate-office">
-                                <span>Office: </span><span x-text="getOfficeTitle(candidate.position_level)"></span>
+                                <span>{% trans "Office:" %} </span><span x-text="getOfficeTitle(candidate.position_level)"></span>
                             </div>
                             <div class="candidate-seat">
-                                <span>Seat: </span><span x-text="getSeatDescription(candidate.position_level)"></span>
+                                <span>{% trans "Seat:" %} </span><span x-text="getSeatDescription(candidate.position_level)"></span>
                             </div>
                             <div class="candidate-location">
                                 <i class="fas fa-map-marker-alt"></i>
-                                <span>From: </span><span x-text="formatLocation(candidate)"></span>
+                                <span>{% trans "From:" %} </span><span x-text="formatLocation(candidate)"></span>
                             </div>
                         </div>
                         <div class="card-actions">
                             <button class="action-btn" @click.stop="shareCandidate(candidate.id)">
                                 <i class="fas fa-share"></i>
-                                Share
+                                {% trans "Share" %}
                             </button>
                         </div>
                     </div>
@@ -442,7 +514,7 @@ function candidateGrid() {
         visibleCandidates: [],
         currentPage: 1,
         totalPages: 1,
-        pageSize: 12, // 3 rows * 4 columns max
+        pageSize: 9, // 3 rows * 3 columns
         hasMore: true,
         hasPrevious: false,
         showPreviousButton: false,
@@ -451,15 +523,29 @@ function candidateGrid() {
 
         async fetchCandidates(page = 1) {
             try {
-                // Get search query from URL or input
+                // Get all parameters from URL
                 const urlParams = new URLSearchParams(window.location.search);
                 this.searchQuery = urlParams.get('q') || document.getElementById('searchInput')?.value || '';
 
-                // Calculate dynamic page size based on viewport
-                const cols = this.getColumnCount();
-                this.pageSize = cols * 3; // 3 rows
+                // Build query params including filters
+                const params = new URLSearchParams();
+                params.set('page', page);
+                params.set('page_size', 9); // Fixed 3x3 grid
 
-                const response = await fetch(`/candidates/api/cards/?page=${page}&page_size=${this.pageSize}&q=${encodeURIComponent(this.searchQuery)}`);
+                // Add search query if exists
+                if (this.searchQuery) params.set('q', this.searchQuery);
+
+                // Add filter parameters from URL
+                if (urlParams.get('province')) params.set('province', urlParams.get('province'));
+                if (urlParams.get('district')) params.set('district', urlParams.get('district'));
+                if (urlParams.get('municipality')) params.set('municipality', urlParams.get('municipality'));
+                if (urlParams.get('position')) params.set('position', urlParams.get('position'));
+
+                // Get the current language prefix from URL
+                const currentPath = window.location.pathname;
+                const langPrefix = currentPath.startsWith('/ne/') ? '/ne' : '';
+
+                const response = await fetch(`${langPrefix}/candidates/api/cards/?${params.toString()}`);
                 const data = await response.json();
 
                 this.candidates = data.items || [];
@@ -505,35 +591,45 @@ function candidateGrid() {
 
         formatLocation(candidate) {
             const parts = [];
-            if (candidate.ward) parts.push(`${candidate.ward}`);
-            if (candidate.municipality) parts.push(candidate.municipality);
-            if (candidate.district) parts.push(candidate.district);
-            if (candidate.province) parts.push(candidate.province);
+            // Ward should be an integer, display as "Ward X"
+            if (candidate.ward && typeof candidate.ward === 'number') {
+                parts.push(`Ward ${candidate.ward}`);
+            }
+            // Municipality, District, Province should be strings
+            if (candidate.municipality && typeof candidate.municipality === 'string') {
+                parts.push(candidate.municipality);
+            }
+            if (candidate.district && typeof candidate.district === 'string') {
+                parts.push(candidate.district);
+            }
+            if (candidate.province && typeof candidate.province === 'string') {
+                parts.push(candidate.province);
+            }
             return parts.join(', ') || 'Nepal';
         },
 
         getOfficeTitle(position_level) {
             const officeTitles = {
-                'federal': 'Federal Parliament',
-                'provincial': 'Provincial Assembly',
-                'mayor': 'Municipality',
-                'deputy_mayor': 'Municipality',
-                'ward': 'Ward',
-                'local': 'Local Government',
-                'local_executive': 'Municipality/Rural Municipality'
+                'federal': '{% trans "Federal Parliament" %}',
+                'provincial': '{% trans "Provincial Assembly" %}',
+                'mayor': '{% trans "Municipality" %}',
+                'deputy_mayor': '{% trans "Municipality" %}',
+                'ward': '{% trans "Ward" %}',
+                'local': '{% trans "Local Government" %}',
+                'local_executive': '{% trans "Municipality/Rural Municipality" %}'
             };
-            return officeTitles[position_level] || 'Independent';
+            return officeTitles[position_level] || '{% trans "Independent" %}';
         },
 
         getSeatDescription(position_level) {
             const seatTitles = {
-                'federal': 'Member of Parliament',
-                'provincial': 'Provincial Assembly Member',
-                'mayor': 'Mayor',
-                'deputy_mayor': 'Deputy Mayor',
-                'ward': 'Ward Chairperson',
-                'local': 'Local Representative',
-                'local_executive': 'Mayor/Chairperson'
+                'federal': '{% trans "Member of Parliament" %}',
+                'provincial': '{% trans "Provincial Assembly Member" %}',
+                'mayor': '{% trans "Mayor" %}',
+                'deputy_mayor': '{% trans "Deputy Mayor" %}',
+                'ward': '{% trans "Ward Chairperson" %}',
+                'local': '{% trans "Local Representative" %}',
+                'local_executive': '{% trans "Mayor/Chairperson" %}'
             };
             return seatTitles[position_level] || position_level;
         },
@@ -562,16 +658,119 @@ function candidateGrid() {
                     name: "{{ candidate.full_name }}",
                     photo: {% if candidate.photo %}"{{ candidate.photo.url }}"{% else %}null{% endif %},
                     position_level: "{{ candidate.position_level }}",
-                    province: "{% if candidate.province %}{{ candidate.province.name_en }}{% endif %}",
-                    district: "{% if candidate.district %}{{ candidate.district.name_en }}{% endif %}",
-                    municipality: "{% if candidate.municipality %}{{ candidate.municipality.name_en }}{% endif %}",
+                    province: "{% if candidate.province %}{% if LANGUAGE_CODE == 'ne' and candidate.province.name_ne %}{{ candidate.province.name_ne }}{% else %}{{ candidate.province.name_en }}{% endif %}{% endif %}",
+                    district: "{% if candidate.district %}{% if LANGUAGE_CODE == 'ne' and candidate.district.name_ne %}{{ candidate.district.name_ne }}{% else %}{{ candidate.district.name_en }}{% endif %}{% endif %}",
+                    municipality: "{% if candidate.municipality %}{% if LANGUAGE_CODE == 'ne' and candidate.municipality.name_ne %}{{ candidate.municipality.name_ne }}{% else %}{{ candidate.municipality.name_en }}{% endif %}{% endif %}",
                     ward: {% if candidate.ward_number %}{{ candidate.ward_number }}{% else %}null{% endif %},
-                    detail_url: "/candidates/{{ candidate.id }}/"
+                    detail_url: "{% if LANGUAGE_CODE == 'ne' %}/ne{% endif %}/candidates/{{ candidate.id }}/"
                 },
                 {% endfor %}
             ];
             this.visibleCandidates = this.candidates.slice(0, this.pageSize);
             this.hasMore = this.candidates.length > this.pageSize;
+        }
+    }
+}
+
+// Filter Component for hierarchical location search
+function filterComponent() {
+    return {
+        provinces: [],
+        districts: [],
+        municipalities: [],
+        selectedProvince: '',
+        selectedDistrict: '',
+        selectedMunicipality: '',
+        selectedPosition: '',
+        currentLanguage: '{{ LANGUAGE_CODE }}',
+
+        async init() {
+            // Load provinces on initialization
+            await this.loadProvinces();
+        },
+
+        async loadProvinces() {
+            try {
+                // Load provinces from the Django context
+                this.provinces = [
+                    {% for province in provinces %}
+                    {
+                        id: {{ province.id }},
+                        name_en: "{{ province.name_en }}",
+                        name_ne: "{{ province.name_ne }}"
+                    },
+                    {% endfor %}
+                ];
+            } catch (error) {
+                console.error('Error loading provinces:', error);
+            }
+        },
+
+        async loadDistricts() {
+            if (!this.selectedProvince) {
+                this.districts = [];
+                this.municipalities = [];
+                this.selectedDistrict = '';
+                this.selectedMunicipality = '';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/districts/?province=${this.selectedProvince}`);
+                this.districts = await response.json();
+                this.municipalities = [];
+                this.selectedDistrict = '';
+                this.selectedMunicipality = '';
+            } catch (error) {
+                console.error('Error loading districts:', error);
+            }
+        },
+
+        async loadMunicipalities() {
+            if (!this.selectedDistrict) {
+                this.municipalities = [];
+                this.selectedMunicipality = '';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/municipalities/?district=${this.selectedDistrict}`);
+                this.municipalities = await response.json();
+                this.selectedMunicipality = '';
+            } catch (error) {
+                console.error('Error loading municipalities:', error);
+            }
+        },
+
+        applyFilters() {
+            const params = new URLSearchParams();
+            if (this.selectedProvince) params.set('province', this.selectedProvince);
+            if (this.selectedDistrict) params.set('district', this.selectedDistrict);
+            if (this.selectedMunicipality) params.set('municipality', this.selectedMunicipality);
+            if (this.selectedPosition) params.set('position', this.selectedPosition);
+
+            const searchQuery = document.getElementById('searchInput')?.value;
+            if (searchQuery) params.set('q', searchQuery);
+
+            // Preserve language in URL
+            const currentPath = window.location.pathname;
+            const langPrefix = currentPath.startsWith('/ne/') ? '/ne' : '';
+
+            window.location.href = `${langPrefix}/?${params.toString()}`;
+        },
+
+        clearFilters() {
+            this.selectedProvince = '';
+            this.selectedDistrict = '';
+            this.selectedMunicipality = '';
+            this.selectedPosition = '';
+            this.districts = [];
+            this.municipalities = [];
+
+            // Clear and reload without filters
+            const currentPath = window.location.pathname;
+            const langPrefix = currentPath.startsWith('/ne/') ? '/ne' : '';
+            window.location.href = `${langPrefix}/`;
         }
     }
 }

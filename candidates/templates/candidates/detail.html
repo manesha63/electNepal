@@ -17,35 +17,58 @@
                         <img src="{{ candidate.photo.url }}" alt="{{ candidate.full_name }}"
                              class="rounded-lg shadow-xl object-cover" style="width: 8.5cm; height: 9cm;">
                     {% else %}
-                        <div class="rounded-lg border border-gray-300 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center" style="width: 8.5cm; height: 9cm;">
-                            <span class="text-gray-700 text-6xl font-bold">{{ candidate.full_name|first }}</span>
+                        <div class="rounded-lg border border-gray-300 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center" style="width: 8.5cm; height: 9cm;">
+                            <span class="text-white text-6xl font-bold">{{ candidate.full_name|first }}</span>
                         </div>
                     {% endif %}
                 </div>
 
                 <!-- Name below photo -->
-                <h1 class="text-2xl font-bold text-gray-800 mb-2 text-center" style="width: 8.5cm;">{{ candidate.full_name }}</h1>
+                <h1 class="text-2xl font-bold text-gray-900 mb-2 text-center" style="width: 8.5cm;">{{ candidate.full_name }}</h1>
 
-                <!-- Position below name -->
-                <div class="text-lg font-semibold text-gray-700 mb-2 text-center" style="width: 8.5cm;">
-                    <span class="text-gray-500">Office:</span> {{ candidate.get_position_level_display }}
+                <!-- Age below name -->
+                {% if candidate.age %}
+                <div class="text-lg text-gray-700 mb-2 text-center" style="width: 8.5cm;">
+                    <span class="text-gray-600">{% trans "Age:" %}</span> {{ candidate.age }} {% trans "years" %}
+                </div>
+                {% endif %}
+
+                <!-- Office below age -->
+                <div class="text-lg font-semibold text-gray-700 mb-1 text-center" style="width: 8.5cm;">
+                    {% get_current_language as LANGUAGE_CODE %}
+                    <span class="text-gray-600">{% trans "Office:" %}</span>
+                    {% if LANGUAGE_CODE == 'ne' %}
+                        {% if candidate.position_level == 'federal' %}
+                            संघीय संसद
+                        {% elif candidate.position_level == 'provincial' %}
+                            प्रदेश सभा
+                        {% elif candidate.position_level == 'local_executive' %}
+                            स्थानीय कार्यपालिका
+                        {% elif candidate.position_level == 'ward' %}
+                            वडा प्रतिनिधि
+                        {% else %}
+                            {{ candidate.get_position_level_display }}
+                        {% endif %}
+                    {% else %}
+                        {{ candidate.get_position_level_display }}
+                    {% endif %}
                 </div>
 
                 <!-- Seat/Position below office -->
                 <div class="text-lg font-semibold text-gray-700 mb-2 text-center" style="width: 8.5cm;">
-                    <span class="text-gray-500">Seat:</span>
+                    <span class="text-gray-600">{% trans "Seat:" %}</span>
                     {% if candidate.position_level == 'federal' %}
                         Member of Parliament
                     {% elif candidate.position_level == 'provincial' %}
                         Provincial Assembly Member
-                    {% elif candidate.position_level == 'mayor' %}
-                        Mayor
-                    {% elif candidate.position_level == 'deputy_mayor' %}
-                        Deputy Mayor
+                    {% elif candidate.position_level == 'local_executive' %}
+                        {% if 'Mayor' in candidate.get_position_level_display %}
+                            Mayor
+                        {% else %}
+                            Chairperson
+                        {% endif %}
                     {% elif candidate.position_level == 'ward' %}
-                        Ward Chairperson
-                    {% elif candidate.position_level == 'local' %}
-                        Local Representative
+                        Ward Representative
                     {% else %}
                         {{ candidate.get_position_level_display }}
                     {% endif %}
@@ -56,12 +79,19 @@
             <div class="flex-1">
                 <!-- Location Info -->
                 <div class="mb-6">
-                    <div class="text-lg font-semibold text-gray-800">
-                        <span class="text-gray-400">From:</span>
-                        {% if candidate.ward_number %}{{ candidate.ward_number }}, {% endif %}
-                        {% if candidate.municipality %}{{ candidate.municipality.name_en }}, {% endif %}
-                        {% if candidate.district %}{{ candidate.district.name_en }}, {% endif %}
-                        {% if candidate.province %}{{ candidate.province.name_en }}{% endif %}
+                    <div class="text-lg font-semibold text-gray-700">
+                        <span class="text-gray-600">{% trans "From:" %}</span>
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% if candidate.ward_number %}{% trans "Ward" %} {{ candidate.ward_number }}, {% endif %}
+                        {% if candidate.municipality %}
+                            {% if LANGUAGE_CODE == 'ne' %}{{ candidate.municipality.name_ne }}{% else %}{{ candidate.municipality.name_en }}{% endif %},
+                        {% endif %}
+                        {% if candidate.district %}
+                            {% if LANGUAGE_CODE == 'ne' %}{{ candidate.district.name_ne }}{% else %}{{ candidate.district.name_en }}{% endif %},
+                        {% endif %}
+                        {% if candidate.province %}
+                            {% if LANGUAGE_CODE == 'ne' %}{{ candidate.province.name_ne }}{% else %}{{ candidate.province.name_en }}{% endif %}
+                        {% endif %}
                     </div>
                 </div>
 
@@ -69,10 +99,10 @@
                 <!-- Education -->
                 {% if candidate.education_en or candidate.education_ne %}
                 <div class="mb-6">
-                    <h2 class="text-lg font-bold text-gray-800 mb-3">
+                    <h2 class="text-lg font-bold text-gray-900 mb-3">
                         {% trans "Education" %}
                     </h2>
-                    <div class="text-gray-600 text-sm leading-relaxed">
+                    <div class="text-gray-700 text-sm leading-relaxed education-content">
                         {% get_current_language as LANGUAGE_CODE %}
                         {% if LANGUAGE_CODE == 'ne' and candidate.education_ne %}
                             {{ candidate.education_ne|linebreaksbr }}
@@ -86,10 +116,10 @@
                 <!-- Past Experience -->
                 {% if candidate.experience_en or candidate.experience_ne %}
                 <div>
-                    <h2 class="text-lg font-bold text-gray-800 mb-3">
+                    <h2 class="text-lg font-bold text-gray-900 mb-3">
                         {% trans "Past Experience" %}
                     </h2>
-                    <div class="text-gray-600 text-sm leading-relaxed" id="experience-content">
+                    <div class="text-gray-700 text-sm leading-relaxed experience-content" id="experience-content">
                         {% get_current_language as LANGUAGE_CODE %}
                         {% if LANGUAGE_CODE == 'ne' and candidate.experience_ne %}
                             {{ candidate.experience_ne|linebreaksbr }}
@@ -97,17 +127,6 @@
                             {{ candidate.experience_en|linebreaksbr }}
                         {% endif %}
                     </div>
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            var expDiv = document.getElementById('experience-content');
-                            if (expDiv) {
-                                expDiv.innerHTML = expDiv.innerHTML.replace(
-                                    /Key Achievements:/g,
-                                    '<span class="font-bold text-base block mt-2">Key Achievements:</span>'
-                                );
-                            }
-                        });
-                    </script>
                 </div>
                 {% endif %}
             </div>
@@ -118,10 +137,10 @@
             <!-- Personal Motivation -->
             {% if candidate.bio_en or candidate.bio_ne %}
             <div class="mb-8">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">
                     {% trans "Motivation" %}
                 </h2>
-                <div class="text-gray-600 leading-relaxed">
+                <div class="text-gray-700 leading-relaxed">
                     {% get_current_language as LANGUAGE_CODE %}
                     {% if LANGUAGE_CODE == 'ne' and candidate.bio_ne %}
                         {{ candidate.bio_ne|linebreaksbr }}
@@ -135,10 +154,10 @@
             <!-- Political Manifesto -->
             {% if candidate.manifesto_en or candidate.manifesto_ne %}
             <div>
-                <h2 class="text-xl font-bold text-gray-800 mb-4">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">
                     {% trans "Political Manifesto" %}
                 </h2>
-                <div class="text-gray-600 leading-relaxed">
+                <div class="text-gray-700 leading-relaxed manifesto-content">
                     {% get_current_language as LANGUAGE_CODE %}
                     {% if LANGUAGE_CODE == 'ne' and candidate.manifesto_ne %}
                         {{ candidate.manifesto_ne|linebreaksbr }}
@@ -153,24 +172,35 @@
     </div>
 
     <!-- Additional Information Cards -->
-    <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Campaign Events -->
         {% if candidate_events %}
         <div class="bg-white rounded-xl border border-gray-300 shadow-md p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-4">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">
                 <i class="fas fa-calendar-alt mr-2 text-gray-600"></i>
                 {% trans "Upcoming Events" %}
             </h3>
             <div class="space-y-3">
                 {% for event in candidate_events %}
                 <div class="border-l-4 border-blue-600 pl-4 py-2">
-                    <div class="font-medium text-gray-800">{{ event.title_en }}</div>
-                    <div class="text-sm text-gray-400">
+                    <div class="font-medium text-gray-800">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% if LANGUAGE_CODE == 'ne' and event.title_ne %}
+                            {{ event.title_ne }}
+                        {% else %}
+                            {{ event.title_en }}
+                        {% endif %}
+                    </div>
+                    <div class="text-sm text-gray-600">
                         {{ event.event_date|date:"M d, Y" }}
                     </div>
-                    {% if event.location_en %}
-                    <div class="text-sm text-gray-400">
-                        {{ event.location_en }}
+                    {% if event.location_en or event.location_ne %}
+                    <div class="text-sm text-gray-600">
+                        {% if LANGUAGE_CODE == 'ne' and event.location_ne %}
+                            {{ event.location_ne }}
+                        {% else %}
+                            {{ event.location_en }}
+                        {% endif %}
                     </div>
                     {% endif %}
                 </div>
@@ -180,33 +210,33 @@
         {% endif %}
 
         <!-- Contact Information -->
-        {% if candidate.user.email or candidate.phone_number or candidate.website or candidate.facebook_url %}
+        {% if candidate.user.email or candidate.phone_number or candidate.website or candidate.facebook_url or candidate.donation_link %}
         <div class="bg-white rounded-xl border border-gray-300 shadow-md p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-4">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">
                 <i class="fas fa-address-card mr-2 text-gray-600"></i>
                 {% trans "Contact" %}
             </h3>
             <div class="space-y-3">
                 {% if candidate.user.email %}
                 <div>
-                    <span class="text-sm text-gray-400">Email:</span>
+                    <span class="text-sm text-gray-600">{% trans "Email:" %}</span>
                     <div class="text-gray-800">{{ candidate.user.email }}</div>
                 </div>
                 {% endif %}
 
                 {% if candidate.phone_number %}
                 <div>
-                    <span class="text-sm text-gray-400">Phone:</span>
+                    <span class="text-sm text-gray-600">{% trans "Phone:" %}</span>
                     <div class="text-gray-800">{{ candidate.phone_number }}</div>
                 </div>
                 {% endif %}
 
                 {% if candidate.website %}
                 <div>
-                    <span class="text-sm text-gray-400">Website:</span>
+                    <span class="text-sm text-gray-600">{% trans "Website:" %}</span>
                     <div>
-                        <a href="{{ candidate.website }}" target="_blank" class="text-gray-600 hover:text-blue-400">
-                            {{ candidate.website|slice:"8:" }}
+                        <a href="{{ candidate.website }}" target="_blank" class="text-blue-600 hover:text-blue-800">
+                            {{ candidate.website|slice:"8:"|slice:":-1" }}
                         </a>
                     </div>
                 </div>
@@ -214,12 +244,21 @@
 
                 {% if candidate.facebook_url %}
                 <div>
-                    <span class="text-sm text-gray-400">Social Media:</span>
+                    <span class="text-sm text-gray-600">{% trans "Social Media:" %}</span>
                     <div>
-                        <a href="{{ candidate.facebook_url }}" target="_blank" class="text-gray-600 hover:text-blue-400">
-                            Facebook Profile
+                        <a href="{{ candidate.facebook_url }}" target="_blank" class="text-blue-600 hover:text-blue-800">
+                            {% trans "Facebook Profile" %}
                         </a>
                     </div>
+                </div>
+                {% endif %}
+
+                {% if candidate.donation_link %}
+                <div class="pt-3 mt-3 border-t border-gray-200">
+                    <a href="{{ candidate.donation_link }}" target="_blank"
+                       class="block w-full text-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-donate mr-2"></i>{% trans "Support Campaign" %}
+                    </a>
                 </div>
                 {% endif %}
             </div>
@@ -236,4 +275,98 @@
         </a>
     </div>
 </div>
+
+<!-- Add CSS and JS for formatting -->
+<style>
+    /* Format education and experience with bullets */
+    .education-content, .experience-content {
+        line-height: 1.8;
+    }
+
+    .education-content br + br {
+        display: none;
+    }
+
+    .experience-content .key-achievements {
+        font-weight: bold;
+        font-size: 1rem;
+        display: block;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        color: #111827;
+    }
+
+    /* Format manifesto content */
+    .manifesto-content {
+        line-height: 1.8;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Format education content with bullet points
+        var eduContent = document.querySelector('.education-content');
+        if (eduContent) {
+            var text = eduContent.innerHTML;
+            // Add bullet points if lines start with dash or asterisk
+            text = text.replace(/^[-*•]\s*/gm, '• ');
+            // Ensure lines that should be bullets have them
+            var lines = text.split('<br>');
+            var formatted = lines.map(function(line) {
+                line = line.trim();
+                if (line && !line.startsWith('•') && !line.match(/^[A-Z]+:/) && line.length > 5) {
+                    return '• ' + line;
+                }
+                return line;
+            }).join('<br>');
+            eduContent.innerHTML = formatted;
+        }
+
+        // Format experience content
+        var expContent = document.getElementById('experience-content');
+        if (expContent) {
+            var text = expContent.innerHTML;
+            // Add bullet points for experience items
+            text = text.replace(/^[-*]\s*/gm, '• ');
+            // Make "Key Achievements:" bold and larger
+            {% get_current_language as LANGUAGE_CODE %}
+            var keyAchievementsText = {% if LANGUAGE_CODE == 'ne' %}'मुख्य उपलब्धिहरू:'{% else %}'Key Achievements:'{% endif %};
+            text = text.replace(new RegExp(keyAchievementsText, 'gi'), '<span class="key-achievements">' + keyAchievementsText + '</span>');
+            // Format achievement items with dashes
+            var lines = text.split('<br>');
+            var inAchievements = false;
+            var formatted = lines.map(function(line) {
+                line = line.trim();
+                if (line.includes(keyAchievementsText)) {
+                    inAchievements = true;
+                    return line;
+                }
+                if (inAchievements && line && !line.startsWith('-')) {
+                    if (line.startsWith('•')) {
+                        return line.replace('•', '-');
+                    }
+                    return '- ' + line;
+                }
+                if (!inAchievements && line && !line.startsWith('•') && !line.match(/^[A-Z]+:/) && line.length > 5) {
+                    return '• ' + line;
+                }
+                return line;
+            }).join('<br>');
+            expContent.innerHTML = formatted;
+        }
+
+        // Format manifesto content
+        var manifestoContent = document.querySelector('.manifesto-content');
+        if (manifestoContent) {
+            var text = manifestoContent.innerHTML;
+            // Make numbered headers bold and uppercase
+            text = text.replace(/(\d+\.\s+)([A-Z][A-Z\s]+)/g, function(match, number, title) {
+                return '<strong>' + number + title + '</strong>';
+            });
+            // Format sub-items with dashes
+            text = text.replace(/^[-*]\s*/gm, '- ');
+            manifestoContent.innerHTML = text;
+        }
+    });
+</script>
 {% endblock %}

@@ -31,7 +31,12 @@ class Candidate(AutoTranslationMixin, models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=200, help_text="Full name as it appears on official documents")
     photo = models.ImageField(upload_to=candidate_photo_path, blank=True, null=True)
-    date_of_birth = models.DateField(null=True, blank=True)
+    age = models.IntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(18), MaxValueValidator(120)],
+        help_text="Age of the candidate (must be 18+ to run for office)"
+    )
     phone_number = models.CharField(max_length=20, blank=True)
 
     bio_en = models.TextField(help_text="Biography in English")
@@ -110,10 +115,18 @@ class Candidate(AutoTranslationMixin, models.Model):
 
         # Only translate if English exists and Nepali is empty
         if en_value and not ne_value:
-            from core.mt import mt
-            translated = mt.translate(en_value, "en", "ne")
-            setattr(self, ne_field, translated)
-            setattr(self, mt_flag_field, True)
+            try:
+                # Use Google Translate directly for reliable translation
+                from googletrans import Translator
+                translator = Translator()
+                result = translator.translate(en_value, src='en', dest='ne')
+                translated = result.text
+                setattr(self, ne_field, translated)
+                setattr(self, mt_flag_field, True)
+            except Exception as e:
+                # If translation fails, at least copy the English (better than lowercase)
+                setattr(self, ne_field, en_value)
+                setattr(self, mt_flag_field, False)
 
     def autotranslate_missing(self):
         """

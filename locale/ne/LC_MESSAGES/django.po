@@ -546,3 +546,99 @@ msgstr "ठीक छ"
 
 #~ msgid "EN"
 #~ msgstr "EN"
+
+# Additional translations for candidate detail page
+msgid "Office:"
+msgstr "कार्यालय:"
+
+msgid "Seat:"
+msgstr "सिट:"
+
+msgid "From:"
+msgstr "स्थान:"
+
+msgid "Email:"
+msgstr "इमेल:"
+
+msgid "Phone:"
+msgstr "फोन:"
+
+msgid "Website:"
+msgstr "वेबसाइट:"
+
+msgid "Facebook Profile"
+msgstr "फेसबुक प्रोफाइल"
+
+msgid "Social Media:"
+msgstr "सामाजिक मिडिया:"
+
+# Position office titles (only new ones, not duplicates)
+msgid "Federal Parliament"
+msgstr "संघीय संसद"
+
+msgid "Provincial Assembly"
+msgstr "प्रादेशिक सभा"
+
+msgid "Local Government"
+msgstr "स्थानीय सरकार"
+
+msgid "Municipality/Rural Municipality"
+msgstr "नगरपालिका/गाउँपालिका"
+
+# Position seat descriptions
+msgid "Member of Parliament"
+msgstr "संसद सदस्य"
+
+msgid "Provincial Assembly Member"
+msgstr "प्रादेशिक सभा सदस्य"
+
+msgid "Mayor"
+msgstr "मेयर"
+
+msgid "Deputy Mayor"
+msgstr "उपमेयर"
+
+msgid "Ward Chairperson"
+msgstr "वडा अध्यक्ष"
+
+msgid "Local Representative"
+msgstr "स्थानीय प्रतिनिधि"
+
+msgid "Mayor/Chairperson"
+msgstr "मेयर/अध्यक्ष"
+
+msgid "Past Experience"
+msgstr "विगत अनुभव"
+
+msgid "Ward Representative"
+msgstr "वडा प्रतिनिधि"
+
+msgid "Motivation"
+msgstr "प्रेरणा"
+
+msgid "Political Manifesto"
+msgstr "राजनीतिक घोषणापत्र"
+
+msgid "Back"
+msgstr "फिर्ता"
+
+msgid "Finding candidates in your area..."
+msgstr "तपाईंको क्षेत्रमा उम्मेदवारहरू खोज्दै..."
+
+msgid "Please allow location access when prompted"
+msgstr "प्रम्प्ट गर्दा स्थान पहुँच अनुमति दिनुहोस्"
+
+msgid "SELECT LOCATION MANUALLY"
+msgstr "म्यानुअल रूपमा स्थान चयन गर्नुहोस्"
+
+msgid "Select Your Location"
+msgstr "आफ्नो स्थान चयन गर्नुहोस्"
+
+msgid "Enter ward number"
+msgstr "वार्ड नम्बर प्रविष्ट गर्नुहोस्"
+
+msgid "Search Candidates"
+msgstr "उम्मेदवारहरू खोज्नुहोस्"
+
+msgid "Location outside Nepal boundaries"
+msgstr "नेपालको सीमाना बाहिर स्थान"
