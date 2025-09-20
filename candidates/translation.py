@@ -54,7 +54,12 @@ class AutoTranslationMixin:
         Override save to auto-translate before saving
         """
         # Auto-translate fields if creating or updating
-        self.auto_translate_fields()
+        if hasattr(self, 'autotranslate_missing'):
+            # Use the model's custom method if it exists (for Candidate model)
+            self.autotranslate_missing()
+        else:
+            # Use the default auto-translation method
+            self.auto_translate_fields()
 
         # Call the parent save method
         super().save(*args, **kwargs)

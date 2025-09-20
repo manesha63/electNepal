@@ -320,7 +320,9 @@ def my_ballot(request):
         # Get location display
         location_parts = []
         if candidate.ward_number:
-            location_parts.append(f"Ward {candidate.ward_number}")
+            from django.utils.translation import gettext as _
+            ward_label = _("Ward")
+            location_parts.append(f"{ward_label} {candidate.ward_number}")
         if candidate.municipality:
             municipality_name = candidate.municipality.name_ne if is_nepali else candidate.municipality.name_en
             location_parts.append(municipality_name)

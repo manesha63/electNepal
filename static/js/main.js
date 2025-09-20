@@ -22,7 +22,7 @@ function acceptCookies() {
 
 // Show Cookie Settings (can be expanded later)
 function showCookieSettings() {
-    alert('Cookie settings feature coming soon! For now, all cookies are essential for the app to function properly.');
+    alert(gettext('Cookie settings feature coming soon!'));
 }
 
 // Hide Cookie Consent Banner
@@ -324,7 +324,7 @@ function loadCandidatesByLocation(location) {
             if (locationStatus && data.location) {
                 locationStatus.innerHTML = `
                     <i class="fas fa-map-marker-alt"></i>
-                    Showing candidates in: <strong>${data.location.municipality}, ${data.location.district}</strong>
+                    ${gettext('Showing candidates in:')} <strong>${data.location.municipality}, ${data.location.district}</strong>
                 `;
                 locationStatus.style.display = 'block';
             }
@@ -335,7 +335,7 @@ function loadCandidatesByLocation(location) {
         .catch(error => {
             console.error('Error loading candidates:', error);
             hideLoading();
-            showToast('Error loading candidates. Please try again.', 'error');
+            showToast(gettext('Error loading candidates. Please try again.'), 'error');
         });
 }
 
@@ -349,8 +349,8 @@ function displayCandidates(candidates) {
         candidateGrid.innerHTML = `
             <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
                 <i class="fas fa-user-slash" style="font-size: 48px; color: #E2E2E2; margin-bottom: 20px;"></i>
-                <p style="color: #6B7280; font-size: 18px;">No candidates found in your area yet.</p>
-                <p style="color: #9CA3AF; margin-top: 10px;">Try adjusting your filters or search in a different location.</p>
+                <p style="color: #6B7280; font-size: 18px;">${gettext('No candidates found in your area yet.')}</p>
+                <p style="color: #9CA3AF; margin-top: 10px;">${gettext('Try adjusting your filters or search in a different location.')}</p>
             </div>
         `;
         return;

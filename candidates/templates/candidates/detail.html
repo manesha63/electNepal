@@ -58,17 +58,17 @@
                 <div class="text-lg font-semibold text-gray-700 mb-2 text-center" style="width: 8.5cm;">
                     <span class="text-gray-600">{% trans "Seat:" %}</span>
                     {% if candidate.position_level == 'federal' %}
-                        Member of Parliament
+                        {% trans "Member of Parliament" %}
                     {% elif candidate.position_level == 'provincial' %}
-                        Provincial Assembly Member
+                        {% trans "Provincial Assembly Member" %}
                     {% elif candidate.position_level == 'local_executive' %}
                         {% if 'Mayor' in candidate.get_position_level_display %}
-                            Mayor
+                            {% trans "Mayor" %}
                         {% else %}
-                            Chairperson
+                            {% trans "Chairperson" %}
                         {% endif %}
                     {% elif candidate.position_level == 'ward' %}
-                        Ward Representative
+                        {% trans "Ward Representative" %}
                     {% else %}
                         {{ candidate.get_position_level_display }}
                     {% endif %}
