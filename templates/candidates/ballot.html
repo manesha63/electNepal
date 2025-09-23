@@ -127,86 +127,148 @@
         background: #5a67d8;
     }
 
+    /* Grid container for cards - adjusted to match location box */
     .candidates-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 1.5rem;
-        margin-top: 2rem;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        padding: 0;
+        max-width: 100%;
+        margin: 2rem 0;
     }
 
+    @media (max-width: 1024px) {
+        .candidates-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 640px) {
+        .candidates-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Candidate Card - WeVote style (exact copy from main page) */
     .candidate-card {
-        background: white;
+        background: linear-gradient(to bottom, #EBEBEB, #EDEDED);
+        border: 1px solid #E6E6E6;
         border-radius: 12px;
-        padding: 1.5rem;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
+        transition: all 0.2s;
+        cursor: pointer;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
     }
 
     .candidate-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        background: linear-gradient(to bottom, #F3F4F6, #E5E7EB);
     }
 
-    .candidate-header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1rem;
+    .card-header {
+        width: 100%;
     }
 
     .candidate-photo {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
+        width: 100%;
+        height: 200px;
         object-fit: cover;
-        background: #e2e8f0;
+    }
+
+    .candidate-photo-placeholder {
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(135deg, #E2E2E2, #D1D5DB);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6B7280;
+        font-size: 3rem;
     }
 
     .candidate-info {
         flex: 1;
+        padding: 16px;
+        text-align: center;
+    }
+
+    .candidate-name-link {
+        text-decoration: none;
+        display: block;
+    }
+
+    .candidate-name-link:hover .candidate-name {
+        color: #60A5FA;
     }
 
     .candidate-name {
         font-size: 1.125rem;
-        font-weight: 600;
-        color: #1a202c;
-        margin-bottom: 0.25rem;
+        font-weight: 700;
+        color: #1F2937;
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition: color 0.2s;
     }
 
-    .candidate-position {
+    .candidate-office {
+        font-size: 1rem;
+        color: #1F2937;
+        margin-bottom: 4px;
+        font-weight: 500;
+    }
+
+    .candidate-seat {
         font-size: 0.875rem;
-        color: #718096;
+        color: #374151;
+        margin-bottom: 4px;
+        font-weight: 500;
     }
 
     .candidate-location {
         font-size: 0.875rem;
-        color: #4a5568;
-        margin-bottom: 0.5rem;
+        color: #4B5563;
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        font-weight: 500;
     }
 
-    .candidate-bio {
+    .candidate-location i {
+        font-size: 0.625rem;
+    }
+
+    .card-actions {
+        padding: 12px 16px 16px;
+        margin-top: auto;
+        text-align: center;
+    }
+
+    .action-btn {
+        background: none;
+        border: none;
         font-size: 0.875rem;
-        color: #4a5568;
-        line-height: 1.5;
-        margin-bottom: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        color: #6B7280;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px;
     }
 
-    .candidate-badge {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
-        background: #f7fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        margin-right: 0.5rem;
-    }
-
-
-    .badge-party {
-        background: #fef5e7;
-        border-color: #fbd38d;
-        color: #744210;
+    .action-btn:hover {
+        color: #60A5FA;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .relevance-indicator {
@@ -398,23 +460,25 @@
                 </p>
             </div>
 
+            <!-- Candidates Grid - same as main page -->
             <div class="candidates-grid">
                 <template x-for="candidate in candidates" :key="candidate.id">
                     <div class="candidate-card" @click="window.location.href = candidate.detail_url">
-                        <!-- Relevance indicator -->
+                        <!-- Relevance indicator overlay -->
                         <template x-if="candidate.ward === parseInt(selectedWard) && candidate.municipality_id === parseInt(selectedMunicipality)">
-                            <span class="relevance-indicator relevance-ward">{% trans "Your Ward" %}</span>
+                            <span class="relevance-indicator relevance-ward" style="position: absolute; top: 10px; left: 10px; z-index: 10;">{% trans "Your Ward" %}</span>
                         </template>
                         <template x-if="candidate.municipality_id === parseInt(selectedMunicipality) && candidate.ward !== parseInt(selectedWard)">
-                            <span class="relevance-indicator relevance-municipality">{% trans "Your Municipality" %}</span>
+                            <span class="relevance-indicator relevance-municipality" style="position: absolute; top: 10px; left: 10px; z-index: 10;">{% trans "Your Municipality" %}</span>
                         </template>
                         <template x-if="candidate.district_id === parseInt(selectedDistrict) && candidate.municipality_id !== parseInt(selectedMunicipality)">
-                            <span class="relevance-indicator relevance-district">{% trans "Your District" %}</span>
+                            <span class="relevance-indicator relevance-district" style="position: absolute; top: 10px; left: 10px; z-index: 10;">{% trans "Your District" %}</span>
                         </template>
                         <template x-if="candidate.province_id === parseInt(selectedProvince) && candidate.district_id !== parseInt(selectedDistrict)">
-                            <span class="relevance-indicator relevance-province">{% trans "Your Province" %}</span>
+                            <span class="relevance-indicator relevance-province" style="position: absolute; top: 10px; left: 10px; z-index: 10;">{% trans "Your Province" %}</span>
                         </template>
 
+                        <!-- Exact template from main page -->
                         <div class="card-header">
                             <template x-if="candidate.photo">
                                 <img :src="candidate.photo" :alt="candidate.name" class="candidate-photo">
@@ -437,7 +501,7 @@
                             </div>
                             <div class="candidate-location">
                                 <i class="fas fa-map-marker-alt"></i>
-                                <span>{% trans "From:" %} </span><span x-text="formatLocation(candidate)"></span>
+                                <span style="display: inline;">{% trans "From:" %} <span x-text="formatLocation(candidate)"></span></span>
                             </div>
                         </div>
                         <div class="card-actions">
@@ -660,7 +724,8 @@ function ballotApp() {
             if (candidate.district && typeof candidate.district === 'string') {
                 parts.push(candidate.district);
             }
-            if (candidate.province && typeof candidate.province === 'string') {
+            // Don't show province for federal candidates as it's redundant
+            if (candidate.province && typeof candidate.province === 'string' && candidate.position_level !== 'federal') {
                 parts.push(candidate.province);
             }
             return parts.join(', ') || 'Nepal';

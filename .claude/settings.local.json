@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python manage.py startapp:*)",
+      "Bash(mkdir:*)",
+      "Bash(python manage.py:*)",
+      "Bash(python3 manage.py makemigrations:*)",
+      "Bash(source:*)",
+      "Bash(pip install:*)",
+      "Bash(touch:*)",
+      "Bash(cat:*)",
+      "Bash(lsof:*)",
+      "Bash(awk:*)",
+      "Bash(xargs kill:*)",
+      "Bash(curl:*)",
+      "Bash(git add:*)",
+      "Bash(python:*)",
+      "Bash(grep:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
