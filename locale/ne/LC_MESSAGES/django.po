@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-21 04:51+0545\n"
+"POT-Creation-Date: 2025-09-26 01:26+0545\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,447 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: authentication/templates/authentication/login.html:4
+#: authentication/templates/authentication/login.html:9
+#, fuzzy
+#| msgid "No Candidates Found"
+msgid "Candidate Login"
+msgstr "कुनै उम्मेदवार फेला परेन"
+
+#: authentication/templates/authentication/login.html:30
+msgid "Username"
+msgstr "प्रयोगकर्ता नाम"
+
+#: authentication/templates/authentication/login.html:34
+#, fuzzy
+#| msgid "Enter ward number"
+msgid "Enter your username"
+msgstr "वार्ड नम्बर प्रविष्ट गर्नुहोस्"
+
+#: authentication/templates/authentication/login.html:42
+#: authentication/templates/authentication/signup.html:54
+msgid "Password"
+msgstr "पासवर्ड"
+
+#: authentication/templates/authentication/login.html:46
+msgid "Enter your password"
+msgstr "तिम्रो पासवर्ड प्रविष्ट गर्नुहोस्"
+
+#: authentication/templates/authentication/login.html:53
+msgid "Login"
+msgstr "लगइन"
+
+#: authentication/templates/authentication/login.html:59
+msgid "Don't have an account?"
+msgstr "खाता छैन?"
+
+#: authentication/templates/authentication/login.html:61
+msgid "Register here"
+msgstr "यहाँ दर्ता गर"
+
+#: authentication/templates/authentication/login.html:66
+msgid "Forgot your password?"
+msgstr "तपाईको पासवर्ड बिर्सनुभयो?"
+
+#: authentication/templates/authentication/password_reset.html:4
+msgid "Password Reset"
+msgstr "पासवर्ड रिसेट"
+
+#: authentication/templates/authentication/password_reset.html:9
+msgid "Reset Your Password"
+msgstr "तपाईंको पासवर्ड रिसेट गर्नुहोस्"
+
+#: authentication/templates/authentication/password_reset.html:12
+msgid ""
+"Enter your email address and we'll send you instructions to reset your "
+"password."
+msgstr ""
+"तपाईंको ईमेल ठेगाना प्रविष्ट गर्नुहोस् र हामी तपाईंलाई तपाईंको पासवर्ड रिसेट"
+" गर्न निर्देशनहरू पठाउनेछौं।"
+
+#: authentication/templates/authentication/password_reset.html:34
+#: authentication/templates/authentication/signup.html:44
+msgid "Email Address"
+msgstr "इमेल ठेगाना"
+
+#: authentication/templates/authentication/password_reset.html:38
+msgid "Enter your email address"
+msgstr "तपाईंको ईमेल ठेगाना प्रविष्ट गर्नुहोस्"
+
+#: authentication/templates/authentication/password_reset.html:45
+msgid "Send Reset Instructions"
+msgstr "रिसेट निर्देशनहरू पठाउनुहोस्"
+
+#: authentication/templates/authentication/password_reset.html:51
+msgid "Remember your password?"
+msgstr "तपाईको पासवर्ड याद छ?"
+
+#: authentication/templates/authentication/password_reset.html:53
+#: authentication/templates/authentication/signup.html:82
+msgid "Login here"
+msgstr "यहाँ लगइन गर्नुहोस्"
+
+#: authentication/templates/authentication/registration_info.html:4
+#: authentication/templates/authentication/registration_info.html:9
+#, fuzzy
+#| msgid "Independent Candidate"
+msgid "Register as an Independent Candidate"
+msgstr "स्वतन्त्र उम्मेदवार"
+
+#: authentication/templates/authentication/registration_info.html:11
+msgid "Step-by-Step Process"
+msgstr "चरण-द्वारा-चरण प्रक्रिया"
+
+#: authentication/templates/authentication/registration_info.html:19
+msgid "Create Your Account"
+msgstr "तपाईंको खाता सिर्जना गर्नुहोस्"
+
+#: authentication/templates/authentication/registration_info.html:20
+msgid ""
+"Sign up with your username, email, and password to create a basic account."
+msgstr ""
+"तपाईंको प्रयोगकर्ता नाम, ईमेल, र पासवर्डको साथ साइन अप गर्नुहोस् आधारभूत "
+"खाता सिर्जना गर्न।"
+
+#: authentication/templates/authentication/registration_info.html:28
+#, fuzzy
+#| msgid "Open Profile"
+msgid "Complete Your Profile"
+msgstr "प्रोफाइल खोल्नुहोस्"
+
+#: authentication/templates/authentication/registration_info.html:29
+msgid "Fill in the required details so voters can know more about you:"
+msgstr ""
+"आवश्यक विवरणहरू भर्नुहोस् त्यसैले मतदाताहरू तपाईंको बारेमा अधिक जान्न "
+"सक्छन्:"
+
+#: authentication/templates/authentication/registration_info.html:31
+msgid "Personal Information (Name, Age, Photo)"
+msgstr "व्यक्तिगत जानकारी (नाम, उमेर, फोटो)"
+
+#: authentication/templates/authentication/registration_info.html:32
+msgid "Position you're running for (Ward / Local / Provincial / Federal)"
+msgstr ""
+"स्थिति तपाई दौडिरहनु भएको छ (वार्ड / स्थानीय / प्रान्तीय / संघीय / संघीय)"
+
+#: authentication/templates/authentication/registration_info.html:33
+#, fuzzy
+#| msgid ""
+#| "Select province, district, and municipality first to see wards"
+msgid "Location (Province, District, Municipality)"
+msgstr "वडाहरू हेर्न पहिले प्रदेश, जिल्ला र नगरपालिका चयन गर्नुहोस्"
+
+#: authentication/templates/authentication/registration_info.html:34
+#, fuzzy
+#| msgid "Education"
+msgid "Education Background"
+msgstr "शिक्षा"
+
+#: authentication/templates/authentication/registration_info.html:35
+#, fuzzy
+#| msgid "Past Experience"
+msgid "Past Experience & Achievements"
+msgstr "विगत अनुभव"
+
+#: authentication/templates/authentication/registration_info.html:36
+#: candidates/templates/candidates/detail.html:158
+msgid "Political Manifesto"
+msgstr "राजनीतिक घोषणापत्र"
+
+#: authentication/templates/authentication/registration_info.html:37
+msgid "Contact Information"
+msgstr "सम्पर्क जानकारी"
+
+#: authentication/templates/authentication/registration_info.html:46
+msgid "Admin Review & Verification"
+msgstr "प्रशासन समीक्षा र प्रमाणिकरण"
+
+#: authentication/templates/authentication/registration_info.html:47
+msgid ""
+"Our team will review your profile to ensure all information is complete and "
+"appropriate."
+msgstr ""
+"हाम्रो टोलीले तपाइँको प्रोफाइल समीक्षा गर्दछ सुनिश्चित गर्न सबै जानकारी "
+"पूर्ण र उपयुक्त छ भनेर सुनिश्चित गर्न।"
+
+#: authentication/templates/authentication/registration_info.html:48
+msgid "This usually takes 24–48 hours."
+msgstr "यसले सामान्यतया 2 -4--48 घण्टा लिन्छ।"
+
+#: authentication/templates/authentication/registration_info.html:56
+msgid "Profile Goes Live"
+msgstr "प्रोफाइल बाँच्न जान्छ"
+
+#: authentication/templates/authentication/registration_info.html:57
+#, fuzzy
+#| msgid "Register your profile to connect with voters across Nepal."
+msgid "Once approved, your profile becomes visible to voters on ElectNepal."
+msgstr "नेपालभरका मतदाताहरूसँग जोडिन आफ्नो प्रोफाइल दर्ता गर्नुहोस्।"
+
+#: authentication/templates/authentication/registration_info.html:58
+msgid "You'll receive an email notification when your profile is approved."
+msgstr ""
+"तपाईंले एक ईमेल सूचना प्राप्त गर्नुहुनेछ जब तपाईंको प्रोफाइल स्वीकृत हुन्छ।"
+
+#: authentication/templates/authentication/registration_info.html:66
+msgid "Manage Your Content"
+msgstr "तपाईंको सामग्री प्रबन्ध गर्नुहोस्"
+
+#: authentication/templates/authentication/registration_info.html:67
+msgid "After approval, you can log in anytime to:"
+msgstr "स्वीकृति पछि, तपाईं कुनै पनि समयमा लग इन गर्न सक्नुहुनेछ:"
+
+#: authentication/templates/authentication/registration_info.html:69
+msgid "Edit profile information"
+msgstr "प्रोफाइल जानकारी सम्पादन गर्नुहोस्"
+
+#: authentication/templates/authentication/registration_info.html:70
+msgid "Add campaign posts & updates"
+msgstr "अभियान पोष्टहरू र अपडेटहरू थप्नुहोस्"
+
+#: authentication/templates/authentication/registration_info.html:71
+msgid "Create and manage campaign events"
+msgstr "अभियानका घटनाहरू सिर्जना र प्रबन्ध गर्नुहोस्"
+
+#: authentication/templates/authentication/registration_info.html:72
+msgid "Update your manifesto"
+msgstr "तपाईंको घोषणापत्र अपडेट गर्नुहोस्"
+
+#: authentication/templates/authentication/registration_info.html:73
+msgid "Add donation links"
+msgstr "दान लिंकहरू थप्नुहोस्"
+
+#: authentication/templates/authentication/registration_info.html:81
+msgid "Terms of Registration"
+msgstr "रेजिष्ट्रेसन को सर्तहरू"
+
+#: authentication/templates/authentication/registration_info.html:82
+msgid "By registering, you confirm that you agree to:"
+msgstr "दर्ता गरेर, तपाईं सहमत हुनुहुन्छ कि तपाईं सहमत हुनुहुन्छ:"
+
+#: authentication/templates/authentication/registration_info.html:84
+msgid "Provide accurate and truthful information"
+msgstr "सहि र सत्य जानकारी प्रदान गर्नुहोस्"
+
+#: authentication/templates/authentication/registration_info.html:85
+msgid "Follow all election laws and regulations"
+msgstr "सबै निर्वाचन कानून र नियमहरू पालना गर्नुहोस्"
+
+#: authentication/templates/authentication/registration_info.html:86
+msgid "Accept the admin review process"
+msgstr "प्रशासक समीक्षा प्रक्रिया स्वीकार्नुहोस्"
+
+#: authentication/templates/authentication/registration_info.html:87
+msgid "Maintain appropriate content on your profile"
+msgstr "तपाईंको प्रोफाइलमा उपयुक्त सामग्री राख्नुहोस्"
+
+#: authentication/templates/authentication/registration_info.html:94
+msgid "Cancel"
+msgstr "रद्द गर्नु"
+
+#: authentication/templates/authentication/registration_info.html:97
+msgid "I Understand"
+msgstr "म बुझ्छु"
+
+#: authentication/templates/authentication/signup.html:4
+#: authentication/templates/authentication/signup.html:9
+#: core/templates/core/home.html:64
+msgid "Register as Candidate"
+msgstr "उम्मेदवार दर्ता"
+
+#: authentication/templates/authentication/signup.html:12
+msgid ""
+"Create an account to register as an independent candidate and connect with "
+"voters."
+msgstr ""
+"एक स्वतन्त्र उम्मेद्वारको रूपमा दर्ता गर्न र मतदाताहरूसँग जडान गर्न खाता "
+"सिर्जना गर्नुहोस्।"
+
+#: authentication/templates/authentication/signup.html:34
+#: candidates/templates/candidates/register.html:49
+msgid "Full Name"
+msgstr "पूरा नाम"
+
+#: authentication/templates/authentication/signup.html:60
+msgid "Your password must contain at least 8 characters."
+msgstr "तपाईंको पासवर्डमा कम्तीमा ८ अक्षरहरू हुनुपर्छ।"
+
+#: authentication/templates/authentication/signup.html:65
+msgid "Confirm Password"
+msgstr "पासवर्ड पुष्टि गर्नुहोस्"
+
+#: authentication/templates/authentication/signup.html:74
+msgid "Create Account"
+msgstr "खाता सिर्जना गर्नुहोस्"
+
+#: authentication/templates/authentication/signup.html:80
+msgid "Already have an account?"
+msgstr "पहिले नै खाता छ?"
+
+#: authentication/templates/authentication/signup.html:88
+msgid ""
+"By registering, you agree to follow election laws and provide truthful "
+"information."
+msgstr ""
+"दर्ता गरेर, तपाईं निर्वाचन कानून पछ्याउन र सत्य जानकारी प्रदान गर्न सहमत "
+"हुनुहुन्छ।"
+
+#: candidates/templates/candidates/dashboard.html:4
+#: candidates/templates/candidates/dashboard.html:8
+#, fuzzy
+#| msgid "No Candidates Found"
+msgid "Candidate Dashboard"
+msgstr "कुनै उम्मेदवार फेला परेन"
+
+#: candidates/templates/candidates/dashboard.html:24
+msgid "Profile Under Review"
+msgstr "समीक्षा अन्तर्गत प्रोफाइल"
+
+#: candidates/templates/candidates/dashboard.html:25
+msgid ""
+"Your profile is being reviewed by our admin team. This usually takes 24-48 "
+"hours."
+msgstr ""
+"तपाईंको प्रोफाइल हाम्रो व्यवस्थापक टीम द्वारा समीक्षा भइरहेको छ।यसले "
+"सामान्यतया 2 -4--48 घण्टा लिन्छ।"
+
+#: candidates/templates/candidates/dashboard.html:34
+msgid "Profile Not Approved"
+msgstr "प्रोफाइल अनुमोदित छैन"
+
+#: candidates/templates/candidates/dashboard.html:36
+msgid "Reason"
+msgstr "कारण"
+
+#: candidates/templates/candidates/dashboard.html:38
+msgid "Please contact support for more information."
+msgstr "अधिक जानकारीको लागि समर्थन समर्थन गर्नुहोस्।"
+
+#: candidates/templates/candidates/dashboard.html:47
+msgid "Profile Active"
+msgstr "प्रोफाइल सक्रिय"
+
+#: candidates/templates/candidates/dashboard.html:48
+msgid "Your profile is live and visible to voters!"
+msgstr "तपाईंको प्रोफाइल लाइभ र मतदाताहरूलाई दृश्यात्मक छ!"
+
+#: candidates/templates/candidates/dashboard.html:50
+#, fuzzy
+#| msgid "View Full Profile"
+msgid "View Public Profile"
+msgstr "पूर्ण प्रोफाइल हेर्नुहोस्"
+
+#: candidates/templates/candidates/dashboard.html:63
+msgid "Profile Status"
+msgstr "प्रोफाइल स्थिति"
+
+#: candidates/templates/candidates/dashboard.html:73
+msgid "Campaign Posts"
+msgstr "अभियान पोष्टहरू"
+
+#: candidates/templates/candidates/dashboard.html:83
+#: candidates/templates/candidates/dashboard.html:191
+#: candidates/templates/candidates/detail.html:181
+msgid "Upcoming Events"
+msgstr "आगामी कार्यक्रमहरू"
+
+#: candidates/templates/candidates/dashboard.html:93
+msgid "Profile Views"
+msgstr "प्रोफाइल दृश्य"
+
+#: candidates/templates/candidates/dashboard.html:107
+#, fuzzy
+#| msgid "Contact Information"
+msgid "Profile Information"
+msgstr "सम्पर्क जानकारी"
+
+#: candidates/templates/candidates/dashboard.html:118
+msgid "Name"
+msgstr "नाम"
+
+#: candidates/templates/candidates/dashboard.html:122
+#, fuzzy
+#| msgid "All Positions"
+msgid "Position"
+msgstr "सबै पदहरू"
+
+#: candidates/templates/candidates/dashboard.html:126
+msgid "Location"
+msgstr "स्थान"
+
+#: candidates/templates/candidates/dashboard.html:132
+#: candidates/templates/candidates/detail.html:85
+#: candidates/templates/candidates/feed_simple_grid.html:600
+#: candidates/templates/candidates/feed_simple_grid.html:622
+#: candidates/views.py:328 templates/candidates/ballot.html:717
+#: templates/candidates/ballot.html:740
+msgid "Ward"
+msgstr "वडा"
+
+#: candidates/templates/candidates/dashboard.html:137
+#, fuzzy
+#| msgid "Phone:"
+msgid "Phone"
+msgstr "फोन:"
+
+#: candidates/templates/candidates/dashboard.html:141
+msgid "Joined"
+msgstr "सामेल भए"
+
+#: candidates/templates/candidates/dashboard.html:148
+#: candidates/templates/candidates/dashboard.html:226
+#, fuzzy
+#| msgid "View Profile"
+msgid "Edit Profile"
+msgstr "प्रोफाइल हेर्नुहोस्"
+
+#: candidates/templates/candidates/dashboard.html:158
+msgid "Recent Posts"
+msgstr "भर्खरका पोष्टहरू"
+
+#: candidates/templates/candidates/dashboard.html:161
+#: candidates/templates/candidates/dashboard.html:194
+msgid "Add New"
+msgstr "नयाँ थप्नुहोस्"
+
+#: candidates/templates/candidates/dashboard.html:175
+msgid "Published"
+msgstr "प्रकाशित गरिएको"
+
+#: candidates/templates/candidates/dashboard.html:177
+msgid "Draft"
+msgstr "मंच"
+
+#: candidates/templates/candidates/dashboard.html:184
+msgid "No posts yet."
+msgstr "कुनै पोष्टहरू छैन।"
+
+#: candidates/templates/candidates/dashboard.html:214
+#, fuzzy
+#| msgid "Upcoming Events"
+msgid "No upcoming events."
+msgstr "आगामी कार्यक्रमहरू"
+
+#: candidates/templates/candidates/dashboard.html:223
+#, fuzzy
+#| msgid "Quick Filters"
+msgid "Quick Actions"
+msgstr "द्रुत फिल्टरहरू"
+
+#: candidates/templates/candidates/dashboard.html:229
+msgid "Create Post"
+msgstr "पोस्ट बनाउनुहोस्"
+
+#: candidates/templates/candidates/dashboard.html:232
+msgid "Add Event"
+msgstr "घटना थप्नुहोस्"
+
+#: candidates/templates/candidates/dashboard.html:236
+#, fuzzy
+#| msgid "Change Location"
+msgid "Manage Donations"
+msgstr "स्थान परिवर्तन गर्नुहोस्"
 
 #: candidates/templates/candidates/detail.html:4
 msgid "Independent Candidate"
@@ -31,33 +472,34 @@ msgstr "वर्ष"
 
 # Additional translations for candidate detail page
 #: candidates/templates/candidates/detail.html:39
-#: candidates/templates/candidates/feed_simple_grid.html:463
-#: templates/candidates/ballot.html:430
+#: candidates/templates/candidates/feed_simple_grid.html:467
+#: templates/candidates/ballot.html:497
 msgid "Office:"
 msgstr "कार्यालय:"
 
 #: candidates/templates/candidates/detail.html:59
-#: candidates/templates/candidates/feed_simple_grid.html:466
-#: templates/candidates/ballot.html:433
+#: candidates/templates/candidates/feed_simple_grid.html:470
+#: templates/candidates/ballot.html:500
 msgid "Seat:"
 msgstr "सिट:"
 
 # Position seat descriptions
 #: candidates/templates/candidates/detail.html:61
-#: candidates/templates/candidates/feed_simple_grid.html:627
-#: templates/candidates/ballot.html:679
+#: candidates/templates/candidates/feed_simple_grid.html:631
+#: templates/candidates/ballot.html:749
 msgid "Member of Parliament"
 msgstr "संसद सदस्य"
 
 #: candidates/templates/candidates/detail.html:63
-#: candidates/templates/candidates/feed_simple_grid.html:628
-#: templates/candidates/ballot.html:680
+#: candidates/templates/candidates/feed_simple_grid.html:417
+#: candidates/templates/candidates/feed_simple_grid.html:632
+#: templates/candidates/ballot.html:750
 msgid "Provincial Assembly Member"
 msgstr "प्रादेशिक सभा सदस्य"
 
 #: candidates/templates/candidates/detail.html:66
-#: candidates/templates/candidates/feed_simple_grid.html:629
-#: templates/candidates/ballot.html:681
+#: candidates/templates/candidates/feed_simple_grid.html:633
+#: templates/candidates/ballot.html:751
 msgid "Mayor"
 msgstr "मेयर"
 
@@ -66,28 +508,17 @@ msgid "Chairperson"
 msgstr "अध्यक्ष"
 
 #: candidates/templates/candidates/detail.html:71
-#: candidates/templates/candidates/feed_simple_grid.html:416
 msgid "Ward Representative"
 msgstr "वडा प्रतिनिधि"
 
 #: candidates/templates/candidates/detail.html:83
-#: candidates/templates/candidates/feed_simple_grid.html:470
-#: templates/candidates/ballot.html:437
+#: candidates/templates/candidates/feed_simple_grid.html:474
+#: templates/candidates/ballot.html:504
 msgid "From:"
 msgstr "स्थान:"
 
-#: candidates/templates/candidates/detail.html:85
-#: candidates/templates/candidates/feed_simple_grid.html:618
-#: old_templates_backup/feed.html:637 old_templates_backup/feed.html:639
-#: old_templates_backup/feed.html:641 old_templates_backup/feed.html:746
-#: old_templates_backup/feed_paginated.html:533
-#: old_templates_backup/feed_paginated.html:535
-#: old_templates_backup/feed_paginated.html:537
-#: templates/candidates/ballot.html:670
-msgid "Ward"
-msgstr "वडा"
-
 #: candidates/templates/candidates/detail.html:103
+#: candidates/templates/candidates/register.html:165
 msgid "Education"
 msgstr "शिक्षा"
 
@@ -99,16 +530,7 @@ msgstr "विगत अनुभव"
 msgid "Motivation"
 msgstr "प्रेरणा"
 
-#: candidates/templates/candidates/detail.html:158
-msgid "Political Manifesto"
-msgstr "राजनीतिक घोषणापत्र"
-
-#: candidates/templates/candidates/detail.html:181
-#: old_templates_backup/main.html:475
-msgid "Upcoming Events"
-msgstr "आगामी कार्यक्रमहरू"
-
-#: candidates/templates/candidates/detail.html:217 templates/base.html:108
+#: candidates/templates/candidates/detail.html:217 templates/base.html:111
 msgid "Contact"
 msgstr "सम्पर्क"
 
@@ -141,163 +563,336 @@ msgid "Back"
 msgstr "फिर्ता"
 
 #: candidates/templates/candidates/feed_simple_grid.html:345
-#: old_templates_backup/feed.html:549
-#: old_templates_backup/feed_paginated.html:445
-#: old_templates_backup/main.html:447
 msgid "Search candidates..."
 msgstr "उम्मेदवार खोज्नुहोस्..."
 
 #: candidates/templates/candidates/feed_simple_grid.html:348
-#: old_templates_backup/feed.html:552
-#: old_templates_backup/feed_paginated.html:448
 msgid "Search"
 msgstr "खोज्नुहोस्"
 
 #: candidates/templates/candidates/feed_simple_grid.html:360
-#: old_templates_backup/feed.html:564
-#: old_templates_backup/feed_paginated.html:460
 msgid "Filter Candidates"
 msgstr "उम्मेदवारहरू फिल्टर गर्नुहोस्"
 
 #: candidates/templates/candidates/feed_simple_grid.html:365
-#: old_templates_backup/ballot_original.html:325
-#: old_templates_backup/feed.html:579 old_templates_backup/feed.html:582
-#: old_templates_backup/feed_paginated.html:475
-#: old_templates_backup/feed_paginated.html:478
-#: templates/candidates/ballot.html:325
+#: candidates/templates/candidates/register.html:107
+#: templates/candidates/ballot.html:388
 msgid "Province"
 msgstr "प्रदेश"
 
 #: candidates/templates/candidates/feed_simple_grid.html:370
-#: old_templates_backup/feed.html:740
 msgid "All Provinces"
 msgstr "सबै प्रदेशहरू"
 
 #: candidates/templates/candidates/feed_simple_grid.html:379
-#: old_templates_backup/ballot_original.html:341
-#: old_templates_backup/feed.html:601 old_templates_backup/feed.html:604
-#: old_templates_backup/feed_paginated.html:497
-#: old_templates_backup/feed_paginated.html:500
-#: templates/candidates/ballot.html:341
+#: candidates/templates/candidates/register.html:117
+#: templates/candidates/ballot.html:404
 msgid "District"
 msgstr "जिल्ला"
 
 #: candidates/templates/candidates/feed_simple_grid.html:385
-#: old_templates_backup/feed.html:602 old_templates_backup/feed.html:741
-#: old_templates_backup/feed_paginated.html:498
 msgid "All Districts"
 msgstr "सबै जिल्लाहरू"
 
 #: candidates/templates/candidates/feed_simple_grid.html:394
-#: candidates/templates/candidates/feed_simple_grid.html:616
-#: candidates/templates/candidates/feed_simple_grid.html:617
-#: old_templates_backup/ballot_original.html:355
-#: old_templates_backup/feed.html:621 old_templates_backup/feed.html:624
-#: old_templates_backup/feed_paginated.html:517
-#: old_templates_backup/feed_paginated.html:520
-#: templates/candidates/ballot.html:355 templates/candidates/ballot.html:668
-#: templates/candidates/ballot.html:669
+#: candidates/templates/candidates/feed_simple_grid.html:620
+#: candidates/templates/candidates/feed_simple_grid.html:621
+#: candidates/templates/candidates/register.html:127
+#: templates/candidates/ballot.html:419 templates/candidates/ballot.html:738
+#: templates/candidates/ballot.html:739
 msgid "Municipality"
 msgstr "नगरपालिका"
 
 #: candidates/templates/candidates/feed_simple_grid.html:399
-#: old_templates_backup/feed.html:622 old_templates_backup/feed.html:743
-#: old_templates_backup/feed_paginated.html:518
 msgid "All Municipalities"
 msgstr "सबै नगरपालिकाहरू"
 
 #: candidates/templates/candidates/feed_simple_grid.html:408
-msgid "Position Level"
-msgstr "पद स्तर"
+#, fuzzy
+#| msgid "All Positions"
+msgid "Seat/Position"
+msgstr "सबै पदहरू"
 
 #: candidates/templates/candidates/feed_simple_grid.html:412
 msgid "All Positions"
 msgstr "सबै पदहरू"
 
-# Position office titles (only new ones, not duplicates)
 #: candidates/templates/candidates/feed_simple_grid.html:413
-#: candidates/templates/candidates/feed_simple_grid.html:614
-#: templates/candidates/ballot.html:666
-msgid "Federal Parliament"
-msgstr "संघीय संसद"
+#: candidates/templates/candidates/feed_simple_grid.html:635
+#: templates/candidates/ballot.html:753
+msgid "Ward Chairperson"
+msgstr "वडा अध्यक्ष"
 
 #: candidates/templates/candidates/feed_simple_grid.html:414
-#: candidates/templates/candidates/feed_simple_grid.html:615
-#: templates/candidates/ballot.html:667
-msgid "Provincial Assembly"
-msgstr "प्रादेशिक सभा"
+#, fuzzy
+#| msgid "Ward Number"
+msgid "Ward Member"
+msgstr "वडा नम्बर"
 
 #: candidates/templates/candidates/feed_simple_grid.html:415
-#: candidates/templates/candidates/feed_simple_grid.html:633
-#: templates/candidates/ballot.html:685
+#: candidates/templates/candidates/feed_simple_grid.html:637
+#: templates/candidates/ballot.html:755
 msgid "Mayor/Chairperson"
 msgstr "मेयर/अध्यक्ष"
 
-#: candidates/templates/candidates/feed_simple_grid.html:425
+#: candidates/templates/candidates/feed_simple_grid.html:416
+#, fuzzy
+#| msgid "Mayor/Chairperson"
+msgid "Deputy Mayor/Vice Chairperson"
+msgstr "मेयर/अध्यक्ष"
+
+#: candidates/templates/candidates/feed_simple_grid.html:418
+#, fuzzy
+#| msgid "Local Representative"
+msgid "House of Representatives Member"
+msgstr "स्थानीय प्रतिनिधि"
+
+#: candidates/templates/candidates/feed_simple_grid.html:419
+#, fuzzy
+#| msgid "Provincial Assembly Member"
+msgid "National Assembly Member"
+msgstr "प्रादेशिक सभा सदस्य"
+
+#: candidates/templates/candidates/feed_simple_grid.html:428
 msgid "Apply Filters"
 msgstr "फिल्टरहरू लागू गर्नुहोस्"
 
-#: candidates/templates/candidates/feed_simple_grid.html:430
-#: old_templates_backup/feed.html:655
-#: old_templates_backup/feed_paginated.html:551
-#: old_templates_backup/main.html:457
+#: candidates/templates/candidates/feed_simple_grid.html:433
 msgid "Clear"
 msgstr "खाली गर्नुहोस्"
 
-#: candidates/templates/candidates/feed_simple_grid.html:476
-#: old_templates_backup/feed.html:757 templates/candidates/ballot.html:443
+#: candidates/templates/candidates/feed_simple_grid.html:480
+#: templates/candidates/ballot.html:510
 msgid "Share"
 msgstr "साझा गर्नुहोस्"
 
 # Additional UI strings from templates
-#: candidates/templates/candidates/feed_simple_grid.html:491
+#: candidates/templates/candidates/feed_simple_grid.html:495
+#: candidates/templates/candidates/register.html:240
 msgid "Previous"
 msgstr "अघिल्लो"
 
-#: candidates/templates/candidates/feed_simple_grid.html:500
+#: candidates/templates/candidates/feed_simple_grid.html:504
 msgid "More"
 msgstr "थप"
 
+# Position office titles (only new ones, not duplicates)
+#: candidates/templates/candidates/feed_simple_grid.html:618
+#: templates/candidates/ballot.html:736
+msgid "Federal Parliament"
+msgstr "संघीय संसद"
+
 #: candidates/templates/candidates/feed_simple_grid.html:619
-#: templates/candidates/ballot.html:671
+#: templates/candidates/ballot.html:737
+msgid "Provincial Assembly"
+msgstr "प्रादेशिक सभा"
+
+#: candidates/templates/candidates/feed_simple_grid.html:623
+#: templates/candidates/ballot.html:741
 msgid "Local Government"
 msgstr "स्थानीय सरकार"
 
-#: candidates/templates/candidates/feed_simple_grid.html:620
-#: templates/candidates/ballot.html:672
+#: candidates/templates/candidates/feed_simple_grid.html:624
+#: templates/candidates/ballot.html:742
 msgid "Municipality/Rural Municipality"
 msgstr "नगरपालिका/गाउँपालिका"
 
-#: candidates/templates/candidates/feed_simple_grid.html:622
-#: old_templates_backup/feed.html:761 templates/candidates/ballot.html:674
+#: candidates/templates/candidates/feed_simple_grid.html:626
+#: templates/candidates/ballot.html:744
 msgid "Independent"
 msgstr "स्वतन्त्र"
 
-#: candidates/templates/candidates/feed_simple_grid.html:630
-#: templates/candidates/ballot.html:682
+#: candidates/templates/candidates/feed_simple_grid.html:634
+#: templates/candidates/ballot.html:752
 msgid "Deputy Mayor"
 msgstr "उपमेयर"
 
-#: candidates/templates/candidates/feed_simple_grid.html:631
-#: templates/candidates/ballot.html:683
-msgid "Ward Chairperson"
-msgstr "वडा अध्यक्ष"
-
-#: candidates/templates/candidates/feed_simple_grid.html:632
-#: templates/candidates/ballot.html:684
+#: candidates/templates/candidates/feed_simple_grid.html:636
+#: templates/candidates/ballot.html:754
 msgid "Local Representative"
 msgstr "स्थानीय प्रतिनिधि"
+
+#: candidates/templates/candidates/register.html:4
+msgid "Create Candidate Profile"
+msgstr "उम्मेदवार प्रोफाइल सिर्जना गर्नुहोस्"
+
+#: candidates/templates/candidates/register.html:8
+msgid "Create Your Candidate Profile"
+msgstr "तपाईंको उम्मेदवार प्रोफाइल सिर्जना गर्नुहोस्"
+
+#: candidates/templates/candidates/register.html:45
+#, fuzzy
+#| msgid "Contact Information"
+msgid "Basic Information"
+msgstr "सम्पर्क जानकारी"
+
+#: candidates/templates/candidates/register.html:59
+#, fuzzy
+#| msgid "Age:"
+msgid "Age"
+msgstr "उमेर:"
+
+#: candidates/templates/candidates/register.html:69
+#, fuzzy
+#| msgid "Ward Number"
+msgid "Phone Number"
+msgstr "वडा नम्बर"
+
+#: candidates/templates/candidates/register.html:75
+#: templates/candidates/ballot.html:434
+msgid "Optional"
+msgstr "ऐच्छिक"
+
+#: candidates/templates/candidates/register.html:81
+msgid "Profile Photo"
+msgstr "प्रोफाइल तस्बिर"
+
+#: candidates/templates/candidates/register.html:87
+msgid "Upload a professional photo (JPG/PNG, max 5MB)"
+msgstr "व्यावसायिक तस्बिर अपलोड गर्नुहोस् (JPG/PNG, अधिकतम 5MB)"
+
+#: candidates/templates/candidates/register.html:93
+#, fuzzy
+#| msgid "Position Level"
+msgid "Position & Location"
+msgstr "पद स्तर"
+
+#: candidates/templates/candidates/register.html:97
+msgid "Position Level"
+msgstr "पद स्तर"
+
+#: candidates/templates/candidates/register.html:137
+#: templates/candidates/ballot.html:434
+msgid "Ward Number"
+msgstr "वडा नम्बर"
+
+#: candidates/templates/candidates/register.html:148
+msgid "Profile Content"
+msgstr "प्रोफाइल सामग्री"
+
+#: candidates/templates/candidates/register.html:150
+msgid ""
+"Enter content in English. It will be automatically translated to Nepali."
+msgstr ""
+"अंग्रेजीमा सामग्री प्रविष्ट गर्नुहोस्।यो स्वतः नेपालीमा अनुवाद गरिएको छ।"
+
+#: candidates/templates/candidates/register.html:155
+msgid "Biography"
+msgstr "जीवनी"
+
+#: candidates/templates/candidates/register.html:175
+msgid "Experience"
+msgstr "अनुभव"
+
+#: candidates/templates/candidates/register.html:185
+msgid "Manifesto"
+msgstr "घोषणापत्र"
+
+#: candidates/templates/candidates/register.html:196
+msgid "Social Links & Review"
+msgstr "सामाजिक लिङ्कहरू र समीक्षा"
+
+#: candidates/templates/candidates/register.html:200
+msgid "Website"
+msgstr "वेबसाइट"
+
+#: candidates/templates/candidates/register.html:210
+#, fuzzy
+#| msgid "Facebook"
+msgid "Facebook Page"
+msgstr "फेसबुक"
+
+#: candidates/templates/candidates/register.html:220
+#, fuzzy
+#| msgid "Important Notes"
+msgid "Important"
+msgstr "महत्त्वपूर्ण टिप्पणीहरू"
+
+#: candidates/templates/candidates/register.html:220
+msgid ""
+"Your profile will be reviewed by our admin team before being published. This"
+" usually takes 24-48 hours."
+msgstr ""
+"तपाईंको प्रोफाइल हाम्रो प्रशासक टोली द्वारा समीक्षा गरिनेछ।यसले सामान्यतया 2"
+" -4--48 घण्टा लिन्छ।"
+
+#: candidates/templates/candidates/register.html:227
+msgid ""
+"I confirm that all information provided is accurate and I agree to follow "
+"election laws."
+msgstr ""
+"म पुष्टि गर्छु कि प्रदान गरिएको सबै जानकारीहरू सही छन् र म निर्वाचन कानून "
+"अनुसरण गर्न सहमत छु।"
+
+#: candidates/templates/candidates/register.html:232
+msgid "Submit for Review"
+msgstr "समीक्षाका लागि पेश गर्नुहोस्"
+
+#: candidates/templates/candidates/register.html:244
+msgid "Next"
+msgstr "अर्को"
+
+#: candidates/templates/candidates/registration_success.html:4
+msgid "Registration Submitted"
+msgstr "दर्ता पेश गरिएको"
+
+#: candidates/templates/candidates/registration_success.html:14
+msgid "Profile Submitted Successfully!"
+msgstr "प्रोफाइल सफलतापूर्वक बुझाइयो!"
+
+#: candidates/templates/candidates/registration_success.html:17
+msgid "Thank you for registering as a candidate on ElectNepal."
+msgstr "कृषिमा उम्मेदवारको रूपमा दर्ता गरेकोमा धन्यवाद।"
+
+#: candidates/templates/candidates/registration_success.html:21
+msgid "What happens next?"
+msgstr "अब के हुन्छ?"
+
+#: candidates/templates/candidates/registration_success.html:25
+msgid "Your profile will be reviewed by our admin team within 24-48 hours."
+msgstr ""
+"तपाईंको प्रोफाइल हाम्रो प्रशासक टोली 2 24--48 घण्टा भित्रमा समीक्षा गरिनेछ।"
+
+#: candidates/templates/candidates/registration_success.html:29
+msgid "You will receive an email notification once your profile is approved."
+msgstr ""
+"तपाईं एक पटक ईमेल सूचना प्राप्त गर्नुहुनेछ एक पटक तपाईंको प्रोफाइल स्वीकृत "
+"भएपछि।"
+
+#: candidates/templates/candidates/registration_success.html:33
+msgid "Once approved, you can access your dashboard to add posts and events."
+msgstr ""
+"एक पटक स्वीकृत भयो, तपाइँ तपाइँको ड्यासबोर्ड पहुँच गर्न सक्नुहुनेछ पोष्टहरू "
+"र घटनाहरू थप्न।"
+
+#: candidates/templates/candidates/registration_success.html:37
+msgid "Your profile will be visible to voters on the platform."
+msgstr "तपाईंको प्रोफाइल प्लेटफर्ममा मतदाताहरूमा देख्न सकिन्छ।"
+
+#: candidates/templates/candidates/registration_success.html:44
+#, fuzzy
+#| msgid "Go to Homepage"
+msgid "Return to Homepage"
+msgstr "गृहपृष्ठमा जानुहोस्"
+
+#: candidates/templates/candidates/registration_success.html:47
+msgid "Go to Dashboard"
+msgstr "ड्यासबोर्डमा जानुहोस्"
+
+#: candidates/templates/candidates/registration_success.html:52
+msgid "If you have any questions, please contact us at"
+msgstr "यदि तपाईंसँग कुनै प्रश्नहरू छन् भने कृपया हामीलाई सम्पर्क गर्नुहोस्"
 
 #: core/templates/core/bilingual_field.html:9
 #: core/templates/core/mt_badge.html:5
 msgid "Auto-translated"
 msgstr "स्वत: अनुवादित"
 
-#: core/templates/core/home.html:4 templates/base.html:105
+#: core/templates/core/home.html:4 templates/base.html:108
 msgid "Empowering Democracy in Nepal"
 msgstr "नेपालमा लोकतन्त्र सशक्तीकरण"
 
-#: core/templates/core/home.html:16 old_templates_backup/main.html:510
+#: core/templates/core/home.html:16
 msgid "About ElectNepal"
 msgstr "ElectNepal को बारेमा"
 
@@ -308,9 +903,10 @@ msgid ""
 "voters. We believe in transparent, accessible, and fair elections where "
 "every voice matters."
 msgstr ""
-"ElectNepal नेपालमा लोकतन्त्र सुदृढ गर्न डिजाइन गरिएको एक व्यापक प्लेटफर्म हो जसले "
-"स्वतन्त्र उम्मेदवारहरूलाई मतदाताहरूसँग जोडिन ठाउँ प्रदान गर्दछ। हामी पारदर्शी, पहुँचयोग्य र "
-"निष्पक्ष निर्वाचनमा विश्वास गर्छौं जहाँ हरेक आवाज महत्त्वपूर्ण छ।"
+"ElectNepal नेपालमा लोकतन्त्र सुदृढ गर्न डिजाइन गरिएको एक व्यापक प्लेटफर्म हो"
+" जसले स्वतन्त्र उम्मेदवारहरूलाई मतदाताहरूसँग जोडिन ठाउँ प्रदान गर्दछ। हामी "
+"पारदर्शी, पहुँचयोग्य र निष्पक्ष निर्वाचनमा विश्वास गर्छौं जहाँ हरेक आवाज "
+"महत्त्वपूर्ण छ।"
 
 #: core/templates/core/home.html:24
 msgid ""
@@ -318,9 +914,9 @@ msgid ""
 "share their vision, and engage with constituents across all 7 provinces, 77 "
 "districts, and 753 municipalities of Nepal."
 msgstr ""
-"हाम्रो प्लेटफर्मले स्वतन्त्र उम्मेदवारहरूलाई प्रमाणित प्रोफाइलहरू सिर्जना गर्न, तिनीहरूको "
-"दृष्टिकोण साझा गर्न र नेपालका सबै ७ प्रदेश, ७७ जिल्ला र ७५३ नगरपालिकाहरूमा "
-"निर्वाचकहरूसँग संलग्न हुन अनुमति दिन्छ।"
+"हाम्रो प्लेटफर्मले स्वतन्त्र उम्मेदवारहरूलाई प्रमाणित प्रोफाइलहरू सिर्जना "
+"गर्न, तिनीहरूको दृष्टिकोण साझा गर्न र नेपालका सबै ७ प्रदेश, ७७ जिल्ला र ७५३ "
+"नगरपालिकाहरूमा निर्वाचकहरूसँग संलग्न हुन अनुमति दिन्छ।"
 
 #: core/templates/core/home.html:32
 msgid "Nepal Coverage"
@@ -343,21 +939,16 @@ msgid "Wards"
 msgstr "वडाहरू"
 
 #: core/templates/core/home.html:57
-msgid "Want to Register as a Candidate?"
-msgstr "उम्मेदवारको रूपमा दर्ता गर्न चाहनुहुन्छ?"
-
-#: core/templates/core/home.html:60
 msgid ""
 "If you're an independent candidate looking to create your profile and "
-"connect with voters, or if you have any questions about our platform, please "
-"reach out to us:"
+"connect with voters, or if you have any questions about our platform, please"
+" reach out to us:"
 msgstr ""
-"यदि तपाईं आफ्नो प्रोफाइल सिर्जना गर्न र मतदाताहरूसँग जोडिन खोज्ने स्वतन्त्र उम्मेदवार "
-"हुनुहुन्छ भने, वा यदि तपाईंसँग हाम्रो प्लेटफर्मको बारेमा कुनै प्रश्नहरू छन् भने, कृपया हामीलाई "
-"सम्पर्क गर्नुहोस्:"
+"यदि तपाईं आफ्नो प्रोफाइल सिर्जना गर्न र मतदाताहरूसँग जोडिन खोज्ने स्वतन्त्र "
+"उम्मेदवार हुनुहुन्छ भने, वा यदि तपाईंसँग हाम्रो प्लेटफर्मको बारेमा कुनै "
+"प्रश्नहरू छन् भने, कृपया हामीलाई सम्पर्क गर्नुहोस्:"
 
-#: core/templates/core/how_to_vote.html:4 old_templates_backup/main.html:502
-#: templates/base.html:81
+#: core/templates/core/how_to_vote.html:4 templates/base.html:81
 msgid "How to Vote"
 msgstr "कसरी मतदान गर्ने"
 
@@ -423,7 +1014,8 @@ msgstr "मतदान तपाईंको संवैधानिक अध
 
 #: core/templates/core/how_to_vote.html:34
 msgid "Your vote is secret - no one can force you to reveal your choice"
-msgstr "तपाईंको मत गोप्य छ - कसैले तपाईंलाई आफ्नो छनौट खुलाउन बाध्य पार्न सक्दैन"
+msgstr ""
+"तपाईंको मत गोप्य छ - कसैले तपाईंलाई आफ्नो छनौट खुलाउन बाध्य पार्न सक्दैन"
 
 #: core/templates/core/how_to_vote.html:35
 msgid "Report any irregularities to election officials immediately"
@@ -439,324 +1031,24 @@ msgid ""
 "registration status, visit the Election Commission of Nepal website or "
 "contact your local election office."
 msgstr ""
-"मतदान प्रक्रियाको बारेमा थप जानकारी वा आफ्नो मतदाता दर्ता स्थिति जाँच गर्न, नेपाल "
-"निर्वाचन आयोगको वेबसाइट भ्रमण गर्नुहोस् वा आफ्नो स्थानीय निर्वाचन कार्यालयमा सम्पर्क "
-"गर्नुहोस्।"
+"मतदान प्रक्रियाको बारेमा थप जानकारी वा आफ्नो मतदाता दर्ता स्थिति जाँच गर्न, "
+"नेपाल निर्वाचन आयोगको वेबसाइट भ्रमण गर्नुहोस् वा आफ्नो स्थानीय निर्वाचन "
+"कार्यालयमा सम्पर्क गर्नुहोस्।"
 
-#: core/templates/core/how_to_vote.html:43 old_templates_backup/list.html:62
+#: core/templates/core/how_to_vote.html:43
 msgid "Back to Home"
 msgstr "गृहपृष्ठमा फर्कनुहोस्"
 
 #: core/templates/core/mt_badge.html:3
 msgid "This content was automatically translated. Please review for accuracy."
-msgstr "यो सामग्री स्वचालित रूपमा अनुवाद गरिएको छ। कृपया सटीकताका लागि समीक्षा गर्नुहोस्।"
-"यो सामग्री स्वचालित रूपमा अनुवाद गरिएको थियो। कृपया सटीकताको लागि समीक्षा गर्नुहोस्।"
+msgstr ""
+"यो सामग्री स्वचालित रूपमा अनुवाद गरिएको छ। कृपया सटीकताका लागि समीक्षा "
+"गर्नुहोस्।यो सामग्री स्वचालित रूपमा अनुवाद गरिएको थियो। कृपया सटीकताको लागि "
+"समीक्षा गर्नुहोस्।"
 
 #: locations/views.py:51
 msgid "Location outside Nepal boundaries"
 msgstr "नेपालको सीमाना बाहिर स्थान"
-
-#: old_templates_backup/ballot_original.html:4 templates/base.html:79
-#: templates/candidates/ballot.html:4
-msgid "Ballot"
-msgstr "मतपत्र"
-
-#: old_templates_backup/ballot_original.html:304
-#: templates/candidates/ballot.html:304
-msgid "Finding candidates in your area..."
-msgstr "तपाईंको क्षेत्रमा उम्मेदवारहरू खोज्दै..."
-
-#: old_templates_backup/ballot_original.html:305
-#: templates/candidates/ballot.html:305
-msgid "Please allow location access when prompted"
-msgstr "प्रम्प्ट गर्दा स्थान पहुँच अनुमति दिनुहोस्"
-
-#: old_templates_backup/ballot_original.html:317
-#: templates/candidates/ballot.html:317
-msgid "SELECT LOCATION MANUALLY"
-msgstr "म्यानुअल रूपमा स्थान चयन गर्नुहोस्"
-
-#: old_templates_backup/ballot_original.html:322
-#: templates/candidates/ballot.html:322
-msgid "Select Your Location"
-msgstr "आफ्नो स्थान चयन गर्नुहोस्"
-
-#: old_templates_backup/ballot_original.html:330
-#: old_templates_backup/feed.html:747 templates/candidates/ballot.html:330
-msgid "Select Province"
-msgstr "प्रदेश छान्नुहोस्"
-
-#: old_templates_backup/ballot_original.html:347
-#: old_templates_backup/feed.html:748 templates/candidates/ballot.html:347
-msgid "Select District"
-msgstr "जिल्ला छान्नुहोस्"
-
-#: old_templates_backup/ballot_original.html:361
-#: old_templates_backup/feed.html:749 templates/candidates/ballot.html:361
-msgid "Select Municipality"
-msgstr "नगरपालिका छान्नुहोस्"
-
-#: old_templates_backup/ballot_original.html:369
-#: templates/candidates/ballot.html:369
-msgid "Ward Number"
-msgstr "वडा नम्बर"
-
-#: old_templates_backup/ballot_original.html:369
-#: templates/candidates/ballot.html:369
-msgid "Optional"
-msgstr "ऐच्छिक"
-
-#: old_templates_backup/ballot_original.html:376
-#: templates/candidates/ballot.html:376
-msgid "Enter ward number"
-msgstr "वार्ड नम्बर प्रविष्ट गर्नुहोस्"
-
-#: old_templates_backup/ballot_original.html:384
-#: templates/candidates/ballot.html:384
-msgid "Search Candidates"
-msgstr "उम्मेदवारहरू खोज्नुहोस्"
-
-#: old_templates_backup/ballot_original.html:392
-#: templates/candidates/ballot.html:392
-msgid "Your Ballot"
-msgstr "तपाईंको मतपत्र"
-
-#: old_templates_backup/ballot_original.html:394
-#: templates/candidates/ballot.html:394
-msgid "independent candidates in your voting area"
-msgstr "तपाईंको मतदान क्षेत्रमा स्वतन्त्र उम्मेदवारहरू"
-
-#: old_templates_backup/ballot_original.html:403
-#: templates/candidates/ballot.html:403
-msgid "Your Ward"
-msgstr "तपाईंको वडा"
-
-#: old_templates_backup/ballot_original.html:406
-#: templates/candidates/ballot.html:406
-msgid "Your Municipality"
-msgstr "तपाईंको नगरपालिका"
-
-#: old_templates_backup/ballot_original.html:409
-#: templates/candidates/ballot.html:409
-msgid "Your District"
-msgstr "तपाईंको जिल्ला"
-
-#: old_templates_backup/ballot_original.html:412
-#: templates/candidates/ballot.html:412
-msgid "Your Province"
-msgstr "तपाईंको प्रदेश"
-
-#: old_templates_backup/ballot_original.html:443
-#: old_templates_backup/main.html:576 templates/candidates/ballot.html:455
-msgid "No Candidates Found"
-msgstr "कुनै उम्मेदवार फेला परेन"
-
-#: old_templates_backup/ballot_original.html:444
-#: templates/candidates/ballot.html:456
-msgid "No independent candidates are currently registered in your area."
-msgstr "तपाईंको क्षेत्रमा हाल कुनै स्वतन्त्र उम्मेदवारहरू दर्ता भएका छैनन्।"
-
-#: old_templates_backup/ballot_original.html:445
-#: templates/candidates/ballot.html:457
-msgid "Try selecting a different location or check back later."
-msgstr "फरक स्थान छनौट गर्नुहोस् वा पछि फेरि जाँच गर्नुहोस्।"
-
-#: old_templates_backup/ballot_original.html:476
-#: templates/candidates/ballot.html:488
-msgid "Geolocation is not supported by your browser."
-msgstr "तपाईंको ब्राउजरले भौगोलिक स्थान समर्थन गर्दैन।"
-
-#: old_templates_backup/ballot_original.html:489
-#: templates/candidates/ballot.html:501
-msgid "Location permission denied. Please select your location manually."
-msgstr "स्थान अनुमति अस्वीकार गरियो। कृपया आफ्नो स्थान म्यानुअल रूपमा छनौट गर्नुहोस्।"
-
-#: old_templates_backup/ballot_original.html:492
-#: templates/candidates/ballot.html:504
-msgid "Location information unavailable. Please select manually."
-msgstr "स्थान जानकारी उपलब्ध छैन। कृपया म्यानुअल रूपमा छनौट गर्नुहोस्।"
-
-#: old_templates_backup/ballot_original.html:495
-#: templates/candidates/ballot.html:507
-msgid "Location request timed out. Please try again."
-msgstr "स्थान अनुरोधको समय समाप्त भयो। कृपया फेरि प्रयास गर्नुहोस्।"
-
-#: old_templates_backup/ballot_original.html:498
-#: templates/candidates/ballot.html:510
-msgid "Unable to get your location. Please select manually."
-msgstr "तपाईंको स्थान प्राप्त गर्न असमर्थ। कृपया म्यानुअल रूपमा छनौट गर्नुहोस्।"
-
-#: old_templates_backup/ballot_original.html:516
-#: templates/candidates/ballot.html:528
-msgid "Could not determine location"
-msgstr "स्थान निर्धारण गर्न सकिएन"
-
-#: old_templates_backup/ballot_original.html:595
-#: templates/candidates/ballot.html:607
-msgid "Please select at least a province"
-msgstr "कृपया कम्तीमा एउटा प्रदेश छनौट गर्नुहोस्"
-
-#: old_templates_backup/ballot_original.html:619
-#: templates/candidates/ballot.html:631
-msgid "Failed to load candidates"
-msgstr "उम्मेदवारहरू लोड गर्न असफल"
-
-#: old_templates_backup/feed.html:569 old_templates_backup/feed.html:571
-#: old_templates_backup/feed_paginated.html:465
-#: old_templates_backup/feed_paginated.html:467
-msgid "Federal"
-msgstr "संघीय"
-
-#: old_templates_backup/feed.html:580 old_templates_backup/feed.html:588
-#: old_templates_backup/feed.html:739
-#: old_templates_backup/feed_paginated.html:476
-#: old_templates_backup/feed_paginated.html:484
-msgid "All"
-msgstr "सबै"
-
-#: old_templates_backup/feed.html:638 old_templates_backup/feed.html:745
-#: old_templates_backup/feed_paginated.html:534
-msgid "All Wards"
-msgstr "सबै वडाहरू"
-
-#: old_templates_backup/feed.html:742
-msgid "All Districts in Province"
-msgstr "प्रदेशका सबै जिल्लाहरू"
-
-#: old_templates_backup/feed.html:744
-msgid "All Municipalities in District"
-msgstr "जिल्लाका सबै नगरपालिकाहरू"
-
-#: old_templates_backup/feed.html:750
-msgid "Select Province First"
-msgstr "पहिले प्रदेश छान्नुहोस्"
-
-#: old_templates_backup/feed.html:751
-msgid "Select District First"
-msgstr "पहिले जिल्ला छान्नुहोस्"
-
-#: old_templates_backup/feed.html:752
-msgid "Select province and district first to see specific municipalities"
-msgstr "विशेष नगरपालिकाहरू हेर्न पहिले प्रदेश र जिल्ला चयन गर्नुहोस्"
-
-#: old_templates_backup/feed.html:753
-msgid "Select province, district, and municipality first to see wards"
-msgstr "वडाहरू हेर्न पहिले प्रदेश, जिल्ला र नगरपालिका चयन गर्नुहोस्"
-
-# Candidate card translations
-#: old_templates_backup/feed.html:755
-msgid "Seat"
-msgstr "सिट"
-
-#: old_templates_backup/feed.html:756
-msgid "Open Profile"
-msgstr "प्रोफाइल खोल्नुहोस्"
-
-#: old_templates_backup/feed.html:758
-msgid "provincial"
-msgstr "प्रादेशिक"
-
-#: old_templates_backup/feed.html:759
-msgid "local"
-msgstr "स्थानीय"
-
-#: old_templates_backup/feed.html:760
-msgid "federal"
-msgstr "संघीय"
-
-#: old_templates_backup/feed.html:762
-msgid "N/A"
-msgstr "उपलब्ध छैन"
-
-#: old_templates_backup/feed_paginated.html:614
-msgid "No candidates found"
-msgstr "कुनै उम्मेदवार फेला परेन"
-
-#: old_templates_backup/feed_paginated.html:615
-#: old_templates_backup/main.html:577
-msgid "Try adjusting your filters or search terms"
-msgstr "तपाईंको फिल्टर वा खोज शब्दहरू समायोजन गर्ने प्रयास गर्नुहोस्"
-
-#: old_templates_backup/list.html:4 old_templates_backup/list.html:9
-#: old_templates_backup/main.html:4 templates/base.html:80
-msgid "Independent Candidates"
-msgstr "स्वतन्त्र उम्मेदवारहरू"
-
-#: old_templates_backup/list.html:35
-msgid "View Profile"
-msgstr "प्रोफाइल हेर्नुहोस्"
-
-#: old_templates_backup/list.html:45
-msgid "No Candidates Yet"
-msgstr "अहिलेसम्म कुनै उम्मेदवार छैनन्"
-
-#: old_templates_backup/list.html:46
-msgid "Independent candidates will appear here once they register."
-msgstr "स्वतन्त्र उम्मेदवारहरू दर्ता भएपछि यहाँ देखा पर्नेछन्।"
-
-#: old_templates_backup/list.html:50
-msgid "Are you an independent candidate?"
-msgstr "के तपाईं स्वतन्त्र उम्मेदवार हुनुहुन्छ?"
-
-#: old_templates_backup/list.html:52
-msgid "Register your profile to connect with voters across Nepal."
-msgstr "नेपालभरका मतदाताहरूसँग जोडिन आफ्नो प्रोफाइल दर्ता गर्नुहोस्।"
-
-#: old_templates_backup/main.html:424
-msgid "Enable Location Services"
-msgstr "स्थान सेवाहरू सक्षम पार्नुहोस्"
-
-#: old_templates_backup/main.html:425
-msgid ""
-"Allow ElectNepal to access your location to show independent candidates in "
-"your area."
-msgstr ""
-"तपाईंको क्षेत्रमा स्वतन्त्र उम्मेदवारहरू देखाउन ElectNepal लाई तपाईंको स्थान पहुँच गर्न "
-"अनुमति दिनुहोस्।"
-
-#: old_templates_backup/main.html:429
-msgid "Allow Location"
-msgstr "स्थान अनुमति दिनुहोस्"
-
-#: old_templates_backup/main.html:432
-msgid "Enter Manually"
-msgstr "म्यानुअल रूपमा प्रविष्ट गर्नुहोस्"
-
-#: old_templates_backup/main.html:456
-msgid "Quick Filters"
-msgstr "द्रुत फिल्टरहरू"
-
-#: old_templates_backup/main.html:462
-msgid "Has Manifesto"
-msgstr "घोषणापत्र छ"
-
-#: old_templates_backup/main.html:466
-msgid "Local Level"
-msgstr "स्थानीय तह"
-
-#: old_templates_backup/main.html:506
-msgid "Register as Candidate"
-msgstr "उम्मेदवार दर्ता"
-
-#: old_templates_backup/main.html:524
-msgid "All Candidates"
-msgstr "सबै उम्मेदवारहरू"
-
-#: old_templates_backup/main.html:525
-msgid "Showing all independent candidates"
-msgstr "सबै स्वतन्त्र उम्मेदवारहरू देखाउँदै"
-
-#: old_templates_backup/main.html:530
-msgid "Change Location"
-msgstr "स्थान परिवर्तन गर्नुहोस्"
-
-#: old_templates_backup/main.html:554
-msgid "Location"
-msgstr "स्थान"
-
-#: old_templates_backup/main.html:568
-msgid "View Full Profile"
-msgstr "पूर्ण प्रोफाइल हेर्नुहोस्"
 
 #: templates/404.html:4 templates/404.html:13
 msgid "Page Not Found"
@@ -800,8 +1092,9 @@ msgid ""
 "use our platform, you agree to our use of cookies for analytics and "
 "functionality."
 msgstr ""
-"हामी ElectNepal मा तपाईंको अनुभव बढाउन कुकीजहरू प्रयोग गर्छौं। हाम्रो प्लेटफर्म प्रयोग "
-"गरिरहँदा, तपाईं विश्लेषण र कार्यक्षमताका लागि हाम्रो कुकीज प्रयोगमा सहमत हुनुहुन्छ।"
+"हामी ElectNepal मा तपाईंको अनुभव बढाउन कुकीजहरू प्रयोग गर्छौं। हाम्रो "
+"प्लेटफर्म प्रयोग गरिरहँदा, तपाईं विश्लेषण र कार्यक्षमताका लागि हाम्रो कुकीज "
+"प्रयोगमा सहमत हुनुहुन्छ।"
 
 #: templates/base.html:58
 msgid "Accept All"
@@ -811,72 +1104,256 @@ msgstr "सबै स्वीकार गर्नुहोस्"
 msgid "Settings"
 msgstr "सेटिङ्गहरू"
 
-#: templates/base.html:82 templates/base.html:107
+#: templates/base.html:79 templates/candidates/ballot.html:4
+msgid "Ballot"
+msgstr "मतपत्र"
+
+#: templates/base.html:80
+msgid "Independent Candidates"
+msgstr "स्वतन्त्र उम्मेदवारहरू"
+
+#: templates/base.html:82 templates/base.html:110
 msgid "About Us"
 msgstr "हाम्रो बारेमा"
 
-#: templates/base.html:87
+#: templates/base.html:89
 msgid "English"
 msgstr "अंग्रेजी"
 
-#: templates/base.html:87
+#: templates/base.html:89
 msgid "Nepali"
 msgstr "नेपाली"
 
-#: templates/base.html:104
+#: templates/base.html:107
 msgid "All rights reserved."
 msgstr "सबै अधिकार सुरक्षित।"
 
-#: templates/base.html:109
+#: templates/base.html:112
 msgid "Privacy"
 msgstr "गोपनीयता"
 
-#: templates/base.html:118
+#: templates/base.html:121
 msgid "Coming Soon"
 msgstr "चाँडै आउँदैछ"
 
-#: templates/base.html:119
+#: templates/base.html:122
 msgid ""
-"The Ballot feature is currently under development and will be available soon."
+"The Ballot feature is currently under development and will be available "
+"soon."
 msgstr "मतपत्र सुविधा हाल विकास अन्तर्गत छ र चाँडै उपलब्ध हुनेछ।"
 
-#: templates/base.html:121
+#: templates/base.html:124
 msgid "OK"
 msgstr "ठीक छ"
 
-#: templates/base.html:128
+#: templates/base.html:131
 msgid "Loading..."
 msgstr "लोड हुँदैछ..."
 
-#: templates/candidates/ballot.html:692
+#: templates/candidates/ballot.html:367
+msgid "Finding candidates in your area..."
+msgstr "तपाईंको क्षेत्रमा उम्मेदवारहरू खोज्दै..."
+
+#: templates/candidates/ballot.html:368
+msgid "Please allow location access when prompted"
+msgstr "प्रम्प्ट गर्दा स्थान पहुँच अनुमति दिनुहोस्"
+
+#: templates/candidates/ballot.html:380
+msgid "SELECT LOCATION MANUALLY"
+msgstr "म्यानुअल रूपमा स्थान चयन गर्नुहोस्"
+
+#: templates/candidates/ballot.html:385
+msgid "Select Your Location"
+msgstr "आफ्नो स्थान चयन गर्नुहोस्"
+
+#: templates/candidates/ballot.html:393
+msgid "Select Province"
+msgstr "प्रदेश छान्नुहोस्"
+
+#: templates/candidates/ballot.html:410
+msgid "Select District"
+msgstr "जिल्ला छान्नुहोस्"
+
+#: templates/candidates/ballot.html:425
+msgid "Select Municipality"
+msgstr "नगरपालिका छान्नुहोस्"
+
+#: templates/candidates/ballot.html:441
+msgid "Enter ward number"
+msgstr "वार्ड नम्बर प्रविष्ट गर्नुहोस्"
+
+#: templates/candidates/ballot.html:449
+msgid "Search Candidates"
+msgstr "उम्मेदवारहरू खोज्नुहोस्"
+
+#: templates/candidates/ballot.html:457
+msgid "Your Ballot"
+msgstr "तपाईंको मतपत्र"
+
+#: templates/candidates/ballot.html:459
+msgid "independent candidates in your voting area"
+msgstr "तपाईंको मतदान क्षेत्रमा स्वतन्त्र उम्मेदवारहरू"
+
+#: templates/candidates/ballot.html:469
+msgid "Your Ward"
+msgstr "तपाईंको वडा"
+
+#: templates/candidates/ballot.html:472
+msgid "Your Municipality"
+msgstr "तपाईंको नगरपालिका"
+
+#: templates/candidates/ballot.html:475
+msgid "Your District"
+msgstr "तपाईंको जिल्ला"
+
+#: templates/candidates/ballot.html:478
+msgid "Your Province"
+msgstr "तपाईंको प्रदेश"
+
+#: templates/candidates/ballot.html:522
+msgid "No Candidates Found"
+msgstr "कुनै उम्मेदवार फेला परेन"
+
+#: templates/candidates/ballot.html:523
+msgid "No independent candidates are currently registered in your area."
+msgstr "तपाईंको क्षेत्रमा हाल कुनै स्वतन्त्र उम्मेदवारहरू दर्ता भएका छैनन्।"
+
+#: templates/candidates/ballot.html:524
+msgid "Try selecting a different location or check back later."
+msgstr "फरक स्थान छनौट गर्नुहोस् वा पछि फेरि जाँच गर्नुहोस्।"
+
+#: templates/candidates/ballot.html:556
+msgid "Geolocation is not supported by your browser."
+msgstr "तपाईंको ब्राउजरले भौगोलिक स्थान समर्थन गर्दैन।"
+
+#: templates/candidates/ballot.html:569
+msgid "Location permission denied. Please select your location manually."
+msgstr ""
+"स्थान अनुमति अस्वीकार गरियो। कृपया आफ्नो स्थान म्यानुअल रूपमा छनौट "
+"गर्नुहोस्।"
+
+#: templates/candidates/ballot.html:572
+msgid "Location information unavailable. Please select manually."
+msgstr "स्थान जानकारी उपलब्ध छैन। कृपया म्यानुअल रूपमा छनौट गर्नुहोस्।"
+
+#: templates/candidates/ballot.html:575
+msgid "Location request timed out. Please try again."
+msgstr "स्थान अनुरोधको समय समाप्त भयो। कृपया फेरि प्रयास गर्नुहोस्।"
+
+#: templates/candidates/ballot.html:578
+msgid "Unable to get your location. Please select manually."
+msgstr ""
+"तपाईंको स्थान प्राप्त गर्न असमर्थ। कृपया म्यानुअल रूपमा छनौट गर्नुहोस्।"
+
+#: templates/candidates/ballot.html:596
+msgid "Could not determine location"
+msgstr "स्थान निर्धारण गर्न सकिएन"
+
+#: templates/candidates/ballot.html:675
+msgid "Please select at least a province"
+msgstr "कृपया कम्तीमा एउटा प्रदेश छनौट गर्नुहोस्"
+
+#: templates/candidates/ballot.html:699
+msgid "Failed to load candidates"
+msgstr "उम्मेदवारहरू लोड गर्न असफल"
+
+#: templates/candidates/ballot.html:762
 msgid "Check out this independent candidate"
 msgstr "यो स्वतन्त्र उम्मेदवारलाई हेर्नुहोस्"
 
-#: templates/candidates/ballot.html:702
+#: templates/candidates/ballot.html:772
 msgid "Link copied to clipboard!"
 msgstr "लिंक क्लिपबोर्डमा कपी गरियो!"
 
-#: templates/candidates/ballot.html:704
+#: templates/candidates/ballot.html:774
 msgid "Could not copy link"
 msgstr "लिंक कपी गर्न सकिएन"
 
-#~ msgid "Biography"
-#~ msgstr "जीवनी"
+#~ msgid "Want to Register as a Candidate?"
+#~ msgstr "उम्मेदवारको रूपमा दर्ता गर्न चाहनुहुन्छ?"
 
-#~ msgid "Experience"
-#~ msgstr "अनुभव"
+#~ msgid "Federal"
+#~ msgstr "संघीय"
 
-#~ msgid "Manifesto"
-#~ msgstr "घोषणापत्र"
+#~ msgid "All"
+#~ msgstr "सबै"
 
-#~ msgid "Contact Information"
-#~ msgstr "सम्पर्क जानकारी"
+#~ msgid "All Wards"
+#~ msgstr "सबै वडाहरू"
 
-#~ msgid "Website"
-#~ msgstr "वेबसाइट"
+#~ msgid "All Districts in Province"
+#~ msgstr "प्रदेशका सबै जिल्लाहरू"
 
-#~ msgid "Facebook"
-#~ msgstr "फेसबुक"
+#~ msgid "All Municipalities in District"
+#~ msgstr "जिल्लाका सबै नगरपालिकाहरू"
+
+#~ msgid "Select Province First"
+#~ msgstr "पहिले प्रदेश छान्नुहोस्"
+
+#~ msgid "Select District First"
+#~ msgstr "पहिले जिल्ला छान्नुहोस्"
+
+#~ msgid "Select province and district first to see specific municipalities"
+#~ msgstr "विशेष नगरपालिकाहरू हेर्न पहिले प्रदेश र जिल्ला चयन गर्नुहोस्"
+
+# Candidate card translations
+#~ msgid "Seat"
+#~ msgstr "सिट"
+
+#~ msgid "provincial"
+#~ msgstr "प्रादेशिक"
+
+#~ msgid "local"
+#~ msgstr "स्थानीय"
+
+#~ msgid "federal"
+#~ msgstr "संघीय"
+
+#~ msgid "N/A"
+#~ msgstr "उपलब्ध छैन"
+
+#~ msgid "No candidates found"
+#~ msgstr "कुनै उम्मेदवार फेला परेन"
+
+#~ msgid "Try adjusting your filters or search terms"
+#~ msgstr "तपाईंको फिल्टर वा खोज शब्दहरू समायोजन गर्ने प्रयास गर्नुहोस्"
+
+#~ msgid "No Candidates Yet"
+#~ msgstr "अहिलेसम्म कुनै उम्मेदवार छैनन्"
+
+#~ msgid "Independent candidates will appear here once they register."
+#~ msgstr "स्वतन्त्र उम्मेदवारहरू दर्ता भएपछि यहाँ देखा पर्नेछन्।"
+
+#~ msgid "Are you an independent candidate?"
+#~ msgstr "के तपाईं स्वतन्त्र उम्मेदवार हुनुहुन्छ?"
+
+#~ msgid "Enable Location Services"
+#~ msgstr "स्थान सेवाहरू सक्षम पार्नुहोस्"
+
+#~ msgid ""
+#~ "Allow ElectNepal to access your location to show independent candidates in "
+#~ "your area."
+#~ msgstr ""
+#~ "तपाईंको क्षेत्रमा स्वतन्त्र उम्मेदवारहरू देखाउन ElectNepal लाई तपाईंको स्थान"
+#~ " पहुँच गर्न अनुमति दिनुहोस्।"
+
+#~ msgid "Allow Location"
+#~ msgstr "स्थान अनुमति दिनुहोस्"
+
+#~ msgid "Enter Manually"
+#~ msgstr "म्यानुअल रूपमा प्रविष्ट गर्नुहोस्"
+
+#~ msgid "Has Manifesto"
+#~ msgstr "घोषणापत्र छ"
+
+#~ msgid "Local Level"
+#~ msgstr "स्थानीय तह"
+
+#~ msgid "All Candidates"
+#~ msgstr "सबै उम्मेदवारहरू"
+
+#~ msgid "Showing all independent candidates"
+#~ msgstr "सबै स्वतन्त्र उम्मेदवारहरू देखाउँदै"
 
 #~ msgid "Back to Candidates"
 #~ msgstr "उम्मेदवारहरूमा फर्कनुहोस्"

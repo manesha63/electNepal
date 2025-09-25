@@ -5,11 +5,8 @@ from .models import Candidate, CandidatePost, CandidateEvent
 
 
 class CandidateRegistrationForm(forms.ModelForm):
-    """Form for candidate self-registration"""
-    
-    email = forms.EmailField(required=True)
-    password = forms.CharField(widget=forms.PasswordInput, min_length=8)
-    confirm_password = forms.CharField(widget=forms.PasswordInput)
+    """Form for candidate self-registration (for authenticated users)"""
+
     terms_accepted = forms.BooleanField(required=True)
     
     class Meta:
@@ -33,12 +30,6 @@ class CandidateRegistrationForm(forms.ModelForm):
             'manifesto_ne': forms.Textarea(attrs={'rows': 5}),
         }
     
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
-            raise ValidationError("This email is already registered.")
-        return email
-    
     def clean_phone_number(self):
         phone = self.cleaned_data.get('phone_number')
         if phone:
@@ -51,12 +42,7 @@ class CandidateRegistrationForm(forms.ModelForm):
     
     def clean(self):
         cleaned_data = super().clean()
-        password = cleaned_data.get('password')
-        confirm_password = cleaned_data.get('confirm_password')
-        
-        if password and confirm_password and password != confirm_password:
-            raise ValidationError("Passwords do not match.")
-        
+
         # Validate position-specific requirements
         position_level = cleaned_data.get('position_level')
         ward_number = cleaned_data.get('ward_number')
@@ -70,21 +56,15 @@ class CandidateRegistrationForm(forms.ModelForm):
         
         return cleaned_data
     
-    def save(self, commit=True):
-        # Create user account
-        user = User.objects.create_user(
-            username=self.cleaned_data['email'],
-            email=self.cleaned_data['email'],
-            password=self.cleaned_data['password']
-        )
-        
-        # Create candidate profile
+    def save(self, commit=True, user=None):
+        # Create candidate profile for authenticated user
         candidate = super().save(commit=False)
-        candidate.user = user
-        
+        if user:
+            candidate.user = user
+
         if commit:
             candidate.save()
-        
+
         return candidate
 
 

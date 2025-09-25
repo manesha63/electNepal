@@ -11,7 +11,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),
     path('api/', include('locations.urls', namespace='locations_api')),
-    path('accounts/', include('authentication.urls')),  # Authentication URLs
 
     # Language switching
     path('set-language/', core_views.set_language, name='set_language'),
@@ -21,6 +20,7 @@ urlpatterns += i18n_patterns(
     path('', candidate_views.CandidateListView.as_view(), name='home'),  # Candidates list as home
     path('about/', core_views.HomeView.as_view(), name='about'),  # About page (old home)
     path('how-to-vote/', core_views.HowToVoteView.as_view(), name='how_to_vote'),  # How to Vote page
+    path('auth/', include('authentication.urls')),  # Authentication URLs with i18n support
     path('candidates/', include('candidates.urls')),
     path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),  # JavaScript translations
     prefix_default_language=False
