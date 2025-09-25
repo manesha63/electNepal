@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Candidate Dashboard" %} - ElectNepal{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto mt-8 px-4">
+    <h1 class="text-3xl font-bold mb-6">{% trans "Candidate Dashboard" %}</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="mb-4 p-3 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'success' %}bg-green-100 text-green-700{% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Status Banner -->
+    {% if candidate.status == 'pending' %}
+    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6">
+        <div class="flex items-center">
+            <i class="fas fa-clock text-2xl mr-3"></i>
+            <div>
+                <p class="font-bold">{% trans "Profile Under Review" %}</p>
+                <p class="text-sm">{% trans "Your profile is being reviewed by our admin team. This usually takes 24-48 hours." %}</p>
+            </div>
+        </div>
+    </div>
+    {% elif candidate.status == 'rejected' %}
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
+        <div class="flex items-center">
+            <i class="fas fa-times-circle text-2xl mr-3"></i>
+            <div>
+                <p class="font-bold">{% trans "Profile Not Approved" %}</p>
+                {% if candidate.admin_notes %}
+                <p class="text-sm">{% trans "Reason" %}: {{ candidate.admin_notes }}</p>
+                {% endif %}
+                <p class="text-sm mt-2">{% trans "Please contact support for more information." %}</p>
+            </div>
+        </div>
+    </div>
+    {% elif candidate.status == 'approved' %}
+    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle text-2xl mr-3"></i>
+            <div>
+                <p class="font-bold">{% trans "Profile Active" %}</p>
+                <p class="text-sm">{% trans "Your profile is live and visible to voters!" %}
+                    <a href="{% url 'candidates:detail' candidate.id %}" class="ml-2 underline font-semibold">
+                        {% trans "View Public Profile" %} →
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Dashboard Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-lg shadow-sm border">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">{% trans "Profile Status" %}</p>
+                    <p class="text-xl font-bold">{{ candidate.get_status_display }}</p>
+                </div>
+                <i class="fas fa-user-circle text-3xl text-blue-500"></i>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-sm border">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">{% trans "Campaign Posts" %}</p>
+                    <p class="text-xl font-bold">{{ posts.count }}</p>
+                </div>
+                <i class="fas fa-newspaper text-3xl text-green-500"></i>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-sm border">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">{% trans "Upcoming Events" %}</p>
+                    <p class="text-xl font-bold">{{ events.count }}</p>
+                </div>
+                <i class="fas fa-calendar text-3xl text-purple-500"></i>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-sm border">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">{% trans "Profile Views" %}</p>
+                    <p class="text-xl font-bold">-</p>
+                </div>
+                <i class="fas fa-eye text-3xl text-orange-500"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Profile Information -->
+        <div class="lg:col-span-1">
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+                <h2 class="text-xl font-bold mb-4">{% trans "Profile Information" %}</h2>
+
+                {% if candidate.photo %}
+                <div class="mb-4">
+                    <img src="{{ candidate.photo.url }}" alt="{{ candidate.full_name }}"
+                         class="w-32 h-32 rounded-full mx-auto object-cover">
+                </div>
+                {% endif %}
+
+                <div class="space-y-3 text-sm">
+                    <div>
+                        <span class="font-semibold text-gray-600">{% trans "Name" %}:</span>
+                        <p>{{ candidate.full_name }}</p>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-600">{% trans "Position" %}:</span>
+                        <p>{{ candidate.get_position_level_display }}</p>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-600">{% trans "Location" %}:</span>
+                        <p>
+                            {% if candidate.municipality %}{{ candidate.municipality.name_en }}, {% endif %}
+                            {{ candidate.district.name_en }},
+                            {{ candidate.province.name_en }}
+                            {% if candidate.ward_number %}
+                                <br>{% trans "Ward" %} {{ candidate.ward_number }}
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-600">{% trans "Phone" %}:</span>
+                        <p>{{ candidate.phone_number|default:"-" }}</p>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-600">{% trans "Joined" %}:</span>
+                        <p>{{ candidate.created_at|date:"M d, Y" }}</p>
+                    </div>
+                </div>
+
+                {% if can_edit %}
+                <a href="{% url 'candidates:edit' %}" class="mt-4 w-full inline-block text-center bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                    <i class="fas fa-edit mr-2"></i>{% trans "Edit Profile" %}
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Posts -->
+        <div class="lg:col-span-2">
+            <div class="bg-white p-6 rounded-lg shadow-sm border mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">{% trans "Recent Posts" %}</h2>
+                    {% if can_edit %}
+                    <a href="{% url 'candidates:add_post' %}" class="text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-plus mr-1"></i> {% trans "Add New" %}
+                    </a>
+                    {% endif %}
+                </div>
+
+                {% if posts %}
+                <div class="space-y-3">
+                    {% for post in posts %}
+                    <div class="border-b pb-3">
+                        <h3 class="font-semibold">{{ post.title_en }}</h3>
+                        <p class="text-sm text-gray-600">{{ post.content_en|truncatewords:20 }}</p>
+                        <div class="text-xs text-gray-500 mt-1">
+                            {{ post.created_at|date:"M d, Y" }}
+                            {% if post.is_published %}
+                                <span class="ml-2 text-green-600">{% trans "Published" %}</span>
+                            {% else %}
+                                <span class="ml-2 text-yellow-600">{% trans "Draft" %}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-500">{% trans "No posts yet." %}</p>
+                {% endif %}
+            </div>
+
+            <!-- Upcoming Events -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">{% trans "Upcoming Events" %}</h2>
+                    {% if can_edit %}
+                    <a href="{% url 'candidates:add_event' %}" class="text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-plus mr-1"></i> {% trans "Add New" %}
+                    </a>
+                    {% endif %}
+                </div>
+
+                {% if events %}
+                <div class="space-y-3">
+                    {% for event in events %}
+                    <div class="border-b pb-3">
+                        <h3 class="font-semibold">{{ event.title_en }}</h3>
+                        <p class="text-sm text-gray-600">
+                            <i class="fas fa-calendar mr-1"></i> {{ event.event_date|date:"M d, Y g:i A" }}
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            <i class="fas fa-map-marker-alt mr-1"></i> {{ event.location_en|default:"-" }}
+                        </p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-500">{% trans "No upcoming events." %}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions (only for approved candidates) -->
+    {% if can_edit %}
+    <div class="mt-8 bg-gray-50 p-6 rounded-lg">
+        <h2 class="text-xl font-bold mb-4">{% trans "Quick Actions" %}</h2>
+        <div class="flex flex-wrap gap-3">
+            <a href="{% url 'candidates:edit' %}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                <i class="fas fa-user-edit mr-2"></i>{% trans "Edit Profile" %}
+            </a>
+            <a href="{% url 'candidates:add_post' %}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                <i class="fas fa-pen mr-2"></i>{% trans "Create Post" %}
+            </a>
+            <a href="{% url 'candidates:add_event' %}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                <i class="fas fa-calendar-plus mr-2"></i>{% trans "Add Event" %}
+            </a>
+            {% if candidate.donation_link %}
+            <a href="{{ candidate.donation_link }}" target="_blank" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                <i class="fas fa-dollar-sign mr-2"></i>{% trans "Manage Donations" %}
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

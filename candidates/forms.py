@@ -15,14 +15,14 @@ class CandidateRegistrationForm(forms.ModelForm):
     class Meta:
         model = Candidate
         fields = [
-            'full_name', 'photo', 'date_of_birth', 'phone_number',
+            'full_name', 'photo', 'age', 'phone_number',
             'bio_en', 'bio_ne', 'education_en', 'education_ne',
             'experience_en', 'experience_ne', 'manifesto_en', 'manifesto_ne',
             'position_level', 'province', 'district', 'municipality',
             'ward_number', 'constituency_code', 'website', 'facebook_url'
         ]
         widgets = {
-            'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
+            'age': forms.NumberInput(attrs={'min': 18, 'max': 120, 'placeholder': 'Age'}),
             'bio_en': forms.Textarea(attrs={'rows': 4}),
             'bio_ne': forms.Textarea(attrs={'rows': 4}),
             'education_en': forms.Textarea(attrs={'rows': 3}),
@@ -134,16 +134,21 @@ class CandidateUpdateForm(forms.ModelForm):
 
 class CandidatePostForm(forms.ModelForm):
     """Form for candidates to create posts"""
-    
+
     class Meta:
         model = CandidatePost
-        fields = ['title', 'content', 'is_published']
+        fields = ['title_en', 'content_en', 'is_published']
         widgets = {
-            'content': forms.Textarea(attrs={'rows': 8}),
+            'title_en': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-lg', 'placeholder': 'Post Title'}),
+            'content_en': forms.Textarea(attrs={'rows': 8, 'class': 'w-full px-4 py-2 border rounded-lg', 'placeholder': 'Post Content'}),
         }
-    
-    def clean_title(self):
-        title = self.cleaned_data.get('title')
+        labels = {
+            'title_en': 'Title (English)',
+            'content_en': 'Content (English)',
+        }
+
+    def clean_title_en(self):
+        title = self.cleaned_data.get('title_en')
         if len(title) < 5:
             raise ValidationError("Title must be at least 5 characters long.")
         return title
@@ -151,13 +156,20 @@ class CandidatePostForm(forms.ModelForm):
 
 class CandidateEventForm(forms.ModelForm):
     """Form for candidates to create events"""
-    
+
     class Meta:
         model = CandidateEvent
-        fields = ['title', 'description', 'event_date', 'location', 'is_published']
+        fields = ['title_en', 'description_en', 'event_date', 'location_en', 'is_published']
         widgets = {
-            'description': forms.Textarea(attrs={'rows': 4}),
-            'event_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'title_en': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-lg', 'placeholder': 'Event Title'}),
+            'description_en': forms.Textarea(attrs={'rows': 4, 'class': 'w-full px-4 py-2 border rounded-lg'}),
+            'event_date': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'w-full px-4 py-2 border rounded-lg'}),
+            'location_en': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-lg', 'placeholder': 'Event Location'}),
+        }
+        labels = {
+            'title_en': 'Event Title (English)',
+            'description_en': 'Description (English)',
+            'location_en': 'Location (English)',
         }
     
     def clean_event_date(self):

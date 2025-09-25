@@ -9,14 +9,14 @@
     <h1 class="hero-title animate-on-scroll">
         ElectNepal
     </h1>
-    
-    <!-- Info Section -->
-    <div class="info-section animate-on-scroll">
-        <h2 class="info-title">
+
+    <!-- About Section without box -->
+    <div class="animate-on-scroll" style="margin-top: 2rem;">
+        <h2 class="info-title" style="margin-bottom: 1rem;">
             {% trans "About ElectNepal" %}
         </h2>
-        
-        <div class="info-content">
+
+        <div style="padding: 0 1rem;">
             <p>
                 {% trans "ElectNepal is a comprehensive platform designed to strengthen democracy in Nepal by providing a space for independent candidates to connect with voters. We believe in transparent, accessible, and fair elections where every voice matters." %}
             </p>
@@ -24,7 +24,7 @@
                 {% trans "Our platform allows independent candidates to create verified profiles, share their vision, and engage with constituents across all 7 provinces, 77 districts, and 753 municipalities of Nepal." %}
             </p>
         </div>
-        
+
     </div>
     
     <!-- Statistics -->
@@ -53,16 +53,18 @@
     <!-- Contact Box - Moved to Bottom -->
     <div class="info-section animate-on-scroll">
         <div class="contact-box">
-            <h3>
-                <i class="fas fa-envelope"></i> {% trans "Want to Register as a Candidate?" %}
-            </h3>
             <p>
                 {% trans "If you're an independent candidate looking to create your profile and connect with voters, or if you have any questions about our platform, please reach out to us:" %}
             </p>
-            <a href="mailto:chandmanisha002@gmail.com" class="contact-email">
-                <i class="fas fa-paper-plane"></i>
-                chandmanisha002@gmail.com
-            </a>
+
+            <!-- Register as Candidate Link -->
+            <div style="margin-top: 2rem;">
+                <div style="display: flex; justify-content: center;">
+                    <a href="{% url 'register_info' %}" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold" style="text-decoration: none;">
+                        {% trans "Register as Candidate" %}
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

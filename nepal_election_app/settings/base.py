@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'core',
     'locations',
     'candidates',
+    'authentication',
 ]
 
 MIDDLEWARE = [

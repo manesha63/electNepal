@@ -82,10 +82,13 @@
                     <a href="{% url 'about' %}" class="nav-link">{% trans "About Us" %}</a>
                 </div>
 
-                <!-- Language Switcher -->
-                <button class="lang-btn" onclick="switchLanguage()">
-                    <span id="currentLang">{% if request.LANGUAGE_CODE == 'ne' %}{% trans "English" %}{% else %}{% trans "Nepali" %}{% endif %}</span>
-                </button>
+                <!-- Right side: Language Switcher Only -->
+                <div class="flex items-center">
+                    <!-- Language Switcher -->
+                    <button class="lang-btn" onclick="switchLanguage()">
+                        <span id="currentLang">{% if request.LANGUAGE_CODE == 'ne' %}{% trans "English" %}{% else %}{% trans "Nepali" %}{% endif %}</span>
+                    </button>
+                </div>
             </div>
         </nav>
         

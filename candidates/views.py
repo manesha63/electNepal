@@ -1,12 +1,16 @@
-from django.views.generic import ListView, DetailView
-from django.shortcuts import render, get_object_or_404
+from django.views.generic import ListView, DetailView, TemplateView
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.db.models import Q, Case, When, Value, IntegerField
 from django.utils import timezone
 from django.utils.translation import get_language
 from django.views.decorators.http import require_GET
 from django.core.paginator import Paginator
-from .models import Candidate, CandidateEvent
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
+from .models import Candidate, CandidateEvent, CandidatePost
+from .forms import CandidateRegistrationForm, CandidateUpdateForm, CandidatePostForm, CandidateEventForm
 from locations.models import Province, District, Municipality
 import json
 
@@ -18,7 +22,7 @@ class CandidateListView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
-        queryset = Candidate.objects.all()
+        queryset = Candidate.objects.filter(status='approved')  # Only show approved candidates
 
         # Get filter parameters
         search = self.request.GET.get('search', '')
@@ -446,3 +450,150 @@ def candidate_cards_api(request):
         "has_previous": page_obj.has_previous(),
         "total": paginator.count,
     })
+
+
+# Candidate Registration and Dashboard Views
+@login_required
+def candidate_register(request):
+    """Handle candidate registration for authenticated users."""
+    # Check if user already has a candidate profile
+    if hasattr(request.user, 'candidate'):
+        messages.info(request, 'You already have a candidate profile.')
+        return redirect('candidates:dashboard')
+
+    if request.method == 'POST':
+        form = CandidateRegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            candidate = form.save(commit=False)
+            candidate.user = request.user
+            candidate.status = 'pending'  # Set to pending for admin review
+            candidate.save()
+
+            messages.success(request, 'Your candidate profile has been submitted for review! You will be notified once approved.')
+            return redirect('candidates:registration_success')
+    else:
+        form = CandidateRegistrationForm()
+
+    # Get location data for dropdowns
+    provinces = Province.objects.all().order_by('name_en')
+
+    return render(request, 'candidates/register.html', {
+        'form': form,
+        'provinces': provinces,
+    })
+
+
+class CandidateDashboardView(LoginRequiredMixin, TemplateView):
+    """Dashboard for candidates to manage their profile."""
+    template_name = 'candidates/dashboard.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        # Check if user has a candidate profile
+        if not hasattr(request.user, 'candidate'):
+            messages.warning(request, 'You need to create a candidate profile first.')
+            return redirect('candidates:register')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        candidate = self.request.user.candidate
+
+        context['candidate'] = candidate
+        context['posts'] = candidate.posts.all().order_by('-created_at')[:5]
+        context['events'] = candidate.events.filter(
+            event_date__gte=timezone.now()
+        ).order_by('event_date')[:5]
+        context['can_edit'] = candidate.status == 'approved'
+
+        return context
+
+
+@login_required
+def edit_profile(request):
+    """Edit candidate profile (only for approved candidates)."""
+    if not hasattr(request.user, 'candidate'):
+        return redirect('candidates:register')
+
+    candidate = request.user.candidate
+
+    # Only approved candidates can edit their profile
+    if candidate.status != 'approved':
+        messages.error(request, 'Your profile must be approved before you can edit it.')
+        return redirect('candidates:dashboard')
+
+    if request.method == 'POST':
+        form = CandidateUpdateForm(request.POST, request.FILES, instance=candidate)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated successfully!')
+            return redirect('candidates:dashboard')
+    else:
+        form = CandidateUpdateForm(instance=candidate)
+
+    return render(request, 'candidates/edit_profile.html', {
+        'form': form,
+        'candidate': candidate
+    })
+
+
+@login_required
+def add_post(request):
+    """Add a new campaign post (only for approved candidates)."""
+    if not hasattr(request.user, 'candidate'):
+        return redirect('candidates:register')
+
+    candidate = request.user.candidate
+
+    if candidate.status != 'approved':
+        messages.error(request, 'Your profile must be approved before you can add posts.')
+        return redirect('candidates:dashboard')
+
+    if request.method == 'POST':
+        form = CandidatePostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.candidate = candidate
+            post.save()
+            messages.success(request, 'Post created successfully!')
+            return redirect('candidates:dashboard')
+    else:
+        form = CandidatePostForm()
+
+    return render(request, 'candidates/add_post.html', {
+        'form': form,
+        'candidate': candidate
+    })
+
+
+@login_required
+def add_event(request):
+    """Add a new campaign event (only for approved candidates)."""
+    if not hasattr(request.user, 'candidate'):
+        return redirect('candidates:register')
+
+    candidate = request.user.candidate
+
+    if candidate.status != 'approved':
+        messages.error(request, 'Your profile must be approved before you can add events.')
+        return redirect('candidates:dashboard')
+
+    if request.method == 'POST':
+        form = CandidateEventForm(request.POST)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.candidate = candidate
+            event.save()
+            messages.success(request, 'Event created successfully!')
+            return redirect('candidates:dashboard')
+    else:
+        form = CandidateEventForm()
+
+    return render(request, 'candidates/add_event.html', {
+        'form': form,
+        'candidate': candidate
+    })
+
+
+def registration_success(request):
+    """Display success page after candidate registration."""
+    return render(request, 'candidates/registration_success.html')

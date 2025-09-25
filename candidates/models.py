@@ -19,10 +19,26 @@ def verification_doc_path(instance, filename):
 
 class Candidate(AutoTranslationMixin, models.Model):
     POSITION_LEVELS = [
-        ('ward', 'Ward Representative'),
-        ('local_executive', 'Local Executive (Mayor/Chairperson)'),
-        ('provincial', 'Provincial Assembly'),
-        ('federal', 'Federal Parliament'),
+        # Ward Level
+        ('ward_chairperson', 'Ward Chairperson'),
+        ('ward_member', 'Ward Member'),
+
+        # Local Unit Level (Municipality/Rural Municipality/Metropolitan/Sub-Metropolitan)
+        ('mayor_chairperson', 'Mayor/Chairperson'),
+        ('deputy_mayor_vice_chairperson', 'Deputy Mayor/Vice Chairperson'),
+
+        # Provincial Level
+        ('provincial_assembly', 'Provincial Assembly Member'),
+
+        # Federal Level
+        ('house_of_representatives', 'House of Representatives Member'),
+        ('national_assembly', 'National Assembly Member'),
+    ]
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending Review'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
     ]
 
     # Fields that should be auto-translated
@@ -55,7 +71,7 @@ class Candidate(AutoTranslationMixin, models.Model):
     manifesto_ne = models.TextField(blank=True)
     is_mt_manifesto_ne = models.BooleanField(default=False, help_text="True if manifesto_ne is machine translated")
 
-    position_level = models.CharField(max_length=20, choices=POSITION_LEVELS)
+    position_level = models.CharField(max_length=35, choices=POSITION_LEVELS)
     province = models.ForeignKey(Province, on_delete=models.CASCADE)
     district = models.ForeignKey(District, on_delete=models.CASCADE)
     municipality = models.ForeignKey(Municipality, on_delete=models.CASCADE, null=True, blank=True)
@@ -71,6 +87,12 @@ class Candidate(AutoTranslationMixin, models.Model):
     facebook_url = models.URLField(blank=True)
     donation_link = models.URLField(blank=True)
 
+    # Approval/Verification fields
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    admin_notes = models.TextField(blank=True, help_text="Notes from admin (e.g., rejection reasons)")
+    approved_at = models.DateTimeField(null=True, blank=True)
+    approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='approved_candidates')
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -83,10 +105,21 @@ class Candidate(AutoTranslationMixin, models.Model):
         ]
 
     def clean(self):
-        if self.position_level == 'ward' and not self.ward_number:
-            raise ValidationError('Ward number is required for ward-level positions')
-        if self.position_level == 'ward' and not self.municipality:
-            raise ValidationError('Municipality is required for ward-level positions')
+        # Ward level positions require ward number and municipality
+        ward_positions = ['ward_chairperson', 'ward_member']
+        if self.position_level in ward_positions:
+            if not self.ward_number:
+                raise ValidationError('Ward number is required for ward-level positions')
+            if not self.municipality:
+                raise ValidationError('Municipality is required for ward-level positions')
+
+        # Local unit level positions require municipality but not ward
+        local_positions = ['mayor_chairperson', 'deputy_mayor_vice_chairperson']
+        if self.position_level in local_positions:
+            if not self.municipality:
+                raise ValidationError('Municipality is required for local unit positions')
+
+        # Validate location hierarchy
         if self.municipality and self.municipality.district != self.district:
             raise ValidationError('Municipality must belong to the selected district')
         if self.district.province != self.province:

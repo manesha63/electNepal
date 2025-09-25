@@ -11,6 +11,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),
     path('api/', include('locations.urls', namespace='locations_api')),
+    path('accounts/', include('authentication.urls')),  # Authentication URLs
 
     # Language switching
     path('set-language/', core_views.set_language, name='set_language'),
