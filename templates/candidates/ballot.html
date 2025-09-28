@@ -456,7 +456,12 @@
             <div class="text-center mb-6">
                 <h1 class="text-3xl font-bold text-gray-800 mb-2">{% trans "Your Ballot" %}</h1>
                 <p class="text-lg text-gray-600">
-                    <span x-text="candidates.length"></span> {% trans "independent candidates in your voting area" %}
+                    <span x-text="totalCandidates"></span> {% trans "independent candidates in your voting area" %}
+                    <template x-if="totalPages > 1">
+                        <span class="text-sm text-gray-500">
+                            ({% trans "Page" %} <span x-text="currentPage"></span> {% trans "of" %} <span x-text="totalPages"></span>)
+                        </span>
+                    </template>
                 </p>
             </div>
 
@@ -513,6 +518,54 @@
                     </div>
                 </template>
             </div>
+
+            <!-- Pagination Controls -->
+            <template x-if="totalPages > 1">
+                <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin: 30px 0;">
+                    <!-- Previous button -->
+                    <button
+                        @click="previousPage()"
+                        :disabled="!hasPrevious"
+                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300"
+                        :class="{'opacity-50 cursor-not-allowed': !hasPrevious}">
+                        <i class="fas fa-chevron-left"></i> {% trans "Previous" %}
+                    </button>
+
+                    <!-- Page numbers -->
+                    <div class="page-numbers" style="display: flex; gap: 5px;">
+                        <template x-for="page in Math.min(5, totalPages)" :key="page">
+                            <button
+                                @click="goToPage(page)"
+                                x-text="page"
+                                class="px-3 py-1 rounded"
+                                :class="page === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
+                                style="min-width: 35px;">
+                            </button>
+                        </template>
+                        <template x-if="totalPages > 5">
+                            <span class="px-2">...</span>
+                        </template>
+                        <template x-if="totalPages > 5">
+                            <button
+                                @click="goToPage(totalPages)"
+                                x-text="totalPages"
+                                class="px-3 py-1 rounded"
+                                :class="totalPages === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
+                                style="min-width: 35px;">
+                            </button>
+                        </template>
+                    </div>
+
+                    <!-- Next button -->
+                    <button
+                        @click="nextPage()"
+                        :disabled="!hasNext"
+                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300"
+                        :class="{'opacity-50 cursor-not-allowed': !hasNext}">
+                        {% trans "Next" %} <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </template>
         </div>
     </template>
 
@@ -527,6 +580,7 @@
     </template>
 </div>
 
+<script src="{% static 'js/position-utils.js' %}"></script>
 <script>
 function ballotApp() {
     return {
@@ -535,6 +589,14 @@ function ballotApp() {
         searched: false,
         candidates: [],
         currentLanguage: 'en',  // Will be set in x-init
+
+        // Pagination data
+        currentPage: 1,
+        totalPages: 1,
+        totalCandidates: 0,
+        pageSize: 20,
+        hasNext: false,
+        hasPrevious: false,
 
         // Location selection
         selectedProvince: '',
@@ -679,16 +741,48 @@ function ballotApp() {
             await this.loadCandidates();
         },
 
-        // Load candidates based on location
-        async loadCandidates() {
+        // Load candidates based on location with frontend caching and pagination
+        async loadCandidates(page = 1) {
             this.loading = true;
             this.error = null;
+
+            // Create cache key for localStorage including page
+            const cacheKey = `ballot_${this.selectedProvince || ''}_${this.selectedDistrict || ''}_${this.selectedMunicipality || ''}_${this.selectedWard || ''}_${document.documentElement.lang || 'en'}_page${page}`;
+
+            // Try to get cached data (valid for 5 minutes)
+            const cachedData = localStorage.getItem(cacheKey);
+            if (cachedData) {
+                try {
+                    const cached = JSON.parse(cachedData);
+                    const cacheAge = Date.now() - cached.timestamp;
+
+                    // If cache is less than 5 minutes old (300000 ms), use it
+                    if (cacheAge < 300000) {
+                        const data = cached.data;
+                        this.candidates = data.candidates || [];
+                        this.currentPage = data.page || 1;
+                        this.totalPages = data.num_pages || 1;
+                        this.totalCandidates = data.total || 0;
+                        this.hasNext = data.has_next || false;
+                        this.hasPrevious = data.has_previous || false;
+                        this.searched = true;
+                        this.loading = false;
+                        console.log('Using cached ballot data for page', page);
+                        return;
+                    }
+                } catch (e) {
+                    // Invalid cache data, remove it
+                    localStorage.removeItem(cacheKey);
+                }
+            }
 
             const params = new URLSearchParams({
                 province_id: this.selectedProvince || '',
                 district_id: this.selectedDistrict || '',
                 municipality_id: this.selectedMunicipality || '',
-                ward_number: this.selectedWard || ''
+                ward_number: this.selectedWard || '',
+                page: page,
+                page_size: this.pageSize
             });
 
             try {
@@ -700,12 +794,82 @@ function ballotApp() {
                 }
 
                 this.candidates = data.candidates || [];
+                this.currentPage = data.page || 1;
+                this.totalPages = data.num_pages || 1;
+                this.totalCandidates = data.total || 0;
+                this.hasNext = data.has_next || false;
+                this.hasPrevious = data.has_previous || false;
                 this.searched = true;
+
+                // Cache the successful result
+                try {
+                    localStorage.setItem(cacheKey, JSON.stringify({
+                        timestamp: Date.now(),
+                        data: data
+                    }));
+
+                    // Clean up old cache entries (keep only last 10)
+                    this.cleanupOldCache();
+                } catch (e) {
+                    // localStorage might be full or disabled
+                    console.warn('Could not cache ballot data:', e);
+                }
 
             } catch (error) {
                 this.error = error.message;
             } finally {
                 this.loading = false;
+            }
+        },
+
+        // Navigate to next page
+        async nextPage() {
+            if (this.hasNext) {
+                await this.loadCandidates(this.currentPage + 1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        },
+
+        // Navigate to previous page
+        async previousPage() {
+            if (this.hasPrevious) {
+                await this.loadCandidates(this.currentPage - 1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        },
+
+        // Navigate to specific page
+        async goToPage(pageNumber) {
+            if (pageNumber >= 1 && pageNumber <= this.totalPages) {
+                await this.loadCandidates(pageNumber);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        },
+
+        // Clean up old ballot cache entries
+        cleanupOldCache() {
+            const ballotKeys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('ballot_')) {
+                    ballotKeys.push(key);
+                }
+            }
+
+            // If more than 10 ballot caches, remove oldest ones
+            if (ballotKeys.length > 10) {
+                const keysWithTime = ballotKeys.map(key => {
+                    try {
+                        const data = JSON.parse(localStorage.getItem(key));
+                        return { key, timestamp: data.timestamp || 0 };
+                    } catch {
+                        return { key, timestamp: 0 };
+                    }
+                });
+
+                keysWithTime.sort((a, b) => a.timestamp - b.timestamp);
+                const toRemove = keysWithTime.slice(0, keysWithTime.length - 10);
+                toRemove.forEach(item => localStorage.removeItem(item.key));
             }
         },
 
@@ -732,29 +896,30 @@ function ballotApp() {
         },
 
         getOfficeTitle(position_level) {
-            const officeTitles = {
-                'federal': "{% trans 'Federal Parliament' %}",
-                'provincial': "{% trans 'Provincial Assembly' %}",
-                'mayor': "{% trans 'Municipality' %}",
-                'deputy_mayor': "{% trans 'Municipality' %}",
-                'ward': "{% trans 'Ward' %}",
-                'local': "{% trans 'Local Government' %}",
-                'local_executive': "{% trans 'Municipality/Rural Municipality' %}"
+            const translations = {
+                ward: "{% trans 'Ward' %}",
+                municipalityRural: "{% trans 'Municipality/Rural Municipality' %}",
+                provincialAssembly: "{% trans 'Provincial Assembly' %}",
+                federalParliament: "{% trans 'Federal Parliament' %}",
+                localGovernment: "{% trans 'Local Government' %}"
             };
-            return officeTitles[position_level] || "{% trans 'Independent' %}";
+            return PositionUtils.getOfficeTitle(position_level, translations);
         },
 
         getSeatDescription(position_level) {
-            const seatTitles = {
-                'federal': "{% trans 'Member of Parliament' %}",
-                'provincial': "{% trans 'Provincial Assembly Member' %}",
-                'mayor': "{% trans 'Mayor' %}",
-                'deputy_mayor': "{% trans 'Deputy Mayor' %}",
-                'ward': "{% trans 'Ward Chairperson' %}",
-                'local': "{% trans 'Local Representative' %}",
-                'local_executive': "{% trans 'Mayor/Chairperson' %}"
+            const translations = {
+                wardChairperson: "{% trans 'Ward Chairperson' %}",
+                wardMember: "{% trans 'Ward Member' %}",
+                mayorChairperson: "{% trans 'Mayor/Chairperson' %}",
+                deputyMayorViceChairperson: "{% trans 'Deputy Mayor/Vice Chairperson' %}",
+                provincialAssemblyMember: "{% trans 'Provincial Assembly Member' %}",
+                houseRepresentativesMember: "{% trans 'House of Representatives Member' %}",
+                nationalAssemblyMember: "{% trans 'National Assembly Member' %}",
+                memberParliament: "{% trans 'Member of Parliament' %}",
+                localRepresentative: "{% trans 'Local Representative' %}",
+                wardRepresentative: "{% trans 'Ward Representative' %}"
             };
-            return seatTitles[position_level] || position_level;
+            return PositionUtils.getSeatDescription(position_level, translations);
         },
 
         shareCandidate(candidateId) {

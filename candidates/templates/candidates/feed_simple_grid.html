@@ -510,6 +510,7 @@
     </div>
 </div>
 
+<script src="{% static 'js/position-utils.js' %}"></script>
 <script>
 // Alpine.js Component for Candidate Grid
 function candidateGrid() {
@@ -614,29 +615,30 @@ function candidateGrid() {
         },
 
         getOfficeTitle(position_level) {
-            const officeTitles = {
-                'federal': '{% trans "Federal Parliament" %}',
-                'provincial': '{% trans "Provincial Assembly" %}',
-                'mayor': '{% trans "Municipality" %}',
-                'deputy_mayor': '{% trans "Municipality" %}',
-                'ward': '{% trans "Ward" %}',
-                'local': '{% trans "Local Government" %}',
-                'local_executive': '{% trans "Municipality/Rural Municipality" %}'
+            const translations = {
+                ward: '{% trans "Ward" %}',
+                municipalityRural: '{% trans "Municipality/Rural Municipality" %}',
+                provincialAssembly: '{% trans "Provincial Assembly" %}',
+                federalParliament: '{% trans "Federal Parliament" %}',
+                localGovernment: '{% trans "Local Government" %}'
             };
-            return officeTitles[position_level] || '{% trans "Independent" %}';
+            return PositionUtils.getOfficeTitle(position_level, translations);
         },
 
         getSeatDescription(position_level) {
-            const seatTitles = {
-                'federal': '{% trans "Member of Parliament" %}',
-                'provincial': '{% trans "Provincial Assembly Member" %}',
-                'mayor': '{% trans "Mayor" %}',
-                'deputy_mayor': '{% trans "Deputy Mayor" %}',
-                'ward': '{% trans "Ward Chairperson" %}',
-                'local': '{% trans "Local Representative" %}',
-                'local_executive': '{% trans "Mayor/Chairperson" %}'
+            const translations = {
+                wardChairperson: '{% trans "Ward Chairperson" %}',
+                wardMember: '{% trans "Ward Member" %}',
+                mayorChairperson: '{% trans "Mayor/Chairperson" %}',
+                deputyMayorViceChairperson: '{% trans "Deputy Mayor/Vice Chairperson" %}',
+                provincialAssemblyMember: '{% trans "Provincial Assembly Member" %}',
+                houseRepresentativesMember: '{% trans "House of Representatives Member" %}',
+                nationalAssemblyMember: '{% trans "National Assembly Member" %}',
+                memberParliament: '{% trans "Member of Parliament" %}',
+                localRepresentative: '{% trans "Local Representative" %}',
+                wardRepresentative: '{% trans "Ward Representative" %}'
             };
-            return seatTitles[position_level] || position_level;
+            return PositionUtils.getSeatDescription(position_level, translations);
         },
 
         shareCandidate(id) {

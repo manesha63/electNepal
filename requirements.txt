@@ -1,6 +1,7 @@
 asgiref==3.9.1
 dj-database-url==3.0.1
 Django==4.2.7
+django-ratelimit==4.1.0
 gunicorn==23.0.0
 packaging==25.0
 pillow==11.3.0

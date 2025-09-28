@@ -2,9 +2,13 @@ from django.http import JsonResponse
 from django.views import View
 from django.views.decorators.http import require_GET
 from django.utils.translation import gettext as _
+from django_ratelimit.decorators import ratelimit
+from django.utils.decorators import method_decorator
 from .models import Province, District, Municipality
+from .analytics import GeolocationAnalytics
 
 
+@method_decorator(ratelimit(key='ip', rate='60/m', method='GET', block=True), name='get')
 class DistrictsByProvinceView(View):
     def get(self, request):
         pid = request.GET.get('province')
@@ -14,6 +18,7 @@ class DistrictsByProvinceView(View):
         return JsonResponse(list(qs), safe=False)
 
 
+@method_decorator(ratelimit(key='ip', rate='60/m', method='GET', block=True), name='get')
 class MunicipalitiesByDistrictView(View):
     def get(self, request):
         did = request.GET.get('district')
@@ -35,10 +40,12 @@ class MunicipalitiesByDistrictView(View):
 
 
 @require_GET
+@ratelimit(key='ip', rate='30/m', method='GET', block=True)  # Stricter limit for georesolve
 def geo_resolve(request):
     """
-    Resolve latitude/longitude to Province/District/Municipality/Ward.
-    For now, using a simple approximation based on Nepal's geographical regions.
+    Resolve latitude/longitude to Province/District/Municipality.
+    Uses improved approximation based on Nepal's actual geographical boundaries.
+    Note: For production accuracy, consider PostGIS with official boundary shapefiles.
     """
     try:
         lat = float(request.GET.get('lat'))
@@ -46,80 +53,154 @@ def geo_resolve(request):
     except (TypeError, ValueError):
         return JsonResponse({'error': 'Invalid or missing lat/lng'}, status=400)
 
-    # Basic boundary check for Nepal (roughly 26.3-30.5 N, 80-88.2 E)
+    # Basic boundary check for Nepal (26.3-30.5°N, 80-88.2°E)
     if not (26.3 <= lat <= 30.5 and 80 <= lng <= 88.2):
+        # Track failed request (outside boundaries)
+        GeolocationAnalytics.track_request(lat, lng, success=False)
         return JsonResponse({'error': _('Location outside Nepal boundaries')}, status=404)
 
-    # Simple region-based approximation for provinces
-    # This is a temporary solution until we have proper polygon boundaries
+    # Improved province detection using more accurate boundaries
+    # Based on Nepal's actual province geography (approximate but much better)
     province_id = None
+    district_name_hint = None
 
-    if lat >= 29.5:  # Far-western high mountains
-        province_id = 6  # Karnali Province
-    elif lat >= 28.5:
-        if lng <= 83:
-            province_id = 7  # Sudurpashchim Province
-        elif lng <= 85.5:
-            province_id = 5  # Lumbini Province
+    # Province detection using refined regions
+    # Koshi Province (Province 1) - Eastern Nepal
+    if lng >= 86.8:
+        if lat >= 27.0:
+            province_id = 1  # Koshi
+            if lat >= 27.8:
+                district_name_hint = 'Taplejung'  # Far north-east
+            elif 27.4 <= lat < 27.8 and lng >= 87.7:
+                district_name_hint = 'Panchthar'
+            elif 27.0 <= lat < 27.4 and lng >= 87.5:
+                district_name_hint = 'Ilam'
+            elif lng >= 87.2:
+                district_name_hint = 'Dhankuta'
+        elif 26.7 <= lat < 27.0:
+            province_id = 1  # Koshi
+            district_name_hint = 'Sunsari'
         else:
-            province_id = 1  # Province No. 1
-    elif lat >= 27.5:
-        if lng <= 84:
-            province_id = 5  # Lumbini Province
-        elif lng <= 85.5:
-            province_id = 3  # Bagmati Province (includes Kathmandu)
-        elif lng <= 86.5:
-            province_id = 2  # Madhesh Province
-        else:
-            province_id = 1  # Province No. 1
-    else:  # Southern Terai region
-        if lng <= 83.5:
-            province_id = 7  # Sudurpashchim Province
-        elif lng <= 85:
-            province_id = 5  # Lumbini Province
-        elif lng <= 86:
-            province_id = 2  # Madhesh Province
-        else:
-            province_id = 1  # Province No. 1
+            province_id = 1  # Koshi
+            district_name_hint = 'Morang'
 
-    # Special case for Kathmandu valley area
-    if 27.6 <= lat <= 27.8 and 85.2 <= lng <= 85.5:
-        province_id = 3  # Bagmati Province
-        # Try to identify Kathmandu district
+    # Madhesh Province (Province 2) - Southern plains (Terai)
+    elif 84.5 <= lng < 86.8 and lat < 27.2:
+        province_id = 2  # Madhesh
+        if lng >= 86.0:
+            district_name_hint = 'Saptari' if lat < 26.6 else 'Siraha'
+        elif lng >= 85.3:
+            district_name_hint = 'Dhanusha' if lat < 26.8 else 'Mahottari'
+        else:
+            district_name_hint = 'Bara' if lat < 27.0 else 'Parsa'
+
+    # Bagmati Province (Province 3) - Central Nepal including Kathmandu Valley
+    elif 84.5 <= lng < 86.2 and 27.2 <= lat < 28.5:
+        province_id = 3  # Bagmati
+        # Kathmandu Valley special zone (more precise)
+        if 27.6 <= lat <= 27.75 and 85.2 <= lng <= 85.45:
+            district_name_hint = 'Kathmandu'
+        elif 27.6 <= lat <= 27.73 and 85.35 <= lng <= 85.5:
+            district_name_hint = 'Bhaktapur'
+        elif 27.58 <= lat <= 27.75 and 85.15 <= lng <= 85.35:
+            district_name_hint = 'Lalitpur'
+        elif lat >= 28.0:
+            district_name_hint = 'Rasuwa'  # Northern mountain district
+        elif lat >= 27.8:
+            district_name_hint = 'Nuwakot' if lng < 85.3 else 'Sindhupalchok'
+        elif lng < 85.0:
+            district_name_hint = 'Chitwan'  # Southern Bagmati
+        elif lng >= 85.5:
+            district_name_hint = 'Kavrepalanchok'
+
+    # Lumbini Province (Province 5) - Western Nepal (Terai to mid-hills)
+    # Check Lumbini BEFORE Gandaki to handle overlap correctly
+    elif 82.2 <= lng < 84.0 and lat < 27.8:
+        province_id = 5  # Lumbini
+        if lat >= 27.5:
+            # Butwal area (27.7N, 83.46E) and surrounding districts
+            district_name_hint = 'Rupandehi' if lng < 83.8 else 'Gulmi'
+        elif lat >= 27.0:
+            district_name_hint = 'Rupandehi'  # Includes Lumbini, Bhairahawa, Butwal
+        else:
+            district_name_hint = 'Kapilvastu' if lng < 83.0 else 'Nawalparasi'
+
+    # Gandaki Province (Province 4) - Central-Western Nepal
+    elif 83.3 <= lng < 84.8 and 27.5 <= lat < 29.0:
+        province_id = 4  # Gandaki
+        if lat >= 28.3:
+            district_name_hint = 'Manang' if lng < 84.0 else 'Mustang'  # High Himalayas
+        elif 27.9 <= lat < 28.3:
+            # Pokhara latitude range - more precise
+            district_name_hint = 'Kaski' if 28.0 <= lat < 28.3 and 83.8 <= lng < 84.1 else ('Lamjung' if lng < 84.2 else 'Gorkha')
+        elif 27.7 <= lat < 27.9:
+            district_name_hint = 'Kaski'  # Pokhara area
+        else:
+            district_name_hint = 'Syangja' if lng < 83.8 else 'Tanahun'
+
+    # Lumbini Province (Province 5) - Northern/hilly areas
+    elif 82.2 <= lng < 84.5 and 27.8 <= lat < 28.5:
+        province_id = 5  # Lumbini (northern districts)
+        district_name_hint = 'Pyuthan' if lng < 83.0 else ('Arghakhanchi' if lng < 83.8 else 'Palpa')
+
+    # Karnali Province (Province 6) - Far-Western Mountains
+    elif 81.0 <= lng < 83.3 and lat >= 28.3:
+        province_id = 6  # Karnali
+        if lat >= 29.5:
+            district_name_hint = 'Humla' if lng < 81.8 else 'Mugu'
+        elif lat >= 29.0:
+            district_name_hint = 'Jumla' if lng < 82.2 else 'Kalikot'
+        elif lat >= 28.6:
+            district_name_hint = 'Dolpa' if lng >= 82.5 else 'Surkhet'
+        else:
+            district_name_hint = 'Dailekh' if lng >= 81.7 else 'Jajarkot'
+
+    # Sudurpashchim Province (Province 7) - Far-Western Nepal
+    elif lng < 82.5:
+        province_id = 7  # Sudurpashchim
+        if lat >= 29.5:
+            district_name_hint = 'Darchula'  # Far north-west
+        elif lat >= 29.0:
+            district_name_hint = 'Bajhang' if lng < 81.2 else 'Bajura'
+        elif lat >= 28.5:
+            # Dhangadhi area and northern districts
+            district_name_hint = 'Kailali' if 28.5 <= lat < 28.8 and lng >= 80.5 else ('Achham' if lng < 81.2 else 'Doti')
+        elif lat >= 28.0:
+            district_name_hint = 'Baitadi' if lng < 80.6 else 'Dadeldhura'
+        else:
+            district_name_hint = 'Kanchanpur' if lat < 28.6 else 'Kailali'
+
+    # Fallback logic for edge cases
+    if province_id is None:
+        # Default fallback based on broad regions
+        if lng >= 86.8:
+            province_id = 1  # Koshi
+        elif lng >= 84.5 and lat < 27.2:
+            province_id = 2  # Madhesh
+        elif lng >= 84.0:
+            province_id = 3 if lat >= 27.5 else 2  # Bagmati or Madhesh
+        elif lng >= 82.5:
+            province_id = 5 if lat < 28.5 else 4  # Lumbini or Gandaki
+        elif lat >= 28.3:
+            province_id = 6  # Karnali
+        else:
+            province_id = 7  # Sudurpashchim
+
+    # Try to find district based on hint and province
+    district = None
+    municipality = None
+
+    if district_name_hint and province_id:
         district = District.objects.filter(
-            province_id=3,
-            name_en__icontains='Kathmandu'
+            province_id=province_id,
+            name_en__icontains=district_name_hint
         ).first()
 
+        # If district found, try to find the closest municipality (first one as approximation)
         if district:
-            # Try to find Kathmandu municipality
-            municipality = Municipality.objects.filter(
-                district=district,
-                name_en__icontains='Kathmandu'
-            ).first()
+            municipality = district.municipalities.first()
 
-            if municipality:
-                return JsonResponse({
-                    'province': {
-                        'id': 3,
-                        'name_en': 'Bagmati Province',
-                        'name_ne': 'बागमती प्रदेश'
-                    },
-                    'district': {
-                        'id': district.id,
-                        'name_en': district.name_en,
-                        'name_ne': district.name_ne
-                    },
-                    'municipality': {
-                        'id': municipality.id,
-                        'name_en': municipality.name_en,
-                        'name_ne': municipality.name_ne,
-                        'code': municipality.code
-                    },
-                    'ward_number': None
-                })
-
-    # Get province details
+    # Get province details and build response
     try:
         province = Province.objects.get(id=province_id)
         result = {
@@ -132,6 +213,44 @@ def geo_resolve(request):
             'municipality': None,
             'ward_number': None
         }
+
+        # Add district if found
+        if district:
+            result['district'] = {
+                'id': district.id,
+                'name_en': district.name_en,
+                'name_ne': district.name_ne
+            }
+
+        # Add municipality if found
+        if municipality:
+            result['municipality'] = {
+                'id': municipality.id,
+                'name_en': municipality.name_en,
+                'name_ne': municipality.name_ne,
+                'code': municipality.code
+            }
+
+        # Track successful request
+        GeolocationAnalytics.track_request(
+            lat, lng, success=True,
+            province_name=province.name_en
+        )
         return JsonResponse(result)
+
     except Province.DoesNotExist:
+        # Track failed request (could not determine location)
+        GeolocationAnalytics.track_request(lat, lng, success=False)
         return JsonResponse({'error': 'Could not determine location'}, status=404)
+
+
+@require_GET
+def geo_analytics_stats(request):
+    """Return geolocation analytics statistics"""
+    stats = GeolocationAnalytics.get_stats()
+    summary = GeolocationAnalytics.get_summary()
+
+    return JsonResponse({
+        'today': stats,
+        'summary': summary
+    })

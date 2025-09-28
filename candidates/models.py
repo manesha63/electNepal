@@ -102,6 +102,12 @@ class Candidate(AutoTranslationMixin, models.Model):
             models.Index(fields=['position_level', 'district']),
             models.Index(fields=['province', 'district', 'municipality']),
             models.Index(fields=['full_name']),
+            # Index for ballot queries - exact location matching with status
+            models.Index(fields=['status', 'province', 'district', 'municipality', 'ward_number'], name='ballot_location_idx'),
+            # Index for position-level filtering with status
+            models.Index(fields=['status', 'position_level', 'province'], name='ballot_position_idx'),
+            # Index for general status filtering
+            models.Index(fields=['status', 'created_at'], name='status_created_idx'),
         ]
 
     def clean(self):

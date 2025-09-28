@@ -102,3 +102,6 @@ CACHES = {
         'LOCATION': 'unique-snowflake',
     }
 }
+
+# Default avatar for candidates without photos
+DEFAULT_CANDIDATE_AVATAR = '/static/images/default-avatar.png'

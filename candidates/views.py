@@ -3,16 +3,20 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.db.models import Q, Case, When, Value, IntegerField
 from django.utils import timezone
-from django.utils.translation import get_language
+from django.utils.translation import get_language, gettext as _
 from django.views.decorators.http import require_GET
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage
+from django.core.cache import cache
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.conf import settings
+from django_ratelimit.decorators import ratelimit
 from .models import Candidate, CandidateEvent, CandidatePost
 from .forms import CandidateRegistrationForm, CandidateUpdateForm, CandidatePostForm, CandidateEventForm
 from locations.models import Province, District, Municipality
 import json
+import hashlib
 
 
 class CandidateListView(ListView):
@@ -81,7 +85,7 @@ class CandidateDetailView(DetailView):
     context_object_name = 'candidate'
     
     def get_queryset(self):
-        return Candidate.objects.select_related('province', 'district', 'municipality')
+        return Candidate.objects.filter(status='approved').select_related('province', 'district', 'municipality')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -94,6 +98,7 @@ class CandidateDetailView(DetailView):
 
 
 # API endpoint for nearby candidates
+@ratelimit(key='ip', rate='60/m', method='GET', block=True)
 def nearby_candidates_api(request):
     """API endpoint to get candidates based on location - Instagram feed style"""
     lat = request.GET.get('lat')
@@ -105,8 +110,8 @@ def nearby_candidates_api(request):
     current_lang = get_language()
     is_nepali = current_lang == 'ne'
 
-    # Get candidates at different levels
-    queryset = Candidate.objects.select_related('district', 'municipality', 'province')
+    # Get candidates at different levels - only show approved
+    queryset = Candidate.objects.filter(status='approved').select_related('district', 'municipality', 'province')
 
     # If location provided, prioritize local candidates
     if lat and lng:
@@ -179,13 +184,14 @@ def nearby_candidates_api(request):
 
 
 # API endpoint for searching candidates
+@ratelimit(key='ip', rate='60/m', method='GET', block=True)
 def search_candidates_api(request):
     """API endpoint for searching candidates"""
     search_term = request.GET.get('q', '')
     district_id = request.GET.get('district')
     municipality_id = request.GET.get('municipality')
     
-    queryset = Candidate.objects.all()
+    queryset = Candidate.objects.filter(status='approved')  # Only show approved candidates
     
     if search_term:
         queryset = queryset.filter(
@@ -215,10 +221,12 @@ def search_candidates_api(request):
 
 
 @require_GET
+@ratelimit(key='ip', rate='30/m', method='GET', block=True)  # 30 requests per minute per IP
 def my_ballot(request):
     """
     Return candidates for the user's ballot based on their location.
     Sorted by relevance: exact ward > municipality > district > province > federal.
+    Implements caching and pagination to reduce database load.
     """
     # Get location parameters from request
     province_id = request.GET.get('province_id')
@@ -226,43 +234,99 @@ def my_ballot(request):
     municipality_id = request.GET.get('municipality_id')
     ward_number = request.GET.get('ward_number')
 
+    # Get pagination parameters
+    page = request.GET.get('page', 1)
+    page_size = request.GET.get('page_size', 20)  # Default 20 candidates per page
+
+    try:
+        page = int(page)
+        page_size = min(int(page_size), 100)  # Max 100 per page for safety
+    except (TypeError, ValueError):
+        page = 1
+        page_size = 20
+
     # Province ID is required at minimum
     if not province_id:
         return JsonResponse({'error': 'province_id is required'}, status=400)
+
+    # Generate cache key based on location, language, and pagination
+    lang = get_language()
+    cache_key_parts = [
+        'ballot',
+        lang,
+        str(province_id),
+        str(district_id or ''),
+        str(municipality_id or ''),
+        str(ward_number or ''),
+        str(page),
+        str(page_size)
+    ]
+    cache_key = f"my_ballot:{':'.join(cache_key_parts)}"
+
+    # Try to get cached result
+    cached_result = cache.get(cache_key)
+    if cached_result:
+        return JsonResponse(cached_result)
 
     try:
         province_id = int(province_id)
     except (TypeError, ValueError):
         return JsonResponse({'error': 'Invalid province_id'}, status=400)
 
-    # Build the filter query
-    filters = Q(province_id=province_id) | Q(position_level='federal')
-
     # Convert IDs to integers if provided
     if district_id:
         try:
             district_id = int(district_id)
-            filters |= Q(district_id=district_id)
         except (TypeError, ValueError):
-            pass
+            district_id = None
 
     if municipality_id:
         try:
             municipality_id = int(municipality_id)
-            filters |= Q(municipality_id=municipality_id)
         except (TypeError, ValueError):
-            pass
+            municipality_id = None
 
     if ward_number:
         try:
             ward_number = int(ward_number)
-            if municipality_id:
-                filters |= Q(municipality_id=municipality_id, ward_number=ward_number)
         except (TypeError, ValueError):
-            pass
+            ward_number = None
 
-    # Query candidates with the filters
-    queryset = Candidate.objects.filter(filters)
+    # Build the filter query based on position levels and location hierarchy
+    # Each position level should only show candidates that match the appropriate location level
+    filters = Q()
+
+    # Federal level candidates (nationwide) - always included
+    # Support both old and new position values
+    filters |= Q(position_level__in=['house_of_representatives', 'national_assembly', 'federal'])
+
+    # Provincial level candidates - must be in user's province
+    filters |= Q(
+        position_level__in=['provincial_assembly', 'provincial'],
+        province_id=province_id
+    )
+
+    # Municipal level candidates (Mayor/Deputy Mayor) - must be in user's exact municipality
+    if municipality_id:
+        filters |= Q(
+            position_level__in=['mayor_chairperson', 'deputy_mayor_vice_chairperson', 'local_executive', 'local'],
+            province_id=province_id,
+            district_id=district_id,
+            municipality_id=municipality_id
+        )
+
+    # Ward level candidates - must be in user's exact ward
+    if municipality_id and ward_number:
+        filters |= Q(
+            position_level__in=['ward_chairperson', 'ward_member', 'ward'],
+            province_id=province_id,
+            district_id=district_id,
+            municipality_id=municipality_id,
+            ward_number=ward_number
+        )
+
+    # Query candidates with the filters and ensure they're approved
+    queryset = Candidate.objects.filter(filters, status='approved')
 
     # Create relevance ranking based on location match
     ranking_conditions = []
@@ -310,13 +374,22 @@ def my_ballot(request):
     # Select related for efficiency
     queryset = queryset.select_related('province', 'district', 'municipality')
 
-    # Get language preference
-    lang = get_language()
+    # Get language preference (already fetched above for cache key)
     is_nepali = lang == 'ne'
+
+    # Paginate the queryset
+    paginator = Paginator(queryset, page_size)
+
+    try:
+        page_obj = paginator.get_page(page)
+    except EmptyPage:
+        page_obj = paginator.get_page(1)  # Return first page if page is out of range
 
     # Build response data
     candidates_data = []
-    for candidate in queryset[:50]:  # Limit to 50 candidates for now
+    ward_label = _("Ward")  # Import moved outside loop
+
+    for candidate in page_obj.object_list:
         # Use language-aware fields
         bio_field = 'bio_ne' if is_nepali and candidate.bio_ne else 'bio_en'
         bio_text = getattr(candidate, bio_field, '')
@@ -324,8 +397,6 @@ def my_ballot(request):
         # Get location display
         location_parts = []
         if candidate.ward_number:
-            from django.utils.translation import gettext as _
-            ward_label = _("Ward")
             location_parts.append(f"{ward_label} {candidate.ward_number}")
         if candidate.municipality:
             municipality_name = candidate.municipality.name_ne if is_nepali else candidate.municipality.name_en
@@ -345,7 +416,7 @@ def my_ballot(request):
         candidates_data.append({
             'id': candidate.id,
             'name': candidate.full_name,  # Changed to match candidate_cards_api
-            'photo': candidate.photo.url if candidate.photo else '/static/images/default-avatar.png',
+            'photo': candidate.photo.url if candidate.photo else settings.DEFAULT_CANDIDATE_AVATAR,
             'position_level': candidate.position_level,
             'province': province_name if candidate.province else None,
             'district': district_name if candidate.district else None,
@@ -360,16 +431,27 @@ def my_ballot(request):
             'party': 'Independent' if not is_nepali else 'स्वतन्त्र'
         })
 
-    return JsonResponse({
+    # Prepare response data with pagination info
+    response_data = {
         'candidates': candidates_data,
-        'total': len(candidates_data),
+        'total': paginator.count,  # Total candidates across all pages
+        'page': page_obj.number,
+        'num_pages': paginator.num_pages,
+        'has_next': page_obj.has_next(),
+        'has_previous': page_obj.has_previous(),
+        'page_size': page_size,
         'location_context': {
             'province_id': province_id,
             'district_id': district_id,
             'municipality_id': municipality_id,
             'ward_number': ward_number
         }
-    })
+    }
+
+    # Cache the result for 5 minutes (300 seconds)
+    cache.set(cache_key, response_data, 300)
+
+    return JsonResponse(response_data)
 
 
 def ballot_view(request):
@@ -379,6 +461,7 @@ def ballot_view(request):
 
 
 @require_GET
+@ratelimit(key='ip', rate='60/m', method='GET', block=True)  # 60 requests per minute for general browsing
 def candidate_cards_api(request):
     """API endpoint for candidate cards with pagination."""
     # Get parameters
@@ -393,8 +476,8 @@ def candidate_cards_api(request):
     municipality_id = request.GET.get('municipality')
     position_level = request.GET.get('position')
 
-    # Build queryset
-    qs = Candidate.objects.select_related('province', 'district', 'municipality')
+    # Build queryset - only show approved candidates
+    qs = Candidate.objects.filter(status='approved').select_related('province', 'district', 'municipality')
 
     # Apply search filter if provided
     if q:
@@ -433,7 +516,7 @@ def candidate_cards_api(request):
         return {
             "id": c.id,
             "name": c.full_name,
-            "photo": c.photo.url if c.photo else "/static/images/default-avatar.png",
+            "photo": c.photo.url if c.photo else settings.DEFAULT_CANDIDATE_AVATAR,
             "position_level": c.position_level,
             "province": getattr(c.province, 'name_ne' if is_nepali else 'name_en', None) if c.province else None,
             "district": getattr(c.district, 'name_ne' if is_nepali else 'name_en', None) if c.district else None,
