@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
+from django.contrib import messages
 from .models import Candidate, CandidatePost, CandidateEvent
 
 
@@ -65,6 +66,9 @@ class CandidateAdmin(admin.ModelAdmin):
     def approve_candidates(self, request, queryset):
         """Approve selected candidates"""
         count = 0
+        email_sent = 0
+        email_failed = 0
+
         for candidate in queryset.filter(status='pending'):
             candidate.status = 'approved'
             candidate.approved_at = timezone.now()
@@ -72,8 +76,23 @@ class CandidateAdmin(admin.ModelAdmin):
             candidate.save()
             count += 1
 
+            # Send approval email
+            try:
+                if candidate.send_approval_email():
+                    email_sent += 1
+                else:
+                    email_failed += 1
+            except Exception as e:
+                email_failed += 1
+                print(f"Email error for {candidate.full_name}: {e}")
+
         if count:
-            self.message_user(request, f'{count} candidate(s) approved successfully.')
+            msg = f'{count} candidate(s) approved successfully.'
+            if email_sent:
+                msg += f' {email_sent} notification email(s) sent.'
+            if email_failed:
+                msg += f' {email_failed} email(s) failed.'
+            self.message_user(request, msg)
         else:
             self.message_user(request, 'No pending candidates to approve.')
     approve_candidates.short_description = 'Approve selected candidates'
@@ -92,6 +111,41 @@ class CandidateAdmin(admin.ModelAdmin):
         count = queryset.update(status='pending', approved_at=None, approved_by=None)
         self.message_user(request, f'{count} candidate(s) marked as pending.')
     mark_as_pending.short_description = 'Mark as pending for review'
+
+    def save_model(self, request, obj, form, change):
+        """Override save to handle status changes and send emails"""
+        if change and 'status' in form.changed_data:
+            old_status = form.initial.get('status')
+            new_status = obj.status
+
+            # Handle approval
+            if old_status != 'approved' and new_status == 'approved':
+                obj.approved_at = timezone.now()
+                obj.approved_by = request.user
+                # Send approval email
+                try:
+                    if obj.send_approval_email():
+                        messages.success(request, f'Approval email sent to {obj.user.email}')
+                    else:
+                        messages.warning(request, 'Candidate approved but email notification failed')
+                except Exception as e:
+                    messages.warning(request, f'Candidate approved but email failed: {e}')
+
+            # Handle rejection
+            elif old_status != 'rejected' and new_status == 'rejected':
+                # Clear approval fields
+                obj.approved_at = None
+                obj.approved_by = None
+                # Send rejection email
+                try:
+                    if obj.send_rejection_email():
+                        messages.success(request, f'Rejection email sent to {obj.user.email}')
+                    else:
+                        messages.warning(request, 'Candidate rejected but email notification failed')
+                except Exception as e:
+                    messages.warning(request, f'Candidate rejected but email failed: {e}')
+
+        super().save_model(request, obj, form, change)
 
 
 

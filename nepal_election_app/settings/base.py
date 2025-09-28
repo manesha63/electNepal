@@ -105,3 +105,6 @@ CACHES = {
 
 # Default avatar for candidates without photos
 DEFAULT_CANDIDATE_AVATAR = '/static/images/default-avatar.png'
+
+# Import logging configuration
+from .logging import LOGGING

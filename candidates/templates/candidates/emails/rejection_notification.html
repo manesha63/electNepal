@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #ef4444; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background-color: #fef2f2; }
+        .button { display: inline-block; padding: 12px 24px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 5px; margin: 10px; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+        .rejection-box { background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; margin: 20px 0; border-radius: 5px; }
+        .reason-box { background-color: white; border-left: 3px solid #ef4444; padding: 15px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Registration Status Update</h1>
+            <p>Your Candidate Profile Requires Revision</p>
+        </div>
+        <div class="content">
+            <h2>Dear {{ candidate.full_name }},</h2>
+
+            <div class="rejection-box">
+                <p>Thank you for your interest in registering as a candidate on ElectNepal. After careful review, we regret to inform you that your profile has not been approved at this time.</p>
+            </div>
+
+            <h3>Reason for Rejection:</h3>
+            <div class="reason-box">
+                {% if candidate.admin_notes %}
+                {{ candidate.admin_notes|linebreaks }}
+                {% else %}
+                <p>Your profile did not meet our current approval criteria. Please review our guidelines and ensure all information is accurate and complete.</p>
+                {% endif %}
+            </div>
+
+            <h3>Common Reasons for Rejection:</h3>
+            <ul>
+                <li>Incomplete or inaccurate information</li>
+                <li>Missing required documents or details</li>
+                <li>Profile photo not meeting guidelines</li>
+                <li>Inappropriate content in bio or manifesto</li>
+                <li>Eligibility requirements not met</li>
+            </ul>
+
+            <h3>What You Can Do:</h3>
+            <ol>
+                <li>Review the rejection reason carefully</li>
+                <li>Update your profile with the required corrections</li>
+                <li>Ensure all information is accurate and complete</li>
+                <li>Resubmit your profile for review</li>
+            </ol>
+
+            <center>
+                <a href="{{ domain }}{% url 'candidates:dashboard' %}" class="button">Update Your Profile</a>
+            </center>
+
+            <h3>Need Help?</h3>
+            <p>If you have questions about the rejection or need clarification on our requirements, please don't hesitate to contact us:</p>
+            <ul>
+                <li>Email: chandmanisha002@gmail.com</li>
+                <li>Include your registration ID: #{{ candidate.id }}</li>
+            </ul>
+
+            <h3>Your Submission Details:</h3>
+            <ul>
+                <li><strong>Name:</strong> {{ candidate.full_name }}</li>
+                <li><strong>Position:</strong> {{ candidate.get_position_level_display }}</li>
+                <li><strong>Submission Date:</strong> {{ candidate.created_at|date:"F d, Y" }}</li>
+                <li><strong>Review Date:</strong> {{ now|date:"F d, Y" }}</li>
+                <li><strong>Status:</strong> <span style="color: #ef4444;">Rejected - Revision Required</span></li>
+            </ul>
+
+            <p>We encourage you to address the issues mentioned and resubmit your profile. We look forward to reviewing your updated application.</p>
+
+            <p>Best regards,<br>
+            The ElectNepal Team</p>
+        </div>
+        <div class="footer">
+            <p>© 2025 ElectNepal. All rights reserved.</p>
+            <p>You're receiving this email because you registered as a candidate on ElectNepal.</p>
+        </div>
+    </div>
+</body>
+</html>

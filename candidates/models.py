@@ -3,8 +3,16 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 from django.urls import reverse
+from django.core.mail import send_mail, mail_admins
+from django.template.loader import render_to_string
+from django.conf import settings
+from django.utils import timezone
 from locations.models import Province, District, Municipality
 from .translation import AutoTranslationMixin
+import logging
+
+# Get logger for email operations
+logger = logging.getLogger('candidates.emails')
 
 
 def candidate_photo_path(instance, filename):
@@ -134,7 +142,187 @@ class Candidate(AutoTranslationMixin, models.Model):
     def get_absolute_url(self):
         return reverse('candidates:detail', kwargs={'pk': self.pk})
 
+    def get_domain(self):
+        """Get the current site domain for email links"""
+        try:
+            from django.contrib.sites.models import Site
+            current_site = Site.objects.get_current()
+            return f"http://{current_site.domain}"
+        except:
+            return "http://localhost:8000"
 
+    def send_registration_confirmation(self):
+        """Send email confirmation to candidate after registration"""
+        subject = f"[ElectNepal] Registration Confirmation - {self.full_name}"
+        context = {
+            'candidate': self,
+            'domain': self.get_domain(),
+        }
+
+        try:
+            html_message = render_to_string(
+                'candidates/emails/registration_confirmation.html',
+                context
+            )
+
+            logger.info(f"Sending registration confirmation to {self.user.email} for candidate {self.full_name}")
+
+            send_mail(
+                subject=subject,
+                message=f"Your candidate registration has been submitted for review. You will be notified once approved.",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[self.user.email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+
+            logger.info(f"Successfully sent registration confirmation to {self.user.email}")
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to send registration confirmation to {self.user.email}: {str(e)}", exc_info=True)
+
+            # Fallback: Try to notify admins about the failure
+            try:
+                mail_admins(
+                    subject=f"[ALERT] Email Failure - Registration Confirmation",
+                    message=f"Failed to send registration confirmation to {self.full_name} ({self.user.email}). Error: {str(e)}",
+                    fail_silently=True
+                )
+            except:
+                pass
+
+            return False
+
+    def notify_admin_new_registration(self):
+        """Notify admins about new candidate registration"""
+        subject = f"[Admin Alert] New Candidate Registration: {self.full_name}"
+        admin_emails = [email for name, email in settings.ADMINS]
+
+        if not admin_emails:
+            logger.warning(f"No admin emails configured for new registration notification")
+            return False
+
+        try:
+            # Count pending candidates
+            pending_count = Candidate.objects.filter(status='pending').count()
+
+            context = {
+                'candidate': self,
+                'domain': self.get_domain(),
+                'pending_count': pending_count,
+            }
+
+            html_message = render_to_string(
+                'candidates/emails/admin_notification.html',
+                context
+            )
+
+            logger.info(f"Notifying {len(admin_emails)} admin(s) about new registration: {self.full_name}")
+
+            send_mail(
+                subject=subject,
+                message=f"New candidate {self.full_name} has registered and requires review.",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=admin_emails,
+                html_message=html_message,
+                fail_silently=False,
+            )
+
+            logger.info(f"Successfully notified admins about {self.full_name}")
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to notify admins about {self.full_name}: {str(e)}", exc_info=True)
+            # Admin notification failure is critical but shouldn't block registration
+            return False
+
+    def send_approval_email(self):
+        """Send approval notification to candidate"""
+        subject = f"[ElectNepal] Congratulations! Your Profile is Approved"
+        context = {
+            'candidate': self,
+            'domain': self.get_domain(),
+        }
+
+        try:
+            html_message = render_to_string(
+                'candidates/emails/approval_notification.html',
+                context
+            )
+
+            logger.info(f"Sending approval email to {self.user.email} for candidate {self.full_name}")
+
+            send_mail(
+                subject=subject,
+                message=f"Congratulations! Your candidate profile has been approved. You can now access your dashboard.",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[self.user.email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+
+            logger.info(f"Successfully sent approval email to {self.user.email}")
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to send approval email to {self.user.email}: {str(e)}", exc_info=True)
+
+            # Notify admins about critical email failure
+            try:
+                mail_admins(
+                    subject=f"[CRITICAL] Failed to send approval email",
+                    message=f"Failed to send approval notification to {self.full_name} ({self.user.email}). Please contact them manually. Error: {str(e)}",
+                    fail_silently=True
+                )
+            except:
+                pass
+
+            return False
+
+    def send_rejection_email(self):
+        """Send rejection notification to candidate with reasons"""
+        subject = f"[ElectNepal] Profile Review Update"
+        context = {
+            'candidate': self,
+            'domain': self.get_domain(),
+            'now': timezone.now(),
+        }
+
+        try:
+            html_message = render_to_string(
+                'candidates/emails/rejection_notification.html',
+                context
+            )
+
+            logger.info(f"Sending rejection email to {self.user.email} for candidate {self.full_name}")
+
+            send_mail(
+                subject=subject,
+                message=f"Your candidate profile requires revision. Admin notes: {self.admin_notes or 'Please review our guidelines.'}",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[self.user.email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+
+            logger.info(f"Successfully sent rejection email to {self.user.email}")
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to send rejection email to {self.user.email}: {str(e)}", exc_info=True)
+
+            # Notify admins about email failure
+            try:
+                mail_admins(
+                    subject=f"[ALERT] Failed to send rejection email",
+                    message=f"Failed to send rejection notification to {self.full_name} ({self.user.email}). They may not know about the rejection. Error: {str(e)}",
+                    fail_silently=True
+                )
+            except:
+                pass
+
+            return False
 
     def get_display_location(self):
         parts = [self.municipality.name_en if self.municipality else self.district.name_en]

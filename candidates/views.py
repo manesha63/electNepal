@@ -552,6 +552,16 @@ def candidate_register(request):
             candidate.status = 'pending'  # Set to pending for admin review
             candidate.save()
 
+            # Send email notifications
+            try:
+                # Send confirmation to candidate
+                candidate.send_registration_confirmation()
+                # Notify admins about new registration
+                candidate.notify_admin_new_registration()
+            except Exception as e:
+                # Log error but don't fail the registration
+                print(f"Email notification error: {e}")
+
             messages.success(request, 'Your candidate profile has been submitted for review! You will be notified once approved.')
             return redirect('candidates:registration_success')
     else:

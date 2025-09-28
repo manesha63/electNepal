@@ -7,6 +7,13 @@ from django.views.generic import CreateView, TemplateView
 from django.urls import reverse_lazy
 from django import forms
 from django.contrib.auth.models import User
+from django.core.mail import send_mail, mail_admins
+from django.template.loader import render_to_string
+from django.conf import settings
+import logging
+
+# Get logger for authentication emails
+logger = logging.getLogger('authentication.emails')
 
 
 class CandidateSignupForm(UserCreationForm):
@@ -37,9 +44,17 @@ class CandidateSignupForm(UserCreationForm):
             'placeholder': 'Confirm Password'
         })
 
+    def clean_email(self):
+        """Validate email is not already in use"""
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("This email address is already registered.")
+        return email
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
+        user.is_active = True  # For now, activate immediately (could require email verification)
         if commit:
             user.save()
         return user
@@ -61,9 +76,71 @@ class CandidateSignupView(CreateView):
     form_class = CandidateSignupForm
     success_url = reverse_lazy('candidates:register')
 
+    def send_welcome_email(self, user):
+        """Send welcome email to newly registered user"""
+        try:
+            subject = "[ElectNepal] Welcome to ElectNepal!"
+
+            # Get domain for email links
+            domain = self.request.get_host()
+            protocol = 'https' if self.request.is_secure() else 'http'
+
+            context = {
+                'user': user,
+                'domain': f"{protocol}://{domain}",
+            }
+
+            # Create welcome email content
+            html_message = render_to_string(
+                'authentication/emails/welcome.html',
+                context
+            )
+
+            plain_message = f"""
+            Welcome to ElectNepal, {user.username}!
+
+            Thank you for creating an account. You can now register as a candidate and participate in Nepal's democratic process.
+
+            Next Steps:
+            1. Complete your candidate profile
+            2. Submit for verification
+            3. Once approved, your profile will be visible to voters
+
+            Login: {protocol}://{domain}/auth/login/
+
+            Best regards,
+            The ElectNepal Team
+            """
+
+            logger.info(f"Sending welcome email to {user.email}")
+
+            send_mail(
+                subject=subject,
+                message=plain_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+
+            logger.info(f"Welcome email sent successfully to {user.email}")
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to send welcome email to {user.email}: {str(e)}", exc_info=True)
+            # Don't block registration if email fails
+            return False
+
     def form_valid(self, form):
         # Save the user
         user = form.save()
+
+        # Send welcome email (don't block registration if it fails)
+        try:
+            self.send_welcome_email(user)
+        except Exception as e:
+            logger.error(f"Welcome email error for {user.username}: {e}")
+
         # Log them in automatically
         login(self.request, user)
         messages.success(self.request, 'Account created successfully! Now create your candidate profile.')

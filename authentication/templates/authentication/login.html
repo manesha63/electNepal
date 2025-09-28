@@ -57,12 +57,12 @@
         <div class="mt-6 text-center text-sm">
             <p class="text-gray-600">
                 {% trans "Don't have an account?" %}
-                <a href="{% url 'register_info' %}" class="text-blue-500 hover:text-blue-700 font-semibold">
+                <a href="{% url 'authentication:register_info' %}" class="text-blue-500 hover:text-blue-700 font-semibold">
                     {% trans "Register here" %}
                 </a>
             </p>
             <p class="mt-2">
-                <a href="{% url 'password_reset' %}" class="text-blue-500 hover:text-blue-700">
+                <a href="{% url 'authentication:password_reset' %}" class="text-blue-500 hover:text-blue-700">
                     {% trans "Forgot your password?" %}
                 </a>
             </p>

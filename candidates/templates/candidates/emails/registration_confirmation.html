@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #2563eb; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background-color: #f8f9fa; }
+        .button { display: inline-block; padding: 12px 24px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ElectNepal</h1>
+            <p>Your Candidate Registration Has Been Submitted</p>
+        </div>
+        <div class="content">
+            <h2>Dear {{ candidate.full_name }},</h2>
+
+            <p>Thank you for registering as a candidate on ElectNepal. Your profile has been successfully submitted and is now under review by our admin team.</p>
+
+            <h3>What Happens Next?</h3>
+            <ul>
+                <li>Our admin team will review your profile within 24-48 hours</li>
+                <li>You will receive an email notification once your profile is approved</li>
+                <li>After approval, your profile will be visible to voters on the platform</li>
+            </ul>
+
+            <h3>Your Submission Details:</h3>
+            <ul>
+                <li><strong>Name:</strong> {{ candidate.full_name }}</li>
+                <li><strong>Position:</strong> {{ candidate.get_position_level_display }}</li>
+                <li><strong>Location:</strong> {{ candidate.province.name_en }}, {{ candidate.district.name_en }}{% if candidate.municipality %}, {{ candidate.municipality.name_en }}{% endif %}</li>
+                <li><strong>Submission Date:</strong> {{ candidate.created_at|date:"F d, Y" }}</li>
+                <li><strong>Status:</strong> Pending Review</li>
+            </ul>
+
+            <p>You can check your registration status anytime by logging into your dashboard:</p>
+
+            <center>
+                <a href="{{ domain }}{% url 'candidates:dashboard' %}" class="button">View Dashboard</a>
+            </center>
+
+            <p>If you have any questions or need assistance, please don't hesitate to contact us at chandmanisha002@gmail.com</p>
+
+            <p>Best regards,<br>
+            The ElectNepal Team</p>
+        </div>
+        <div class="footer">
+            <p>© 2025 ElectNepal. All rights reserved.</p>
+            <p>This is an automated email. Please do not reply directly to this message.</p>
+        </div>
+    </div>
+</body>
+</html>

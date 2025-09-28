@@ -56,6 +56,19 @@ LOGGING = {
             'backupCount': 10,
             'formatter': 'verbose',
         },
+        'email_file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/email.log',
+            'maxBytes': 1024 * 1024 * 10,  # 10MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
     },
     'loggers': {
         'django': {
@@ -75,6 +88,16 @@ LOGGING = {
         },
         'candidates': {
             'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'candidates.emails': {
+            'handlers': ['console', 'email_file', 'mail_admins'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'authentication.emails': {
+            'handlers': ['console', 'email_file', 'mail_admins'],
             'level': 'DEBUG',
             'propagate': False,
         },

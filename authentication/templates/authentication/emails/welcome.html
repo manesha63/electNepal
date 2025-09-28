@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #2563eb; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background-color: #f8f9fa; }
+        .button { display: inline-block; padding: 12px 24px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 5px; margin: 10px; }
+        .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+        .feature-box { background-color: white; border-left: 3px solid #2563eb; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to ElectNepal!</h1>
+            <p>Your journey to democratic participation begins here</p>
+        </div>
+        <div class="content">
+            <h2>Hello {{ user.username }}!</h2>
+
+            <p>Thank you for joining ElectNepal. Your account has been successfully created with the email address: <strong>{{ user.email }}</strong></p>
+
+            <h3>What You Can Do Now:</h3>
+            <div class="feature-box">
+                <strong>🎯 Register as a Candidate</strong>
+                <p>Create your candidate profile and reach voters across Nepal</p>
+            </div>
+
+            <div class="feature-box">
+                <strong>📊 Browse Candidates</strong>
+                <p>Explore profiles of independent candidates in your area</p>
+            </div>
+
+            <div class="feature-box">
+                <strong>🗳️ Learn How to Vote</strong>
+                <p>Access information about the voting process in Nepal</p>
+            </div>
+
+            <h3>Next Steps for Candidates:</h3>
+            <ol>
+                <li><strong>Complete Your Profile:</strong> Add your bio, manifesto, and campaign information</li>
+                <li><strong>Submit for Verification:</strong> Our admin team will review your profile</li>
+                <li><strong>Get Approved:</strong> Once approved, your profile goes live</li>
+                <li><strong>Connect with Voters:</strong> Share updates and campaign events</li>
+            </ol>
+
+            <center>
+                <a href="{{ domain }}{% url 'candidates:register' %}" class="button">Complete Candidate Registration</a>
+                <a href="{{ domain }}{% url 'authentication:login' %}" class="button" style="background-color: #6c757d;">Login to Your Account</a>
+            </center>
+
+            <h3>Account Details:</h3>
+            <ul>
+                <li><strong>Username:</strong> {{ user.username }}</li>
+                <li><strong>Email:</strong> {{ user.email }}</li>
+                <li><strong>Registration Date:</strong> {{ user.date_joined|date:"F d, Y" }}</li>
+            </ul>
+
+            <h3>Need Help?</h3>
+            <p>If you have any questions or need assistance, please contact us at <a href="mailto:chandmanisha002@gmail.com">chandmanisha002@gmail.com</a></p>
+
+            <p style="background-color: #fff3cd; padding: 10px; border-radius: 5px;">
+                <strong>📌 Important:</strong> Please keep your login credentials safe. You'll need them to access your candidate dashboard and manage your profile.
+            </p>
+
+            <p>We're excited to have you as part of Nepal's democratic process!</p>
+
+            <p>Best regards,<br>
+            <strong>The ElectNepal Team</strong></p>
+        </div>
+        <div class="footer">
+            <p>© 2025 ElectNepal. All rights reserved.</p>
+            <p>You're receiving this email because you created an account on ElectNepal.</p>
+            <p>If you didn't create this account, please contact us immediately.</p>
+        </div>
+    </div>
+</body>
+</html>

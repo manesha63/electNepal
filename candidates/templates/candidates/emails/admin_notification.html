@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #dc2626; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background-color: #fff3cd; border: 1px solid #ffc107; }
+        .button { display: inline-block; padding: 12px 24px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px; margin: 10px; }
+        .button-reject { background-color: #dc3545; }
+        .info-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .info-table th { background-color: #f8f9fa; padding: 10px; text-align: left; border: 1px solid #dee2e6; }
+        .info-table td { padding: 10px; border: 1px solid #dee2e6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔔 Admin Alert: New Candidate Registration</h1>
+        </div>
+        <div class="content">
+            <h2>New Candidate Requires Review</h2>
+
+            <p>A new candidate has registered on ElectNepal and requires admin approval.</p>
+
+            <table class="info-table">
+                <tr>
+                    <th>Field</th>
+                    <th>Details</th>
+                </tr>
+                <tr>
+                    <td><strong>Name</strong></td>
+                    <td>{{ candidate.full_name }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Email</strong></td>
+                    <td>{{ candidate.user.email }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Age</strong></td>
+                    <td>{{ candidate.age }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Position</strong></td>
+                    <td>{{ candidate.get_position_level_display }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Province</strong></td>
+                    <td>{{ candidate.province.name_en }}</td>
+                </tr>
+                <tr>
+                    <td><strong>District</strong></td>
+                    <td>{{ candidate.district.name_en }}</td>
+                </tr>
+                {% if candidate.municipality %}
+                <tr>
+                    <td><strong>Municipality</strong></td>
+                    <td>{{ candidate.municipality.name_en }}</td>
+                </tr>
+                {% endif %}
+                {% if candidate.ward_number %}
+                <tr>
+                    <td><strong>Ward</strong></td>
+                    <td>{{ candidate.ward_number }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td><strong>Registration Time</strong></td>
+                    <td>{{ candidate.created_at|date:"F d, Y g:i A" }}</td>
+                </tr>
+            </table>
+
+            <h3>Bio Summary:</h3>
+            <p style="background-color: white; padding: 10px; border-left: 3px solid #2563eb;">
+                {{ candidate.bio_en|truncatewords:50 }}
+            </p>
+
+            <h3>Actions Required:</h3>
+            <p>Please review this candidate's profile and take appropriate action:</p>
+
+            <center>
+                <a href="{{ domain }}/admin/candidates/candidate/{{ candidate.id }}/change/" class="button">Review in Admin Panel</a>
+                <a href="{{ domain }}{% url 'candidates:detail' candidate.pk %}" class="button" style="background-color: #6c757d;">View Public Profile</a>
+            </center>
+
+            <p><strong>Important:</strong> Please review and approve/reject this candidate within 24-48 hours.</p>
+
+            <hr>
+            <p style="font-size: 12px; color: #666;">
+                Total pending candidates: {{ pending_count }}<br>
+                This is an automated notification from ElectNepal.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
