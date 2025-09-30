@@ -4,6 +4,7 @@ from django.views.decorators.http import require_GET
 from django.utils.translation import gettext as _
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
+from django.shortcuts import get_object_or_404
 from .models import Province, District, Municipality
 from .analytics import GeolocationAnalytics
 
@@ -253,4 +254,18 @@ def geo_analytics_stats(request):
     return JsonResponse({
         'today': stats,
         'summary': summary
+    })
+
+
+@require_GET
+@ratelimit(key='ip', rate='60/m', method='GET', block=True)
+def municipality_wards_view(request, municipality_id):
+    """Return the total number of wards for a specific municipality"""
+    municipality = get_object_or_404(Municipality, pk=municipality_id)
+
+    return JsonResponse({
+        'municipality_id': municipality.id,
+        'municipality_name': municipality.name_en,
+        'municipality_name_ne': municipality.name_ne,
+        'total_wards': municipality.total_wards
     })

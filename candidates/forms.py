@@ -47,13 +47,13 @@ class CandidateRegistrationForm(forms.ModelForm):
         position_level = cleaned_data.get('position_level')
         ward_number = cleaned_data.get('ward_number')
         municipality = cleaned_data.get('municipality')
-        
-        if position_level == 'ward':
-            if not ward_number:
-                raise ValidationError("Ward number is required for ward-level positions.")
-            if not municipality:
-                raise ValidationError("Municipality is required for ward-level positions.")
-        
+
+        # Municipality and ward are required for ALL positions
+        if not municipality:
+            raise ValidationError("Municipality is required for all positions.")
+        if not ward_number:
+            raise ValidationError("Ward number is required for all positions.")
+
         return cleaned_data
     
     def save(self, commit=True, user=None):

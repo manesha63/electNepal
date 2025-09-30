@@ -124,7 +124,7 @@
 
             <div>
                 <label for="id_municipality" class="block text-sm font-medium text-gray-700 mb-2">
-                    {% trans "Municipality" %}
+                    {% trans "Municipality" %} *
                 </label>
                 {{ form.municipality }}
                 {% if form.municipality.errors %}
@@ -132,11 +132,13 @@
                 {% endif %}
             </div>
 
-            <div x-show="positionLevel === 'ward'">
+            <div>
                 <label for="id_ward_number" class="block text-sm font-medium text-gray-700 mb-2">
-                    {% trans "Ward Number" %}
+                    {% trans "Ward Number" %} *
                 </label>
-                {{ form.ward_number }}
+                <select name="ward_number" id="id_ward_number" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <option value="">{% trans "Select Ward" %}</option>
+                </select>
                 {% if form.ward_number.errors %}
                 <p class="mt-1 text-sm text-red-600">{{ form.ward_number.errors.0 }}</p>
                 {% endif %}
@@ -290,7 +292,55 @@ function registrationForm() {
 
         validateStep() {
             // Add validation logic for each step
-            // For now, just return true
+            if (this.step === 1) {
+                // Step 1: Basic Info validation
+                const fullName = document.getElementById('id_full_name');
+                const age = document.getElementById('id_age');
+
+                if (!fullName || !fullName.value.trim()) {
+                    alert('Please enter your full name');
+                    return false;
+                }
+                if (!age || !age.value || age.value < 18) {
+                    alert('Please enter a valid age (must be 18 or older)');
+                    return false;
+                }
+            } else if (this.step === 2) {
+                // Step 2: Location validation
+                const position = document.getElementById('id_position_level');
+                const province = document.getElementById('id_province');
+                const district = document.getElementById('id_district');
+                const municipality = document.getElementById('id_municipality');
+                const wardNumber = document.getElementById('id_ward_number');
+
+                if (!position || !position.value) {
+                    alert('Please select a position level');
+                    return false;
+                }
+                if (!province || !province.value) {
+                    alert('Please select a province');
+                    return false;
+                }
+                if (!district || !district.value) {
+                    alert('Please select a district');
+                    return false;
+                }
+                if (!municipality || !municipality.value) {
+                    alert('Municipality is required for all positions');
+                    return false;
+                }
+                if (!wardNumber || !wardNumber.value) {
+                    alert('Ward number is required for all positions');
+                    return false;
+                }
+            } else if (this.step === 3) {
+                // Step 3: Content validation
+                const bioEn = document.getElementById('id_bio_en');
+                if (!bioEn || !bioEn.value.trim()) {
+                    alert('Please enter your bio/description');
+                    return false;
+                }
+            }
             return true;
         },
 
@@ -298,6 +348,7 @@ function registrationForm() {
             const provinceSelect = document.getElementById('id_province');
             const districtSelect = document.getElementById('id_district');
             const municipalitySelect = document.getElementById('id_municipality');
+            const wardSelect = document.getElementById('id_ward_number');
 
             if (provinceSelect) {
                 provinceSelect.addEventListener('change', async function() {
@@ -314,8 +365,11 @@ function registrationForm() {
                             districtSelect.add(option);
                         });
 
-                        // Clear municipality dropdown
+                        // Clear municipality and ward dropdowns
                         municipalitySelect.innerHTML = '<option value="">Select Municipality</option>';
+                        if (wardSelect) {
+                            wardSelect.innerHTML = '<option value="">Select Ward</option>';
+                        }
                     }
                 });
             }
@@ -334,6 +388,42 @@ function registrationForm() {
                             const option = new Option(municipality.name_en, municipality.id);
                             municipalitySelect.add(option);
                         });
+
+                        // Clear ward dropdown when district changes
+                        if (wardSelect) {
+                            wardSelect.innerHTML = '<option value="">Select Ward</option>';
+                        }
+                    }
+                });
+            }
+
+            // Add municipality change event listener for ward population
+            if (municipalitySelect) {
+                municipalitySelect.addEventListener('change', async function() {
+                    console.log('Municipality changed:', this.value); // Debug log
+                    const municipalityId = this.value;
+
+                    if (municipalityId && wardSelect) {
+                        try {
+                            // Fetch ward count for this municipality
+                            const response = await fetch(`/api/municipalities/${municipalityId}/wards/`);
+                            const data = await response.json();
+                            console.log('Ward data received:', data); // Debug log
+
+                            // Update ward dropdown
+                            wardSelect.innerHTML = '<option value="">Select Ward</option>';
+                            for (let i = 1; i <= data.total_wards; i++) {
+                                const option = new Option(`Ward ${i}`, i);
+                                wardSelect.add(option);
+                            }
+                            console.log(`Added ${data.total_wards} wards to dropdown`); // Debug log
+                        } catch (error) {
+                            console.error('Error fetching wards:', error);
+                            alert('Error loading ward information. Please try again.');
+                        }
+                    } else if (wardSelect) {
+                        // Clear ward dropdown if no municipality selected
+                        wardSelect.innerHTML = '<option value="">Select Ward</option>';
                     }
                 });
             }
