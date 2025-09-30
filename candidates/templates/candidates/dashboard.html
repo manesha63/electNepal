@@ -1,15 +1,18 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}{% trans "Your Dashboard" %} - ElectNepal{% endblock %}
+{% block title %}{% trans "Candidate Dashboard" %} - ElectNepal{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto mt-8 px-4">
-    <h1 class="text-3xl font-bold mb-6">{% trans "Your Dashboard" %}</h1>
+<div class="max-w-7xl mx-auto mt-6 px-4 py-6">
+    <!-- Header with Welcome Message -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">{% trans "Welcome back" %}, {{ candidate.full_name }}</h1>
+    </div>
 
     {% if messages %}
         {% for message in messages %}
-        <div class="mb-4 p-3 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'success' %}bg-green-100 text-green-700{% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+        <div class="mb-4 p-4 rounded-lg {% if message.tags == 'error' %}bg-red-50 border border-red-200 text-red-800{% elif message.tags == 'success' %}bg-green-50 border border-green-200 text-green-800{% elif message.tags == 'warning' %}bg-yellow-50 border border-yellow-200 text-yellow-800{% else %}bg-blue-50 border border-blue-200 text-blue-800{% endif %}">
             {{ message }}
         </div>
         {% endfor %}
@@ -17,336 +20,390 @@
 
     <!-- Status Banner -->
     {% if candidate.status == 'pending' %}
-    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6">
-        <div class="flex items-center">
-            <i class="fas fa-clock text-2xl mr-3"></i>
-            <div>
-                <p class="font-bold">{% trans "Profile Under Review" %}</p>
-                <p class="text-sm">{% trans "Your profile is being reviewed by our admin team. This usually takes 24-48 hours." %}</p>
+    <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <svg class="h-6 w-6 text-amber-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-amber-800">{% trans "Profile Under Review" %}</h3>
+                <p class="text-sm text-amber-700 mt-1">{% trans "Your profile is being reviewed by our admin team. This usually takes 24-48 hours." %}</p>
             </div>
         </div>
     </div>
     {% elif candidate.status == 'rejected' %}
-    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
-        <div class="flex items-center">
-            <i class="fas fa-times-circle text-2xl mr-3"></i>
-            <div>
-                <p class="font-bold">{% trans "Profile Not Approved" %}</p>
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <svg class="h-6 w-6 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">{% trans "Profile Not Approved" %}</h3>
                 {% if candidate.admin_notes %}
-                <p class="text-sm">{% trans "Reason" %}: {{ candidate.admin_notes }}</p>
+                <p class="text-sm text-red-700 mt-1">{% trans "Reason" %}: {{ candidate.admin_notes }}</p>
                 {% endif %}
-                <p class="text-sm mt-2">{% trans "Please contact support for more information." %}</p>
+                <p class="text-sm text-red-600 mt-2">{% trans "Please contact support at" %} <a href="mailto:chandmanisha002@gmail.com" class="underline">chandmanisha002@gmail.com</a></p>
             </div>
         </div>
     </div>
     {% elif candidate.status == 'approved' %}
-    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6">
-        <div class="flex items-center">
-            <i class="fas fa-check-circle text-2xl mr-3"></i>
-            <div>
-                <p class="font-bold">{% trans "Profile Active" %}</p>
-                <p class="text-sm">{% trans "Your profile is live and visible to voters!" %}
-                    <a href="{% url 'candidates:detail' candidate.id %}" class="ml-2 underline font-semibold">
-                        {% trans "View Public Profile" %} →
+    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <svg class="h-6 w-6 text-green-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="ml-3 flex-1">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-medium text-green-800">{% trans "Profile Active" %}</h3>
+                    <a href="{% url 'candidates:detail' candidate.id %}" class="inline-flex items-center px-3 py-1 border border-green-300 rounded-md text-sm font-medium text-green-700 bg-white hover:bg-green-50">
+                        {% trans "View Public Profile" %}
+                        <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
                     </a>
-                </p>
+                </div>
             </div>
         </div>
     </div>
     {% endif %}
 
-    <!-- Dashboard Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white p-6 rounded-lg shadow-sm border">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-500">{% trans "Profile Status" %}</p>
-                    <p class="text-xl font-bold">{{ candidate.get_status_display }}</p>
-                </div>
-                <i class="fas fa-user-circle text-3xl text-blue-500"></i>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-sm border">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-500">{% trans "Campaign Posts" %}</p>
-                    <p class="text-xl font-bold">{{ posts.count }}</p>
-                </div>
-                <i class="fas fa-newspaper text-3xl text-green-500"></i>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow-sm border">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-500">{% trans "Upcoming Events" %}</p>
-                    <p class="text-xl font-bold">{{ events.count }}</p>
-                </div>
-                <i class="fas fa-calendar text-3xl text-purple-500"></i>
-            </div>
-        </div>
-
-    </div>
 
     <!-- Main Content Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
         <!-- Profile Information -->
-        <div class="lg:col-span-1">
-            <div class="bg-white p-6 rounded-lg shadow-sm border">
-                <h2 class="text-xl font-bold mb-4">{% trans "Profile Information" %}</h2>
-
-                {% if candidate.photo %}
-                <div class="mb-4">
-                    <img src="{{ candidate.photo.url }}" alt="{{ candidate.full_name }}"
-                         class="w-32 h-32 rounded-full mx-auto object-cover">
-                </div>
-                {% endif %}
-
-                <div class="space-y-3 text-sm">
-                    <div class="border-b pb-2">
-                        <span class="font-semibold text-gray-600">{% trans "Name" %}:</span>
-                        <p>{{ candidate.full_name }} <span class="text-xs text-gray-400">({% trans "fixed" %})</span></p>
-                    </div>
-                    <div class="border-b pb-2">
-                        <span class="font-semibold text-gray-600">{% trans "Position" %}:</span>
-                        <p>{{ candidate.get_position_level_display }} <span class="text-xs text-gray-400">({% trans "fixed" %})</span></p>
-                    </div>
-                    <div class="border-b pb-2">
-                        <span class="font-semibold text-gray-600">{% trans "Location" %}:</span>
-                        <p>
-                            {% if candidate.municipality %}{{ candidate.municipality.name_en }}, {% endif %}
-                            {{ candidate.district.name_en }},
-                            {{ candidate.province.name_en }}
-                            {% if candidate.ward_number %}
-                                <br>{% trans "Ward" %} {{ candidate.ward_number }}
-                            {% endif %}
-                            <span class="text-xs text-gray-400">({% trans "fixed" %})</span>
-                        </p>
-                    </div>
-                    <div class="border-b pb-2">
-                        <span class="font-semibold text-gray-600">{% trans "Age" %}:</span>
-                        <p>{{ candidate.age }} <span class="text-xs text-gray-400">({% trans "fixed" %})</span></p>
-                    </div>
-                    <div>
-                        <span class="font-semibold text-gray-600">{% trans "Joined" %}:</span>
-                        <p>{{ candidate.created_at|date:"M d, Y" }}</p>
-                    </div>
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+                    <h2 class="text-lg font-semibold text-white">{% trans "Personal Information" %}</h2>
                 </div>
 
-                {% if candidate.status == 'approved' %}
-                <div class="mt-4 space-y-2">
-                    <button onclick="openEditModal()" class="w-full text-center bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-                        <i class="fas fa-edit mr-2"></i>{% trans "Edit Profile Details" %}
+                <div class="p-8">
+                    {% if candidate.photo %}
+                    <div class="mb-8">
+                        <img src="{{ candidate.photo.url }}" alt="{{ candidate.full_name }}"
+                             class="w-full h-64 object-cover rounded-lg shadow-md">
+                    </div>
+                    {% else %}
+                    <div class="mb-8">
+                        <div class="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center shadow-md">
+                            <svg class="w-20 h-20 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <dl class="space-y-5">
+                        <div>
+                            <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Full Name" %}</dt>
+                            <dd class="mt-1 text-sm text-gray-900 font-medium">{{ candidate.full_name }}</dd>
+                        </div>
+
+                        <div>
+                            <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Position" %}</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ candidate.get_position_level_display }}</dd>
+                        </div>
+
+                        <div>
+                            <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Location" %}</dt>
+                            <dd class="mt-1 text-sm text-gray-900">
+                                {% if candidate.ward_number %}
+                                    {% trans "Ward" %} {{ candidate.ward_number }},
+                                {% endif %}
+                                {% if candidate.municipality %}
+                                    {{ candidate.municipality.name_en }}<br>
+                                {% endif %}
+                                {{ candidate.district.name_en }}, {{ candidate.province.name_en }}
+                            </dd>
+                        </div>
+
+                        {% if candidate.age %}
+                        <div>
+                            <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Age" %}</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ candidate.age }} {% trans "years" %}</dd>
+                        </div>
+                        {% endif %}
+
+                        {% if candidate.phone_number %}
+                        <div>
+                            <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Phone" %}</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ candidate.phone_number }}</dd>
+                        </div>
+                        {% endif %}
+
+                        <div>
+                            <dt class="text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Email" %}</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ candidate.user.email }}</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            {% if candidate.status == 'approved' %}
+            <!-- Edit Profile Button Box -->
+            <div class="mt-4 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-4">
+                    <button onclick="openEditModal()" class="w-full inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        {% trans "Edit Profile Details" %}
                     </button>
                 </div>
-                {% endif %}
             </div>
+            {% endif %}
         </div>
 
-        <!-- Add Event Form -->
-        <div class="lg:col-span-2">
+        <!-- Campaign Activities -->
+        <div class="lg:col-span-3 space-y-6">
             {% if candidate.status == 'approved' %}
-            <div class="bg-white p-6 rounded-lg shadow-sm border mb-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold">{% trans "Add Campaign Event" %}</h2>
+            <!-- Add Event Form -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900">{% trans "Schedule Campaign Event" %}</h2>
                 </div>
 
-                <form method="POST" action="#" onsubmit="alert('Event submission feature coming soon!'); return false;" class="space-y-4">
-                    {% csrf_token %}
-                    <div>
-                        <label for="event_name" class="block text-sm font-medium text-gray-700 mb-1">
-                            {% trans "Event Name" %} *
-                        </label>
-                        <input type="text" name="title_en" id="event_name" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                               placeholder="{% trans 'e.g., Town Hall Meeting' %}">
-                    </div>
+                <div class="p-6">
+                    <form method="POST" action="{% url 'candidates:add_event' %}" class="space-y-4">
+                        {% csrf_token %}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="event_name" class="block text-sm font-medium text-gray-700 mb-1">
+                                    {% trans "Event Name" %} <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" name="title_en" id="event_name" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                       placeholder="{% trans 'e.g., Community Meeting' %}">
+                            </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="event_date" class="block text-sm font-medium text-gray-700 mb-1">
+                                    {% trans "Date & Time" %} <span class="text-red-500">*</span>
+                                </label>
+                                <input type="datetime-local" name="event_date" id="event_date" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            </div>
+                        </div>
+
                         <div>
                             <label for="event_location" class="block text-sm font-medium text-gray-700 mb-1">
-                                {% trans "Location" %} *
+                                {% trans "Location" %} <span class="text-red-500">*</span>
                             </label>
                             <input type="text" name="location_en" id="event_location" required
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                   placeholder="{% trans 'Venue address' %}">
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                   placeholder="{% trans 'Enter venue address' %}">
                         </div>
 
                         <div>
-                            <label for="event_date" class="block text-sm font-medium text-gray-700 mb-1">
-                                {% trans "Date & Time" %} *
+                            <label for="event_description" class="block text-sm font-medium text-gray-700 mb-1">
+                                {% trans "Description" %}
+                                <span class="text-sm text-gray-500">({% trans "Optional" %})</span>
                             </label>
-                            <input type="datetime-local" name="event_date" id="event_date" required
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <textarea name="description_en" id="event_description" rows="3" maxlength="500"
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                      placeholder="{% trans 'Brief description of the event agenda' %}"></textarea>
+                            <p class="mt-1 text-xs text-gray-500">{% trans "Maximum 500 characters" %}</p>
                         </div>
-                    </div>
 
-                    <div>
-                        <label for="event_description" class="block text-sm font-medium text-gray-700 mb-1">
-                            {% trans "Description" %} {% trans "(Max 2 lines)" %}
-                        </label>
-                        <textarea name="description_en" id="event_description" rows="2" maxlength="200"
-                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  placeholder="{% trans 'Brief description of the event' %}"></textarea>
-                    </div>
-
-                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition">
-                        <i class="fas fa-calendar-plus mr-2"></i>{% trans "Add Event" %}
-                    </button>
-                </form>
+                        <div class="flex items-center justify-end">
+                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                </svg>
+                                {% trans "Add Event" %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
             {% endif %}
 
             <!-- Upcoming Events -->
-            <div class="bg-white p-6 rounded-lg shadow-sm border">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold">{% trans "Your Campaign Events" %}</h2>
-                    <span class="text-xs text-gray-500">{% trans "Events auto-remove after date passes" %}</span>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-semibold text-gray-900">{% trans "Upcoming Events" %}</h2>
+                        <span class="text-xs text-gray-500">{{ events.count }} {% trans "scheduled" %}</span>
+                    </div>
                 </div>
 
-                {% if events %}
-                <div class="space-y-3">
-                    {% for event in events %}
-                    <div class="border-b pb-3 relative">
-                        <h3 class="font-semibold">{{ event.title_en }}</h3>
-                        <p class="text-sm text-gray-600">
-                            <i class="fas fa-calendar mr-1"></i> {{ event.event_date|date:"M d, Y g:i A" }}
-                        </p>
-                        <p class="text-sm text-gray-600">
-                            <i class="fas fa-map-marker-alt mr-1"></i> {{ event.location_en|default:"-" }}
-                        </p>
-                        {% if event.description_en %}
-                        <p class="text-sm text-gray-700 mt-1">{{ event.description_en }}</p>
-                        {% endif %}
-                        {% if can_edit %}
-                        <button onclick="deleteEvent({{ event.id }})" class="absolute top-0 right-0 text-red-500 hover:text-red-700">
-                            <i class="fas fa-times"></i>
-                        </button>
-                        {% endif %}
+                <div class="p-6">
+                    {% if events %}
+                    <div class="space-y-4">
+                        {% for event in events %}
+                        <div class="relative group bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+                            <div class="pr-8">
+                                <h3 class="font-medium text-gray-900">{{ event.title_en }}</h3>
+                                <div class="mt-2 space-y-1">
+                                    <p class="text-sm text-gray-600 flex items-center">
+                                        <svg class="mr-2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        {{ event.event_date|date:"M d, Y g:i A" }}
+                                    </p>
+                                    <p class="text-sm text-gray-600 flex items-center">
+                                        <svg class="mr-2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        {{ event.location_en|default:"Location TBD" }}
+                                    </p>
+                                </div>
+                                {% if event.description_en %}
+                                <p class="text-sm text-gray-700 mt-2">{{ event.description_en }}</p>
+                                {% endif %}
+                            </div>
+                            {% if can_edit %}
+                            <button onclick="deleteEvent({{ event.id }})" class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-red-500 hover:text-red-700">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
+                    <p class="mt-4 text-xs text-gray-500">
+                        <svg class="inline mr-1 h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                        {% trans "Events are visible on your public profile" %}
+                    </p>
+                    {% else %}
+                    <div class="text-center py-6">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <p class="mt-2 text-sm text-gray-500">{% trans "No events scheduled yet" %}</p>
+                        <p class="text-xs text-gray-400 mt-1">{% trans "Add your first campaign event above" %}</p>
+                    </div>
+                    {% endif %}
                 </div>
-                <p class="text-xs text-gray-400 mt-3">
-                    <i class="fas fa-info-circle mr-1"></i>
-                    {% trans "Events will be visible on your public profile and automatically removed after the event date." %}
-                </p>
-                {% else %}
-                <p class="text-gray-500">{% trans "No events scheduled. Add your first event above!" %}</p>
-                {% endif %}
             </div>
         </div>
     </div>
-
-    <!-- Quick Actions (only for approved candidates) -->
-    {% if candidate.status == 'approved' %}
-    <div class="mt-8 bg-gray-50 p-6 rounded-lg">
-        <h2 class="text-xl font-bold mb-4">{% trans "Quick Actions" %}</h2>
-        <div class="flex flex-wrap gap-3">
-            <button onclick="openEditModal()" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                <i class="fas fa-edit mr-2"></i>{% trans "Edit Profile Details" %}
-            </button>
-            <a href="#add-event" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-               onclick="document.getElementById('event_name').focus(); return false;">
-                <i class="fas fa-calendar-plus mr-2"></i>{% trans "Add Event" %}
-            </a>
-            {% if candidate.donation_link %}
-            <a href="{{ candidate.donation_link }}" target="_blank" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                <i class="fas fa-dollar-sign mr-2"></i>{% trans "View Donation Page" %}
-            </a>
-            {% endif %}
-        </div>
-        <p class="text-xs text-gray-500 mt-3">
-            <i class="fas fa-info-circle mr-1"></i>
-            {% trans "Note: Personal information (name, age, location) cannot be edited after registration. Contact support if you need assistance." %}
-        </p>
-    </div>
-    {% endif %}
 
 </div>
 
-<!-- Edit Manifesto & Experience Modal -->
-<div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
-    <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">{% trans "Edit Profile Details" %}</h3>
-                <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-times text-xl"></i>
+<!-- Edit Profile Modal -->
+<div id="editModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onclick="closeEditModal()"></div>
+
+        <!-- Modal panel -->
+        <div class="inline-block w-full max-w-3xl px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:p-6">
+            <div class="absolute top-0 right-0 pt-4 pr-4">
+                <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
                 </button>
             </div>
 
-            <form method="POST" action="{% url 'candidates:edit' %}" class="space-y-4">
-                {% csrf_token %}
+            <div class="sm:flex sm:items-start">
+                <div class="w-full">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-6">{% trans "Edit Profile Details" %}</h3>
 
-                <div>
-                    <label for="manifesto" class="block text-sm font-medium text-gray-700 mb-2">
-                        {% trans "Manifesto" %}
-                    </label>
-                    <textarea name="manifesto_en" id="manifesto" rows="5"
-                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder="{% trans 'Your campaign promises and vision' %}">{{ candidate.manifesto_en }}</textarea>
-                </div>
+                    <form method="POST" action="{% url 'candidates:edit' %}" class="space-y-4">
+                        {% csrf_token %}
 
-                <div>
-                    <label for="experience" class="block text-sm font-medium text-gray-700 mb-2">
-                        {% trans "Experience" %}
-                    </label>
-                    <textarea name="experience_en" id="experience" rows="4"
-                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder="{% trans 'Your relevant experience and background' %}">{{ candidate.experience_en }}</textarea>
-                </div>
+                        <div>
+                            <label for="bio" class="block text-sm font-medium text-gray-700 mb-2">
+                                {% trans "Biography" %}
+                            </label>
+                            <textarea name="bio_en" id="bio" rows="4"
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                      placeholder="{% trans 'Tell voters about yourself' %}">{{ candidate.bio_en }}</textarea>
+                        </div>
 
-                <div>
-                    <label for="education" class="block text-sm font-medium text-gray-700 mb-2">
-                        {% trans "Education" %}
-                    </label>
-                    <textarea name="education_en" id="education" rows="3"
-                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder="{% trans 'Your educational background' %}">{{ candidate.education_en }}</textarea>
-                </div>
+                        <div>
+                            <label for="manifesto" class="block text-sm font-medium text-gray-700 mb-2">
+                                {% trans "Manifesto" %}
+                            </label>
+                            <textarea name="manifesto_en" id="manifesto" rows="5"
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                      placeholder="{% trans 'Your campaign promises and vision' %}">{{ candidate.manifesto_en }}</textarea>
+                        </div>
 
-                <!-- Contact Details -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="website" class="block text-sm font-medium text-gray-700 mb-2">
-                            {% trans "Website" %}
-                        </label>
-                        <input type="url" name="website" id="website" value="{{ candidate.website|default:'' }}"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                               placeholder="https://yourwebsite.com">
-                    </div>
-                    <div>
-                        <label for="facebook_url" class="block text-sm font-medium text-gray-700 mb-2">
-                            {% trans "Facebook Page" %}
-                        </label>
-                        <input type="url" name="facebook_url" id="facebook_url" value="{{ candidate.facebook_url|default:'' }}"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                               placeholder="https://facebook.com/yourpage">
-                    </div>
-                </div>
+                        <div>
+                            <label for="experience" class="block text-sm font-medium text-gray-700 mb-2">
+                                {% trans "Experience" %}
+                            </label>
+                            <textarea name="experience_en" id="experience" rows="4"
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                      placeholder="{% trans 'Your relevant experience and background' %}">{{ candidate.experience_en }}</textarea>
+                        </div>
 
-                <div>
-                    <label for="donation_link" class="block text-sm font-medium text-gray-700 mb-2">
-                        {% trans "Donation Link" %}
-                    </label>
-                    <input type="url" name="donation_link" id="donation_link" value="{{ candidate.donation_link|default:'' }}"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                           placeholder="{% trans 'Link to donation page (optional)' %}">
-                </div>
+                        <div>
+                            <label for="education" class="block text-sm font-medium text-gray-700 mb-2">
+                                {% trans "Education" %}
+                            </label>
+                            <textarea name="education_en" id="education" rows="3"
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                      placeholder="{% trans 'Your educational background' %}">{{ candidate.education_en }}</textarea>
+                        </div>
 
-                <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" onclick="closeEditModal()"
-                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
-                        {% trans "Cancel" %}
-                    </button>
-                    <button type="submit"
-                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                        {% trans "Save Changes" %}
-                    </button>
+                        <!-- Contact Details -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="website" class="block text-sm font-medium text-gray-700 mb-2">
+                                    {% trans "Website" %}
+                                </label>
+                                <input type="url" name="website" id="website" value="{{ candidate.website|default:'' }}"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       placeholder="https://yourwebsite.com">
+                            </div>
+                            <div>
+                                <label for="facebook_url" class="block text-sm font-medium text-gray-700 mb-2">
+                                    {% trans "Facebook Page" %}
+                                </label>
+                                <input type="url" name="facebook_url" id="facebook_url" value="{{ candidate.facebook_url|default:'' }}"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       placeholder="https://facebook.com/yourpage">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="donation_link" class="block text-sm font-medium text-gray-700 mb-2">
+                                {% trans "Donation Link" %}
+                            </label>
+                            <input type="url" name="donation_link" id="donation_link" value="{{ candidate.donation_link|default:'' }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="{% trans 'Link to donation page (optional)' %}">
+                        </div>
+
+                        <div>
+                            <label for="donation_description" class="block text-sm font-medium text-gray-700 mb-2">
+                                {% trans "What will donations be used for?" %}
+                            </label>
+                            <input type="text" name="donation_description" id="donation_description" value="{{ candidate.donation_description|default:'' }}"
+                                   maxlength="200"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="{% trans 'e.g., Campaign materials, community outreach programs' %}">
+                            <p class="mt-1 text-xs text-gray-500">{% trans "Maximum 200 characters" %}</p>
+                        </div>
+
+                        <div class="flex justify-end space-x-3 mt-6 border-t pt-4">
+                            <button type="button" onclick="closeEditModal()"
+                                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+                                {% trans "Cancel" %}
+                            </button>
+                            <button type="submit"
+                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                                {% trans "Save Changes" %}
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

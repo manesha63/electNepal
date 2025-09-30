@@ -431,12 +431,13 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">{% trans "Ward Number" %} ({% trans "Optional" %})</label>
+                <label class="form-label">{% trans "Ward Number" %} <span style="color: red;">*</span></label>
                 <input
                     type="number"
                     class="form-input"
                     x-model="selectedWard"
                     :max="maxWards"
+                    required
                     min="1"
                     placeholder="{% trans 'Enter ward number' %}">
             </div>
@@ -445,7 +446,7 @@
         <button
             @click="searchManual()"
             class="search-button"
-            :disabled="!selectedProvince">
+            :disabled="!selectedProvince || !selectedWard">
             {% trans "Search Candidates" %}
         </button>
     </div>
@@ -520,50 +521,47 @@
             </div>
 
             <!-- Pagination Controls -->
+            <!-- Pagination Controls -->
             <template x-if="totalPages > 1">
-                <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin: 30px 0;">
-                    <!-- Previous button -->
-                    <button
-                        @click="previousPage()"
-                        :disabled="!hasPrevious"
-                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300"
-                        :class="{'opacity-50 cursor-not-allowed': !hasPrevious}">
-                        <i class="fas fa-chevron-left"></i> {% trans "Previous" %}
-                    </button>
+                <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 20px; margin: 30px 0;">
+                    <!-- Show appropriate navigation based on page position -->
+                    <template x-if="currentPage === 1 && hasNext">
+                        <!-- First page with more pages: show > only -->
+                        <button
+                            @click="nextPage()"
+                            class="px-6 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                            style="display: flex; align-items: center;">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </template>
 
-                    <!-- Page numbers -->
-                    <div class="page-numbers" style="display: flex; gap: 5px;">
-                        <template x-for="page in Math.min(5, totalPages)" :key="page">
+                    <template x-if="currentPage > 1 && hasNext">
+                        <!-- Middle pages: show < > -->
+                        <div style="display: flex; align-items: center; gap: 20px;">
                             <button
-                                @click="goToPage(page)"
-                                x-text="page"
-                                class="px-3 py-1 rounded"
-                                :class="page === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
-                                style="min-width: 35px;">
+                                @click="previousPage()"
+                                class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                                style="display: flex; align-items: center;">
+                                <i class="fas fa-chevron-left"></i>
                             </button>
-                        </template>
-                        <template x-if="totalPages > 5">
-                            <span class="px-2">...</span>
-                        </template>
-                        <template x-if="totalPages > 5">
                             <button
-                                @click="goToPage(totalPages)"
-                                x-text="totalPages"
-                                class="px-3 py-1 rounded"
-                                :class="totalPages === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
-                                style="min-width: 35px;">
+                                @click="nextPage()"
+                                class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                                style="display: flex; align-items: center;">
+                                <i class="fas fa-chevron-right"></i>
                             </button>
-                        </template>
-                    </div>
+                        </div>
+                    </template>
 
-                    <!-- Next button -->
-                    <button
-                        @click="nextPage()"
-                        :disabled="!hasNext"
-                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300"
-                        :class="{'opacity-50 cursor-not-allowed': !hasNext}">
-                        {% trans "Next" %} <i class="fas fa-chevron-right"></i>
-                    </button>
+                    <template x-if="currentPage > 1 && !hasNext">
+                        <!-- Last page: show << only -->
+                        <button
+                            @click="previousPage()"
+                            class="px-6 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                            style="display: flex; align-items: center;">
+                            <i class="fas fa-chevron-double-left"></i>
+                        </button>
+                    </template>
                 </div>
             </template>
         </div>
@@ -734,7 +732,11 @@ function ballotApp() {
         // Search manually with selected location
         async searchManual() {
             if (!this.selectedProvince) {
-                this.error = "{% trans 'Please select at least a province' %}";
+                this.error = "{% trans 'Please select a province' %}";
+                return;
+            }
+            if (!this.selectedWard) {
+                this.error = "{% trans 'Please enter a ward number' %}";
                 return;
             }
 

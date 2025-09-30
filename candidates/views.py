@@ -479,12 +479,18 @@ def candidate_cards_api(request):
     # Build queryset - only show approved candidates
     qs = Candidate.objects.filter(status='approved').select_related('province', 'district', 'municipality')
 
-    # Apply search filter if provided
+    # Apply search filter if provided - search in all relevant fields
     if q:
         qs = qs.filter(
             Q(full_name__icontains=q) |
             Q(bio_en__icontains=q) |
-            Q(bio_ne__icontains=q)
+            Q(bio_ne__icontains=q) |
+            Q(education_en__icontains=q) |
+            Q(education_ne__icontains=q) |
+            Q(experience_en__icontains=q) |
+            Q(experience_ne__icontains=q) |
+            Q(manifesto_en__icontains=q) |
+            Q(manifesto_ne__icontains=q)
         )
 
     # Apply location filters
@@ -615,18 +621,25 @@ def edit_profile(request):
         return redirect('candidates:dashboard')
 
     if request.method == 'POST':
-        form = CandidateUpdateForm(request.POST, request.FILES, instance=candidate)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Your profile has been updated successfully!')
-            return redirect('candidates:dashboard')
-    else:
-        form = CandidateUpdateForm(instance=candidate)
+        # Handle simple form data from dashboard modal
+        candidate.bio_en = request.POST.get('bio_en', candidate.bio_en)
+        candidate.manifesto_en = request.POST.get('manifesto_en', candidate.manifesto_en)
+        candidate.experience_en = request.POST.get('experience_en', candidate.experience_en)
+        candidate.education_en = request.POST.get('education_en', candidate.education_en)
+        candidate.website = request.POST.get('website', candidate.website)
+        candidate.facebook_url = request.POST.get('facebook_url', candidate.facebook_url)
+        candidate.donation_link = request.POST.get('donation_link', candidate.donation_link)
+        candidate.donation_description = request.POST.get('donation_description', candidate.donation_description)
 
-    return render(request, 'candidates/edit_profile.html', {
-        'form': form,
-        'candidate': candidate
-    })
+        # Auto-translate if needed
+        candidate.autotranslate_missing()
+        candidate.save()
+
+        messages.success(request, 'Your profile has been updated successfully!')
+        return redirect('candidates:dashboard')
+
+    # If someone directly accesses /candidates/edit/ via GET, redirect to dashboard
+    return redirect('candidates:dashboard')
 
 
 @login_required

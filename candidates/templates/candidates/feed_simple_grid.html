@@ -343,7 +343,8 @@
                    id="searchInput"
                    class="search-input"
                    placeholder="{% trans 'Search candidates...' %}"
-                   value="{{ request.GET.q }}">
+                   value="{{ request.GET.q }}"
+                   onkeypress="if(event.key === 'Enter') performSearch()">
             <button class="search-btn" onclick="performSearch()">
                 {% trans 'Search' %}
             </button>
@@ -485,25 +486,41 @@
             </div>
 
             <!-- Pagination Controls -->
-            <div class="flex justify-between items-center w-full">
-                <!-- Previous Button (only shows after 3+ page loads) -->
-                <button
-                    x-show="showPreviousButton"
-                    @click="loadPrevious()"
-                    class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-                    :disabled="!hasPrevious">
-                    <i class="fas fa-chevron-left mr-2"></i> {% trans "Previous" %}
-                </button>
-                <div x-show="!showPreviousButton" class="w-24"></div>
+            <div class="flex justify-center items-center w-full space-x-4">
+                <!-- Show appropriate navigation based on page position -->
+                <template x-if="currentPage === 1 && hasMore">
+                    <!-- First page with more pages: show > only -->
+                    <button
+                        @click="loadMore()"
+                        class="px-6 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </template>
 
-                <!-- More Button -->
-                <button
-                    x-show="hasMore"
-                    @click="loadMore()"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                    {% trans "More" %} <i class="fas fa-chevron-right ml-2"></i>
-                </button>
-                <div x-show="!hasMore" class="w-24"></div>
+                <template x-if="currentPage > 1 && hasMore">
+                    <!-- Middle pages: show < > -->
+                    <div class="flex items-center space-x-4">
+                        <button
+                            @click="loadPrevious()"
+                            class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button
+                            @click="loadMore()"
+                            class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </template>
+
+                <template x-if="currentPage > 1 && !hasMore">
+                    <!-- Last page: show << only -->
+                    <button
+                        @click="loadPrevious()"
+                        class="px-6 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center">
+                        <i class="fas fa-chevron-double-left"></i>
+                    </button>
+                </template>
             </div>
         </div>
 
@@ -522,8 +539,6 @@ function candidateGrid() {
         pageSize: 9, // 3 rows * 3 columns
         hasMore: true,
         hasPrevious: false,
-        showPreviousButton: false,
-        pageLoadCount: 0,
         searchQuery: '',
 
         async fetchCandidates(page = 1) {
@@ -560,12 +575,6 @@ function candidateGrid() {
                 this.hasMore = data.has_next || false;
                 this.hasPrevious = data.has_previous || false;
 
-                // Track page loads for showing Previous button
-                if (page > this.currentPage) {
-                    this.pageLoadCount++;
-                }
-                this.showPreviousButton = this.pageLoadCount >= 3;
-
             } catch (error) {
                 console.error('Error fetching candidates:', error);
                 // Fallback to template data if available
@@ -575,7 +584,6 @@ function candidateGrid() {
 
         loadMore() {
             if (this.hasMore) {
-                this.pageLoadCount++;
                 this.fetchCandidates(this.currentPage + 1);
             }
         },

@@ -172,10 +172,10 @@
     </div>
 
     <!-- Additional Information Cards -->
-    <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Campaign Events -->
+    <div class="mt-8 grid grid-cols-1 {% if candidate_events and candidate.donation_link %}md:grid-cols-2 lg:grid-cols-3{% elif candidate_events or candidate.donation_link %}md:grid-cols-2{% endif %} gap-6">
+        <!-- Campaign Events - Only show if there are events -->
         {% if candidate_events %}
-        <div class="bg-white rounded-xl border border-gray-300 shadow-md p-6">
+        <div class="bg-white rounded-xl border border-gray-300 shadow-md p-6 h-full">
             <h3 class="text-xl font-bold text-gray-900 mb-4">
                 <i class="fas fa-calendar-alt mr-2 text-gray-600"></i>
                 {% trans "Upcoming Events" %}
@@ -210,8 +210,7 @@
         {% endif %}
 
         <!-- Contact Information -->
-        {% if candidate.user.email or candidate.phone_number or candidate.website or candidate.facebook_url or candidate.donation_link %}
-        <div class="bg-white rounded-xl border border-gray-300 shadow-md p-6">
+        <div class="bg-white rounded-xl border border-gray-300 shadow-md p-6 h-full">
             <h3 class="text-xl font-bold text-gray-900 mb-4">
                 <i class="fas fa-address-card mr-2 text-gray-600"></i>
                 {% trans "Contact" %}
@@ -253,15 +252,28 @@
                 </div>
                 {% endif %}
 
-                {% if candidate.donation_link %}
-                <div class="pt-3 mt-3 border-t border-gray-200">
-                    <a href="{{ candidate.donation_link }}" target="_blank"
-                       class="block w-full text-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
-                        <i class="fas fa-donate mr-2"></i>{% trans "Support Campaign" %}
-                    </a>
-                </div>
+                {% if not candidate.user.email and not candidate.phone_number and not candidate.website and not candidate.facebook_url %}
+                <p class="text-gray-500 text-sm">{% trans "No contact information available" %}</p>
                 {% endif %}
             </div>
+        </div>
+
+        <!-- Donation Section - Only show if there's a donation link -->
+        {% if candidate.donation_link %}
+        <div class="bg-white rounded-xl border border-gray-300 shadow-md p-6 h-full flex flex-col">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">
+                <i class="fas fa-donate mr-2 text-gray-600"></i>
+                {% trans "Support This Campaign" %}
+            </h3>
+            {% if candidate.donation_description %}
+            <p class="text-gray-700 mb-4 flex-grow">{{ candidate.donation_description }}</p>
+            {% else %}
+            <p class="text-gray-700 mb-4 flex-grow">{% trans "Your support helps make a difference in our community" %}</p>
+            {% endif %}
+            <a href="{{ candidate.donation_link }}" target="_blank"
+               class="block w-full text-center px-4 py-3 bg-white text-gray-800 border border-gray-300 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                <i class="fas fa-hand-holding-heart mr-2"></i>{% trans "Donate Now" %}
+            </a>
         </div>
         {% endif %}
 

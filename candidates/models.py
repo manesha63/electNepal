@@ -94,6 +94,7 @@ class Candidate(AutoTranslationMixin, models.Model):
     website = models.URLField(blank=True)
     facebook_url = models.URLField(blank=True)
     donation_link = models.URLField(blank=True)
+    donation_description = models.CharField(max_length=200, blank=True, help_text="Brief description of what donations will be used for")
 
     # Approval/Verification fields
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
