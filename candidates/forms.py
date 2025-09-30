@@ -14,10 +14,16 @@ class CandidateRegistrationForm(forms.ModelForm):
         fields = [
             'full_name', 'photo', 'age', 'phone_number',
             'bio_en', 'bio_ne', 'education_en', 'education_ne',
-            'experience_en', 'experience_ne', 'manifesto_en', 'manifesto_ne',
-            'position_level', 'province', 'district', 'municipality',
-            'ward_number', 'constituency_code', 'website', 'facebook_url'
+            'experience_en', 'experience_ne', 'achievements_en', 'achievements_ne',
+            'manifesto_en', 'manifesto_ne',
+            'office', 'position_level', 'province', 'district', 'municipality',
+            'ward_number', 'constituency_code', 'website', 'facebook_url',
+            'identity_document', 'candidacy_document', 'terms_accepted'
         ]
+        labels = {
+            'position_level': 'Seat',  # Rename Position Level to Seat
+            'office': 'Office',
+        }
         widgets = {
             'age': forms.NumberInput(attrs={'min': 18, 'max': 120, 'placeholder': 'Age'}),
             'bio_en': forms.Textarea(attrs={'rows': 4}),
@@ -26,8 +32,12 @@ class CandidateRegistrationForm(forms.ModelForm):
             'education_ne': forms.Textarea(attrs={'rows': 3}),
             'experience_en': forms.Textarea(attrs={'rows': 3}),
             'experience_ne': forms.Textarea(attrs={'rows': 3}),
+            'achievements_en': forms.Textarea(attrs={'rows': 3, 'placeholder': 'List your key achievements'}),
+            'achievements_ne': forms.Textarea(attrs={'rows': 3}),
             'manifesto_en': forms.Textarea(attrs={'rows': 5}),
             'manifesto_ne': forms.Textarea(attrs={'rows': 5}),
+            'identity_document': forms.FileInput(attrs={'accept': 'image/*,application/pdf'}),
+            'candidacy_document': forms.FileInput(attrs={'accept': 'image/*,application/pdf'}),
         }
     
     def clean_phone_number(self):

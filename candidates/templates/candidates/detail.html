@@ -35,23 +35,8 @@
 
                 <!-- Office below age -->
                 <div class="text-lg font-semibold text-gray-700 mb-1 text-center" style="width: 8.5cm;">
-                    {% get_current_language as LANGUAGE_CODE %}
                     <span class="text-gray-600">{% trans "Office:" %}</span>
-                    {% if LANGUAGE_CODE == 'ne' %}
-                        {% if candidate.position_level == 'federal' %}
-                            संघीय संसद
-                        {% elif candidate.position_level == 'provincial' %}
-                            प्रदेश सभा
-                        {% elif candidate.position_level == 'local_executive' %}
-                            स्थानीय कार्यपालिका
-                        {% elif candidate.position_level == 'ward' %}
-                            वडा प्रतिनिधि
-                        {% else %}
-                            {{ candidate.get_position_level_display }}
-                        {% endif %}
-                    {% else %}
-                        {{ candidate.get_position_level_display }}
-                    {% endif %}
+                    {{ candidate.get_office_display }}
                 </div>
 
                 <!-- Seat/Position below office -->
@@ -105,9 +90,27 @@
                     <div class="text-gray-700 text-sm leading-relaxed education-content">
                         {% get_current_language as LANGUAGE_CODE %}
                         {% if LANGUAGE_CODE == 'ne' and candidate.education_ne %}
-                            {{ candidate.education_ne|linebreaksbr }}
+                            <ul class="list-none space-y-1">
+                            {% for line in candidate.education_ne.splitlines %}
+                                {% if line.strip %}
+                                <li class="flex items-start">
+                                    <span class="mr-2">•</span>
+                                    <span>{{ line.strip }}</span>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                            </ul>
                         {% else %}
-                            {{ candidate.education_en|linebreaksbr }}
+                            <ul class="list-none space-y-1">
+                            {% for line in candidate.education_en.splitlines %}
+                                {% if line.strip %}
+                                <li class="flex items-start">
+                                    <span class="mr-2">•</span>
+                                    <span>{{ line.strip }}</span>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                            </ul>
                         {% endif %}
                     </div>
                 </div>
@@ -115,16 +118,69 @@
 
                 <!-- Past Experience -->
                 {% if candidate.experience_en or candidate.experience_ne %}
-                <div>
+                <div class="mb-6">
                     <h2 class="text-lg font-bold text-gray-900 mb-3">
                         {% trans "Past Experience" %}
                     </h2>
                     <div class="text-gray-700 text-sm leading-relaxed experience-content" id="experience-content">
                         {% get_current_language as LANGUAGE_CODE %}
                         {% if LANGUAGE_CODE == 'ne' and candidate.experience_ne %}
-                            {{ candidate.experience_ne|linebreaksbr }}
+                            <ul class="list-none space-y-1">
+                            {% for line in candidate.experience_ne.splitlines %}
+                                {% if line.strip %}
+                                <li class="flex items-start">
+                                    <span class="mr-2">•</span>
+                                    <span>{{ line.strip }}</span>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                            </ul>
                         {% else %}
-                            {{ candidate.experience_en|linebreaksbr }}
+                            <ul class="list-none space-y-1">
+                            {% for line in candidate.experience_en.splitlines %}
+                                {% if line.strip %}
+                                <li class="flex items-start">
+                                    <span class="mr-2">•</span>
+                                    <span>{{ line.strip }}</span>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Key Achievements -->
+                {% if candidate.achievements_en or candidate.achievements_ne %}
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900 mb-3">
+                        {% trans "Key Achievements" %}
+                    </h2>
+                    <div class="text-gray-700 text-sm leading-relaxed achievements-content">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% if LANGUAGE_CODE == 'ne' and candidate.achievements_ne %}
+                            <ul class="list-none space-y-1">
+                            {% for line in candidate.achievements_ne.splitlines %}
+                                {% if line.strip %}
+                                <li class="flex items-start">
+                                    <span class="mr-2">•</span>
+                                    <span>{{ line.strip }}</span>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                            </ul>
+                        {% else %}
+                            <ul class="list-none space-y-1">
+                            {% for line in candidate.achievements_en.splitlines %}
+                                {% if line.strip %}
+                                <li class="flex items-start">
+                                    <span class="mr-2">•</span>
+                                    <span>{{ line.strip }}</span>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                            </ul>
                         {% endif %}
                     </div>
                 </div>

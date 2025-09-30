@@ -43,6 +43,13 @@ class Candidate(AutoTranslationMixin, models.Model):
         ('national_assembly', 'National Assembly Member'),
     ]
 
+    OFFICE_CHOICES = [
+        ('federal', 'Federal'),
+        ('provincial', 'Provincial'),
+        ('municipal', 'Municipal'),
+        ('ward', 'Ward'),
+    ]
+
     STATUS_CHOICES = [
         ('pending', 'Pending Review'),
         ('approved', 'Approved'),
@@ -50,7 +57,7 @@ class Candidate(AutoTranslationMixin, models.Model):
     ]
 
     # Fields that should be auto-translated
-    TRANSLATABLE_FIELDS = ['bio', 'education', 'experience', 'manifesto']
+    TRANSLATABLE_FIELDS = ['bio', 'education', 'experience', 'achievements', 'manifesto']
     
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=200, help_text="Full name as it appears on official documents")
@@ -75,11 +82,16 @@ class Candidate(AutoTranslationMixin, models.Model):
     experience_ne = models.TextField(blank=True)
     is_mt_experience_ne = models.BooleanField(default=False, help_text="True if experience_ne is machine translated")
 
+    achievements_en = models.TextField(blank=True, help_text="Key achievements and accomplishments")
+    achievements_ne = models.TextField(blank=True)
+    is_mt_achievements_ne = models.BooleanField(default=False, help_text="True if achievements_ne is machine translated")
+
     manifesto_en = models.TextField(blank=True)
     manifesto_ne = models.TextField(blank=True)
     is_mt_manifesto_ne = models.BooleanField(default=False, help_text="True if manifesto_ne is machine translated")
 
-    position_level = models.CharField(max_length=35, choices=POSITION_LEVELS)
+    office = models.CharField(max_length=20, choices=OFFICE_CHOICES, default='municipal', help_text="Office level (Federal/Provincial/Municipal/Ward)")
+    position_level = models.CharField(max_length=35, choices=POSITION_LEVELS, verbose_name="Seat", help_text="Specific seat/position being contested")
     province = models.ForeignKey(Province, on_delete=models.CASCADE)
     district = models.ForeignKey(District, on_delete=models.CASCADE)
     municipality = models.ForeignKey(Municipality, on_delete=models.CASCADE, null=True, blank=True)
@@ -95,6 +107,24 @@ class Candidate(AutoTranslationMixin, models.Model):
     facebook_url = models.URLField(blank=True)
     donation_link = models.URLField(blank=True)
     donation_description = models.CharField(max_length=200, blank=True, help_text="Brief description of what donations will be used for")
+
+    # Identity Verification Documents (confidential - admin only)
+    identity_document = models.FileField(
+        upload_to='verification_docs/identity/%Y/%m/',
+        blank=True,
+        null=True,
+        help_text="National ID/Citizenship/Driver's License (confidential)"
+    )
+    candidacy_document = models.FileField(
+        upload_to='verification_docs/candidacy/%Y/%m/',
+        blank=True,
+        null=True,
+        help_text="Official election declaration paper (confidential)"
+    )
+    terms_accepted = models.BooleanField(
+        default=False,
+        help_text="Candidate has accepted terms and conditions"
+    )
 
     # Approval/Verification fields
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')

@@ -523,7 +523,8 @@ def candidate_cards_api(request):
             "id": c.id,
             "name": c.full_name,
             "photo": c.photo.url if c.photo else settings.DEFAULT_CANDIDATE_AVATAR,
-            "position_level": c.position_level,
+            "office": c.office,  # Add office field
+            "position_level": c.position_level,  # Keep for backward compatibility, this is now "Seat"
             "province": getattr(c.province, 'name_ne' if is_nepali else 'name_en', None) if c.province else None,
             "district": getattr(c.district, 'name_ne' if is_nepali else 'name_en', None) if c.district else None,
             "municipality": getattr(c.municipality, 'name_ne' if is_nepali else 'name_en', None) if c.municipality else None,

@@ -7,9 +7,9 @@ from .models import Candidate, CandidatePost, CandidateEvent
 
 @admin.register(Candidate)
 class CandidateAdmin(admin.ModelAdmin):
-    list_display = ['full_name', 'position_level', 'get_status_badge', 'province', 'district',
+    list_display = ['full_name', 'office', 'position_level', 'get_status_badge', 'province', 'district',
                     'municipality', 'created_at']
-    list_filter = ['status', 'position_level', 'province',
+    list_filter = ['status', 'office', 'position_level', 'province',
                    'district', 'created_at']
     search_fields = ['full_name', 'user__username', 'user__email',
                      'phone_number', 'constituency_code']
@@ -29,7 +29,8 @@ class CandidateAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
         ('Education & Experience', {
-            'fields': ('education_en', 'education_ne', 'experience_en', 'experience_ne'),
+            'fields': ('education_en', 'education_ne', 'experience_en', 'experience_ne',
+                      'achievements_en', 'achievements_ne'),
             'classes': ('collapse',)
         }),
         ('Manifesto', {
@@ -37,11 +38,16 @@ class CandidateAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
         ('Position & Location', {
-            'fields': ('position_level', 'province', 'district', 'municipality', 
+            'fields': ('office', 'position_level', 'province', 'district', 'municipality',
                       'ward_number', 'constituency_code')
         }),
         ('Online Presence', {
             'fields': ('website', 'facebook_url', 'donation_link')
+        }),
+        ('Verification Documents (Confidential)', {
+            'fields': ('identity_document', 'candidacy_document', 'terms_accepted'),
+            'classes': ('collapse',),
+            'description': 'Confidential documents for admin review only - not displayed publicly'
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),

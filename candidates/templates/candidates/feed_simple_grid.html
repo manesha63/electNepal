@@ -189,13 +189,13 @@
 
     .candidate-photo {
         width: 100%;
-        height: 200px;
+        height: 240px;  /* Increased from 200px to 240px (1.2x) */
         object-fit: cover;
     }
 
     .candidate-photo-placeholder {
         width: 100%;
-        height: 200px;
+        height: 240px;  /* Increased from 200px to 240px (1.2x) */
         background: linear-gradient(135deg, #E2E2E2, #D1D5DB);
         display: flex;
         align-items: center;
@@ -206,7 +206,7 @@
 
     .candidate-info {
         flex: 1;
-        padding: 16px;
+        padding: 12px 16px 14px;  /* Reduced top padding to compensate for taller image */
         text-align: center;
     }
 
@@ -223,7 +223,7 @@
         font-size: 1.125rem;
         font-weight: 700;
         color: #1F2937;
-        margin-bottom: 8px;
+        margin-bottom: 6px;  /* Reduced from 8px */
         cursor: pointer;
         transition: color 0.2s;
     }
@@ -231,21 +231,21 @@
     .candidate-office {
         font-size: 1rem;
         color: #1F2937;
-        margin-bottom: 4px;
+        margin-bottom: 3px;  /* Reduced from 4px */
         font-weight: 500;
     }
 
     .candidate-seat {
         font-size: 0.875rem;
         color: #374151;
-        margin-bottom: 4px;
+        margin-bottom: 3px;  /* Reduced from 4px */
         font-weight: 500;
     }
 
     .candidate-location {
         font-size: 0.875rem;
         color: #4B5563;
-        margin-top: 4px;
+        margin-top: 3px;  /* Reduced from 4px */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -293,7 +293,7 @@
     }
 
     .card-actions {
-        padding: 12px 16px 16px;
+        padding: 10px 16px 14px;  /* Reduced padding to compensate for taller image */
         margin-top: auto;
         text-align: center;
     }
@@ -465,7 +465,7 @@
                                 <h3 class="candidate-name" x-text="candidate.name"></h3>
                             </a>
                             <div class="candidate-office">
-                                <span>{% trans "Office:" %} </span><span x-text="getOfficeTitle(candidate.position_level)"></span>
+                                <span>{% trans "Office:" %} </span><span x-text="getOfficeDisplay(candidate.office)"></span>
                             </div>
                             <div class="candidate-seat">
                                 <span>{% trans "Seat:" %} </span><span x-text="getSeatDescription(candidate.position_level)"></span>
@@ -486,41 +486,50 @@
             </div>
 
             <!-- Pagination Controls -->
-            <div class="flex justify-center items-center w-full space-x-4">
-                <!-- Show appropriate navigation based on page position -->
-                <template x-if="currentPage === 1 && hasMore">
-                    <!-- First page with more pages: show > only -->
-                    <button
-                        @click="loadMore()"
-                        class="px-6 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </template>
+            <!-- Pagination Navigation -->
+            <div class="flex justify-center items-center w-full mt-8">
+                <div class="inline-flex items-center space-x-4">
 
-                <template x-if="currentPage > 1 && hasMore">
-                    <!-- Middle pages: show < > -->
-                    <div class="flex items-center space-x-4">
-                        <button
-                            @click="loadPrevious()"
-                            class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
+                    <!-- First Page: Only show >> -->
+                    <template x-if="currentPage === 1 && hasMore">
                         <button
                             @click="loadMore()"
-                            class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center">
-                            <i class="fas fa-chevron-right"></i>
+                            class="px-4 py-2 rounded-lg transition-all duration-200 font-bold text-xl text-gray-700 hover:bg-gray-100 hover:shadow-md hover:border hover:border-gray-300">
+                            <span>&gt;&gt;</span>
                         </button>
-                    </div>
-                </template>
+                    </template>
 
-                <template x-if="currentPage > 1 && !hasMore">
-                    <!-- Last page: show << only -->
-                    <button
-                        @click="loadPrevious()"
-                        class="px-6 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center">
-                        <i class="fas fa-chevron-double-left"></i>
-                    </button>
-                </template>
+                    <!-- Last Page: Only show << -->
+                    <template x-if="!hasMore && currentPage > 1">
+                        <button
+                            @click="loadPrevious()"
+                            class="px-4 py-2 rounded-lg transition-all duration-200 font-bold text-xl text-gray-700 hover:bg-gray-100 hover:shadow-md hover:border hover:border-gray-300">
+                            <span>&lt;&lt;</span>
+                        </button>
+                    </template>
+
+                    <!-- Middle Pages: Show < and > -->
+                    <template x-if="currentPage > 1 && hasMore">
+                        <>
+                            <button
+                                @click="loadPrevious()"
+                                class="px-4 py-2 rounded-lg transition-all duration-200 font-bold text-xl text-gray-700 hover:bg-gray-100 hover:shadow-md hover:border hover:border-gray-300">
+                                <span>&lt;</span>
+                            </button>
+                            <button
+                                @click="loadMore()"
+                                class="px-4 py-2 rounded-lg transition-all duration-200 font-bold text-xl text-gray-700 hover:bg-gray-100 hover:shadow-md hover:border hover:border-gray-300">
+                                <span>&gt;</span>
+                            </button>
+                        </>
+                    </template>
+
+                    <!-- Single Page: No navigation -->
+                    <template x-if="totalPages === 1">
+                        <div></div>
+                    </template>
+
+                </div>
             </div>
         </div>
 
@@ -622,15 +631,15 @@ function candidateGrid() {
             return parts.join(', ') || 'Nepal';
         },
 
-        getOfficeTitle(position_level) {
-            const translations = {
-                ward: '{% trans "Ward" %}',
-                municipalityRural: '{% trans "Municipality/Rural Municipality" %}',
-                provincialAssembly: '{% trans "Provincial Assembly" %}',
-                federalParliament: '{% trans "Federal Parliament" %}',
-                localGovernment: '{% trans "Local Government" %}'
+        getOfficeDisplay(office) {
+            // Display the office field value
+            const officeMap = {
+                'federal': '{% trans "Federal" %}',
+                'provincial': '{% trans "Provincial" %}',
+                'municipal': '{% trans "Municipal" %}',
+                'ward': '{% trans "Ward" %}'
             };
-            return PositionUtils.getOfficeTitle(position_level, translations);
+            return officeMap[office] || office;
         },
 
         getSeatDescription(position_level) {

@@ -24,7 +24,9 @@
             <span class="text-gray-400">→</span>
             <span class="text-gray-600">3. Content</span>
             <span class="text-gray-400">→</span>
-            <span class="text-gray-600">4. Review</span>
+            <span class="text-gray-600">4. Documents</span>
+            <span class="text-gray-400">→</span>
+            <span class="text-gray-600">5. Review</span>
         </div>
         <div class="mt-2 h-2 bg-gray-200 rounded-full">
             <div class="h-full bg-blue-600 rounded-full" style="width: 25%;"></div>
@@ -93,8 +95,18 @@
             <h2 class="text-xl font-semibold mb-4">{% trans "Position & Location" %}</h2>
 
             <div>
+                <label for="id_office" class="block text-sm font-medium text-gray-700 mb-2">
+                    {% trans "Office" %} *
+                </label>
+                {{ form.office }}
+                {% if form.office.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.office.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
                 <label for="id_position_level" class="block text-sm font-medium text-gray-700 mb-2">
-                    {% trans "Position Level" %} *
+                    {% trans "Seat" %} *
                 </label>
                 {{ form.position_level }}
                 {% if form.position_level.errors %}
@@ -183,6 +195,16 @@
             </div>
 
             <div>
+                <label for="id_achievements_en" class="block text-sm font-medium text-gray-700 mb-2">
+                    {% trans "Key Achievements" %}
+                </label>
+                {{ form.achievements_en }}
+                {% if form.achievements_en.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.achievements_en.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
                 <label for="id_manifesto_en" class="block text-sm font-medium text-gray-700 mb-2">
                     {% trans "Manifesto" %}
                 </label>
@@ -193,8 +215,49 @@
             </div>
         </div>
 
-        <!-- Step 4: Social Links & Review -->
+        <!-- Step 4: Document Verification -->
         <div x-show="step === 4" class="space-y-4">
+            <h2 class="text-xl font-semibold mb-4">{% trans "Identity Verification" %}</h2>
+            <p class="text-sm text-gray-600 mb-4">
+                {% trans "Upload documents to verify your identity and candidacy. These documents will remain confidential and will only be reviewed by our admin team." %}
+            </p>
+
+            <div>
+                <label for="id_identity_document" class="block text-sm font-medium text-gray-700 mb-2">
+                    {% trans "Identity Document" %} *
+                </label>
+                <p class="text-xs text-gray-500 mb-2">
+                    {% trans "Upload your National ID, Citizenship Certificate, or Driver's License (PDF or Image)" %}
+                </p>
+                {{ form.identity_document }}
+                {% if form.identity_document.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.identity_document.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="id_candidacy_document" class="block text-sm font-medium text-gray-700 mb-2">
+                    {% trans "Election Declaration Document" %} *
+                </label>
+                <p class="text-xs text-gray-500 mb-2">
+                    {% trans "Upload your official election declaration paper from the Election Commission (PDF or Image)" %}
+                </p>
+                {{ form.candidacy_document }}
+                {% if form.candidacy_document.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.candidacy_document.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p class="text-sm text-blue-800">
+                    <i class="fas fa-shield-alt mr-2"></i>
+                    {% trans "Your documents are encrypted and securely stored. They will never be displayed publicly and are only used for verification purposes." %}
+                </p>
+            </div>
+        </div>
+
+        <!-- Step 5: Social Links & Review -->
+        <div x-show="step === 5" class="space-y-4">
             <h2 class="text-xl font-semibold mb-4">{% trans "Social Links & Review" %}</h2>
 
             <div>
@@ -223,10 +286,21 @@
                 </p>
             </div>
 
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                <h3 class="font-semibold text-sm mb-2">{% trans "Terms and Conditions" %}</h3>
+                <ul class="text-xs text-gray-700 space-y-1">
+                    <li>• {% trans "All information provided must be accurate and truthful" %}</li>
+                    <li>• {% trans "You must comply with all election laws and regulations" %}</li>
+                    <li>• {% trans "False information may result in disqualification" %}</li>
+                    <li>• {% trans "Your profile will be publicly visible once approved" %}</li>
+                    <li>• {% trans "You grant ElectNepal permission to display your information" %}</li>
+                </ul>
+            </div>
+
             <div class="flex items-center">
                 <input type="checkbox" id="id_terms_accepted" name="terms_accepted" required class="mr-2">
-                <label for="id_terms_accepted" class="text-sm">
-                    {% trans "I confirm that all information provided is accurate and I agree to follow election laws." %} *
+                <label for="id_terms_accepted" class="text-sm font-medium">
+                    {% trans "I accept the terms and conditions and confirm that all information provided is accurate" %} *
                 </label>
             </div>
 
@@ -241,7 +315,7 @@
                     class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
                 {% trans "Previous" %}
             </button>
-            <button type="button" @click="nextStep()" x-show="step < 4"
+            <button type="button" @click="nextStep()" x-show="step < 5"
                     class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 {% trans "Next" %}
             </button>
@@ -286,7 +360,7 @@ function registrationForm() {
         updateProgress() {
             const progressBar = document.querySelector('.bg-blue-600');
             if (progressBar) {
-                progressBar.style.width = (this.step * 25) + '%';
+                progressBar.style.width = (this.step * 20) + '%';  // Changed from 25% to 20% for 5 steps
             }
         },
 
@@ -307,14 +381,19 @@ function registrationForm() {
                 }
             } else if (this.step === 2) {
                 // Step 2: Location validation
+                const office = document.getElementById('id_office');
                 const position = document.getElementById('id_position_level');
                 const province = document.getElementById('id_province');
                 const district = document.getElementById('id_district');
                 const municipality = document.getElementById('id_municipality');
                 const wardNumber = document.getElementById('id_ward_number');
 
+                if (!office || !office.value) {
+                    alert('Please select an office');
+                    return false;
+                }
                 if (!position || !position.value) {
-                    alert('Please select a position level');
+                    alert('Please select a seat');
                     return false;
                 }
                 if (!province || !province.value) {
@@ -338,6 +417,19 @@ function registrationForm() {
                 const bioEn = document.getElementById('id_bio_en');
                 if (!bioEn || !bioEn.value.trim()) {
                     alert('Please enter your bio/description');
+                    return false;
+                }
+            } else if (this.step === 4) {
+                // Step 4: Document validation
+                const identityDoc = document.getElementById('id_identity_document');
+                const candidacyDoc = document.getElementById('id_candidacy_document');
+
+                if (!identityDoc || !identityDoc.files || identityDoc.files.length === 0) {
+                    alert('Please upload your identity document (National ID/Citizenship/Driver\'s License)');
+                    return false;
+                }
+                if (!candidacyDoc || !candidacyDoc.files || candidacyDoc.files.length === 0) {
+                    alert('Please upload your election declaration document');
                     return false;
                 }
             }

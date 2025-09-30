@@ -153,20 +153,30 @@ class CandidateSignupView(CreateView):
 
 
 class CustomLoginView(LoginView):
-    """Login with candidate dashboard redirect if candidate exists"""
+    """Custom login view that redirects based on user type:
+    - Admin users -> Admin dashboard
+    - Candidates -> Candidate dashboard
+    - New users -> Candidate registration
+    """
     template_name = 'authentication/login.html'
     redirect_authenticated_user = True
 
     def get_success_url(self):
+        # Check if there's a 'next' parameter in the request
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+
+        # Check if user is admin (staff or superuser)
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            return '/admin/'  # Redirect to admin dashboard
+
         # Check if user has a candidate profile
         if hasattr(self.request.user, 'candidate'):
-            if self.request.user.candidate.status == 'approved':
-                return reverse_lazy('candidates:dashboard')
-            else:
-                return reverse_lazy('candidates:dashboard')  # Still go to dashboard to see status
-        else:
-            # No candidate profile, redirect to registration
-            return reverse_lazy('candidates:register')
+            return reverse_lazy('candidates:dashboard')  # Redirect to candidate dashboard
+
+        # If user has no candidate profile yet, redirect to registration
+        return reverse_lazy('candidates:register')
 
     def form_valid(self, form):
         response = super().form_valid(form)
