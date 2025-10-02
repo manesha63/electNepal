@@ -1,16 +1,12 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}{% trans "Register as Candidate" %} - ElectNepal{% endblock %}
+{% block title %}{% trans "Create an Account" %} - ElectNepal{% endblock %}
 
 {% block content %}
 <div class="max-w-md mx-auto mt-8 px-4">
     <div class="card-gradient p-6 rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold mb-4 text-center">{% trans "Register as Candidate" %}</h2>
-
-        <p class="text-sm text-gray-600 mb-6 text-center">
-            {% trans "Create an account to register as an independent candidate and connect with voters." %}
-        </p>
+        <h2 class="text-2xl font-bold mb-4 text-center">{% trans "Create an Account" %}</h2>
 
         {% if messages %}
             {% for message in messages %}
@@ -31,7 +27,7 @@
 
             <div class="mb-4">
                 <label for="id_username" class="block text-sm font-medium text-gray-700 mb-2">
-                    {% trans "Full Name" %}
+                    {% trans "Username" %}
                 </label>
                 {{ form.username }}
                 {% if form.username.errors %}
@@ -84,9 +80,6 @@
             </p>
         </div>
 
-        <div class="mt-4 pt-4 border-t text-xs text-gray-500 text-center">
-            {% trans "By registering, you agree to follow election laws and provide truthful information." %}
-        </div>
     </div>
 </div>
 {% endblock %}

@@ -2,14 +2,22 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from .models import Candidate, CandidatePost, CandidateEvent
+from .models import Candidate, CandidateEvent  # CandidatePost removed
 
 
 class CandidateRegistrationForm(forms.ModelForm):
     """Form for candidate self-registration (for authenticated users)"""
 
     terms_accepted = forms.BooleanField(required=True)
-    
+    photo = forms.ImageField(required=True, help_text=_("Profile photo is required (JPG/PNG, max 5MB)"))
+
+    # Make profile content fields required
+    bio_en = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}), required=True)
+    education_en = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=True)
+    experience_en = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=True)
+    achievements_en = forms.CharField(widget=forms.Textarea(attrs={'rows': 3, 'placeholder': _('List your key achievements')}), required=True)
+    manifesto_en = forms.CharField(widget=forms.Textarea(attrs={'rows': 5}), required=True)
+
     class Meta:
         model = Candidate
         fields = [
@@ -27,6 +35,7 @@ class CandidateRegistrationForm(forms.ModelForm):
         }
         widgets = {
             'age': forms.NumberInput(attrs={'min': 18, 'max': 120, 'placeholder': _('Age')}),
+            'photo': forms.FileInput(attrs={'accept': 'image/jpeg,image/jpg,image/png', 'class': 'w-full'}),
             'bio_en': forms.Textarea(attrs={'rows': 4}),
             'bio_ne': forms.Textarea(attrs={'rows': 4}),
             'education_en': forms.Textarea(attrs={'rows': 3}),
@@ -37,6 +46,7 @@ class CandidateRegistrationForm(forms.ModelForm):
             'achievements_ne': forms.Textarea(attrs={'rows': 3}),
             'manifesto_en': forms.Textarea(attrs={'rows': 5}),
             'manifesto_ne': forms.Textarea(attrs={'rows': 5}),
+            'ward_number': forms.Select(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
             'identity_document': forms.FileInput(attrs={'accept': 'image/*,application/pdf'}),
             'candidacy_document': forms.FileInput(attrs={'accept': 'image/*,application/pdf'}),
         }
@@ -156,26 +166,27 @@ class CandidateUpdateForm(forms.ModelForm):
         return cleaned_data
 
 
-class CandidatePostForm(forms.ModelForm):
-    """Form for candidates to create posts"""
-
-    class Meta:
-        model = CandidatePost
-        fields = ['title_en', 'content_en', 'is_published']
-        widgets = {
-            'title_en': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-lg', 'placeholder': _('Post Title')}),
-            'content_en': forms.Textarea(attrs={'rows': 8, 'class': 'w-full px-4 py-2 border rounded-lg', 'placeholder': _('Post Content')}),
-        }
-        labels = {
-            'title_en': _('Title (English)'),
-            'content_en': _('Content (English)'),
-        }
-
-    def clean_title_en(self):
-        title = self.cleaned_data.get('title_en')
-        if len(title) < 5:
-            raise ValidationError(_("Title must be at least 5 characters long."))
-        return title
+# Posts functionality removed - candidates can only create events
+# class CandidatePostForm(forms.ModelForm):
+#     """Form for candidates to create posts"""
+#
+#     class Meta:
+#         model = CandidatePost
+#         fields = ['title_en', 'content_en', 'is_published']
+#         widgets = {
+#             'title_en': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-lg', 'placeholder': _('Post Title')}),
+#             'content_en': forms.Textarea(attrs={'rows': 8, 'class': 'w-full px-4 py-2 border rounded-lg', 'placeholder': _('Post Content')}),
+#         }
+#         labels = {
+#             'title_en': _('Title (English)'),
+#             'content_en': _('Content (English)'),
+#         }
+#
+#     def clean_title_en(self):
+#         title = self.cleaned_data.get('title_en')
+#         if len(title) < 5:
+#             raise ValidationError(_("Title must be at least 5 characters long."))
+#         return title
 
 
 class CandidateEventForm(forms.ModelForm):

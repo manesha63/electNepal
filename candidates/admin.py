@@ -3,7 +3,7 @@ from django.utils.html import format_html
 from django.utils import timezone
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
-from .models import Candidate, CandidatePost, CandidateEvent
+from .models import Candidate, CandidateEvent  # Removed CandidatePost
 
 
 @admin.register(Candidate)
@@ -157,23 +157,7 @@ class CandidateAdmin(admin.ModelAdmin):
 
 
 
-@admin.register(CandidatePost)
-class CandidatePostAdmin(admin.ModelAdmin):
-    list_display = ['title_en', 'candidate', 'is_published', 'created_at']
-    list_filter = ['is_published', 'created_at', 'candidate']
-    search_fields = ['title_en', 'title_ne', 'content_en', 'content_ne', 'candidate__full_name']
-    date_hierarchy = 'created_at'
-
-    fieldsets = (
-        (None, {
-            'fields': ('candidate', 'title_en', 'title_ne', 'content_en', 'content_ne', 'is_published')
-        }),
-        ('Timestamps', {
-            'fields': ('created_at', 'updated_at'),
-            'classes': ('collapse',)
-        }),
-    )
-    readonly_fields = ['created_at', 'updated_at']
+# CandidatePost admin removed - candidates can only create events, not posts
 
 
 @admin.register(CandidateEvent)

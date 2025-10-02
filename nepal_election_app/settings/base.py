@@ -107,6 +107,14 @@ CACHES = {
     }
 }
 
+# Session configuration - Auto logout settings
+SESSION_COOKIE_AGE = 300  # 5 minutes (in seconds)
+SESSION_SAVE_EVERY_REQUEST = True  # Reset timeout on every request
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Expire session when browser closes
+SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to session cookie
+SESSION_COOKIE_SAMESITE = 'Lax'  # CSRF protection
+
 # Default avatar for candidates without photos
 DEFAULT_CANDIDATE_AVATAR = '/static/images/default-avatar.png'
 

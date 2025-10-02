@@ -120,7 +120,7 @@ class CustomLoginView(LoginView):
     - New users -> Candidate registration
     """
     template_name = 'authentication/login.html'
-    redirect_authenticated_user = True
+    redirect_authenticated_user = False  # Don't redirect, always show login page
 
     def get_success_url(self):
         # Check if there's a 'next' parameter in the request
@@ -128,13 +128,14 @@ class CustomLoginView(LoginView):
         if next_url:
             return next_url
 
-        # Check if user is admin (staff or superuser)
-        if self.request.user.is_staff or self.request.user.is_superuser:
-            return '/admin/'  # Redirect to admin dashboard
-
-        # Check if user has a candidate profile
+        # Check if user has a candidate profile first (prioritize candidate dashboard)
         if hasattr(self.request.user, 'candidate'):
             return reverse_lazy('candidates:dashboard')  # Redirect to candidate dashboard
+
+        # Check if user is admin (staff or superuser) - only if they don't have a candidate profile
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            # Admin users without candidate profile go to admin dashboard
+            return '/admin/'
 
         # If user has no candidate profile yet, redirect to registration
         return reverse_lazy('candidates:register')

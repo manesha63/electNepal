@@ -12,8 +12,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.conf import settings
 from django_ratelimit.decorators import ratelimit
-from .models import Candidate, CandidateEvent, CandidatePost
-from .forms import CandidateRegistrationForm, CandidateUpdateForm, CandidatePostForm, CandidateEventForm
+from .models import Candidate, CandidateEvent  # CandidatePost removed
+from .forms import CandidateRegistrationForm, CandidateUpdateForm, CandidateEventForm  # CandidatePostForm removed
 from locations.models import Province, District, Municipality
 import json
 import hashlib
@@ -600,7 +600,7 @@ class CandidateDashboardView(LoginRequiredMixin, TemplateView):
         candidate = self.request.user.candidate
 
         context['candidate'] = candidate
-        context['posts'] = candidate.posts.all().order_by('-created_at')[:5]
+        # Removed posts - candidates can only create events
         context['events'] = candidate.events.filter(
             event_date__gte=timezone.now()
         ).order_by('event_date')[:5]
@@ -644,33 +644,34 @@ def edit_profile(request):
     return redirect('candidates:dashboard')
 
 
-@login_required
-def add_post(request):
-    """Add a new campaign post (only for approved candidates)."""
-    if not hasattr(request.user, 'candidate'):
-        return redirect('candidates:register')
-
-    candidate = request.user.candidate
-
-    if candidate.status != 'approved':
-        messages.error(request, 'Your profile must be approved before you can add posts.')
-        return redirect('candidates:dashboard')
-
-    if request.method == 'POST':
-        form = CandidatePostForm(request.POST)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.candidate = candidate
-            post.save()
-            messages.success(request, 'Post created successfully!')
-            return redirect('candidates:dashboard')
-    else:
-        form = CandidatePostForm()
-
-    return render(request, 'candidates/add_post.html', {
-        'form': form,
-        'candidate': candidate
-    })
+# Posts functionality removed - candidates can only create events, not posts
+# @login_required
+# def add_post(request):
+#     """Add a new campaign post (only for approved candidates)."""
+#     if not hasattr(request.user, 'candidate'):
+#         return redirect('candidates:register')
+#
+#     candidate = request.user.candidate
+#
+#     if candidate.status != 'approved':
+#         messages.error(request, 'Your profile must be approved before you can add posts.')
+#         return redirect('candidates:dashboard')
+#
+#     if request.method == 'POST':
+#         form = CandidatePostForm(request.POST)
+#         if form.is_valid():
+#             post = form.save(commit=False)
+#             post.candidate = candidate
+#             post.save()
+#             messages.success(request, 'Post created successfully!')
+#             return redirect('candidates:dashboard')
+#     else:
+#         form = CandidatePostForm()
+#
+#     return render(request, 'candidates/add_post.html', {
+#         'form': form,
+#         'candidate': candidate
+#     })
 
 
 @login_required
@@ -702,24 +703,25 @@ def add_event(request):
     })
 
 
-@login_required
-@require_POST
-def delete_post(request, post_id):
-    """Delete a candidate post (AJAX endpoint)."""
-    try:
-        # Get the post and verify ownership
-        post = get_object_or_404(CandidatePost, id=post_id)
-
-        # Check if user owns this post
-        if post.candidate.user != request.user:
-            return JsonResponse({'error': 'Unauthorized'}, status=403)
-
-        # Delete the post
-        post.delete()
-
-        return JsonResponse({'success': True, 'message': 'Post deleted successfully'})
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+# Posts functionality removed - candidates can only create events
+# @login_required
+# @require_POST
+# def delete_post(request, post_id):
+#     """Delete a candidate post (AJAX endpoint)."""
+#     try:
+#         # Get the post and verify ownership
+#         post = get_object_or_404(CandidatePost, id=post_id)
+#
+#         # Check if user owns this post
+#         if post.candidate.user != request.user:
+#             return JsonResponse({'error': 'Unauthorized'}, status=403)
+#
+#         # Delete the post
+#         post.delete()
+#
+#         return JsonResponse({'success': True, 'message': 'Post deleted successfully'})
+#     except Exception as e:
+#         return JsonResponse({'error': str(e)}, status=500)
 
 
 @login_required

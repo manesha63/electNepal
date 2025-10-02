@@ -5,38 +5,12 @@
 
 {% block content %}
 <div class="max-w-2xl mx-auto mt-16 px-4 text-center">
-    <div class="mb-8">
-        <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full">
-            <i class="fas fa-check-circle text-4xl text-green-600"></i>
-        </div>
-    </div>
-
     <h1 class="text-3xl font-bold mb-4">{% trans "Profile Submitted Successfully!" %}</h1>
 
-    <p class="text-lg text-gray-600 mb-6">
-        {% trans "Thank you for registering as a candidate on ElectNepal." %}
-    </p>
-
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
-        <h2 class="text-xl font-semibold mb-3">{% trans "What happens next?" %}</h2>
-        <ul class="text-left space-y-2 text-gray-700">
-            <li class="flex items-start">
-                <i class="fas fa-check text-blue-500 mt-1 mr-2"></i>
-                <span>{% trans "Your profile will be reviewed by our admin team within 24-48 hours." %}</span>
-            </li>
-            <li class="flex items-start">
-                <i class="fas fa-check text-blue-500 mt-1 mr-2"></i>
-                <span>{% trans "You will receive an email notification once your profile is approved." %}</span>
-            </li>
-            <li class="flex items-start">
-                <i class="fas fa-check text-blue-500 mt-1 mr-2"></i>
-                <span>{% trans "Once approved, you can access your dashboard to add posts and events." %}</span>
-            </li>
-            <li class="flex items-start">
-                <i class="fas fa-check text-blue-500 mt-1 mr-2"></i>
-                <span>{% trans "Your profile will be visible to voters on the platform." %}</span>
-            </li>
-        </ul>
+        <p class="text-gray-700">
+            {% trans "Your profile is now under review. Once the review is complete, you will receive an email with further information about your application status and further information." %}
+        </p>
     </div>
 
     <div class="flex justify-center space-x-4">
