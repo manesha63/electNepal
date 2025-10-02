@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 class Province(models.Model):
     name_en = models.CharField(max_length=100, unique=True)
@@ -33,10 +34,10 @@ class District(models.Model):
 
 class Municipality(models.Model):
     MUNICIPALITY_TYPES = [
-        ('metropolitan', 'Metropolitan City'),
-        ('sub_metropolitan', 'Sub-Metropolitan City'),
-        ('municipality', 'Municipality'),
-        ('rural_municipality', 'Rural Municipality'),
+        ('metropolitan', _('Metropolitan City')),
+        ('sub_metropolitan', _('Sub-Metropolitan City')),
+        ('municipality', _('Municipality')),
+        ('rural_municipality', _('Rural Municipality')),
     ]
     
     district = models.ForeignKey(District, on_delete=models.CASCADE, related_name='municipalities')

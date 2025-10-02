@@ -6,8 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-29 04:06+0545\n"
+"POT-Creation-Date: 2025-10-03 00:57+0545\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,14 +16,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#| msgid "No Candidates Found"
 msgid "Candidate Login"
 msgstr "कुनै उम्मेदवार फेला परेन"
 
 msgid "Username"
 msgstr "प्रयोगकर्ता नाम"
 
-#| msgid "Enter ward number"
 msgid "Enter your username"
 msgstr "वार्ड नम्बर प्रविष्ट गर्नुहोस्"
 
@@ -56,8 +53,7 @@ msgid ""
 "Enter your email address and we'll send you instructions to reset your "
 "password."
 msgstr ""
-"तपाईंको ईमेल ठेगाना प्रविष्ट गर्नुहोस् र हामी तपाईंलाई तपाईंको पासवर्ड रिसेट"
-" गर्न निर्देशनहरू पठाउनेछौं।"
+"तपाईंको ईमेल ठेगाना प्रविष्ट गर्नुहोस् र हामी तपाईंलाई पासवर्ड रिसेट गर्न "
 
 msgid "Email Address"
 msgstr "इमेल ठेगाना"
@@ -74,7 +70,6 @@ msgstr "तपाईको पासवर्ड याद छ?"
 msgid "Login here"
 msgstr "यहाँ लगइन गर्नुहोस्"
 
-#| msgid "Independent Candidate"
 msgid "Register as an Independent Candidate"
 msgstr "स्वतन्त्र उम्मेदवार"
 
@@ -87,35 +82,26 @@ msgstr "तपाईंको खाता सिर्जना गर्नु
 msgid ""
 "Sign up with your username, email, and password to create a basic account."
 msgstr ""
-"तपाईंको प्रयोगकर्ता नाम, ईमेल, र पासवर्डको साथ साइन अप गर्नुहोस् आधारभूत "
-"खाता सिर्जना गर्न।"
+"आधारभूत खाता सिर्जना गर्न तपाईंको प्रयोगकर्ता नाम, ईमेल र पासवर्डसँग साइन अप गर्नुहोस्।"
 
-#| msgid "Open Profile"
 msgid "Complete Your Profile"
 msgstr "प्रोफाइल खोल्नुहोस्"
 
 msgid "Fill in the required details so voters can know more about you:"
-msgstr ""
-"आवश्यक विवरणहरू भर्नुहोस् त्यसैले मतदाताहरू तपाईंको बारेमा अधिक जान्न "
-"सक्छन्:"
+msgstr "आवश्यक विवरणहरू भर्नुहोस् त्यसैले मतदाताहरू तपाईंको बारेमा अधिक जान्न सक्छन्:"
 
 msgid "Personal Information (Name, Age, Photo)"
 msgstr "व्यक्तिगत जानकारी (नाम, उमेर, फोटो)"
 
 msgid "Position you're running for (Ward / Local / Provincial / Federal)"
-msgstr ""
-"स्थिति तपाई दौडिरहनु भएको छ (वार्ड / स्थानीय / प्रान्तीय / संघीय / संघीय)"
+msgstr "स्थिति तपाई दौडिरहनु भएको छ (वार्ड / स्थानीय / प्रान्तीय / संघीय / संघीय)"
 
-#| msgid ""
-#| "Select province, district, and municipality first to see wards"
 msgid "Location (Province, District, Municipality)"
 msgstr "वडाहरू हेर्न पहिले प्रदेश, जिल्ला र नगरपालिका चयन गर्नुहोस्"
 
-#| msgid "Education"
 msgid "Education Background"
 msgstr "शिक्षा"
 
-#| msgid "Past Experience"
 msgid "Past Experience & Achievements"
 msgstr "विगत अनुभव"
 
@@ -132,8 +118,7 @@ msgid ""
 "Our team will review your profile to ensure all information is complete and "
 "appropriate."
 msgstr ""
-"हाम्रो टोलीले तपाइँको प्रोफाइल समीक्षा गर्दछ सुनिश्चित गर्न सबै जानकारी "
-"पूर्ण र उपयुक्त छ भनेर सुनिश्चित गर्न।"
+"हाम्रो टोलीले तपाईंको प्रोफाइल समीक्षा गर्नेछ सबै जानकारी पूर्ण र उपयुक्त छ भनेर सुनिश्चित गर्न।"
 
 msgid "This usually takes 24–48 hours."
 msgstr "यसले सामान्यतया 2 -4--48 घण्टा लिन्छ।"
@@ -141,13 +126,11 @@ msgstr "यसले सामान्यतया 2 -4--48 घण्टा ल
 msgid "Profile Goes Live"
 msgstr "प्रोफाइल बाँच्न जान्छ"
 
-#| msgid "Register your profile to connect with voters across Nepal."
 msgid "Once approved, your profile becomes visible to voters on ElectNepal."
 msgstr "नेपालभरका मतदाताहरूसँग जोडिन आफ्नो प्रोफाइल दर्ता गर्नुहोस्।"
 
 msgid "You'll receive an email notification when your profile is approved."
-msgstr ""
-"तपाईंले एक ईमेल सूचना प्राप्त गर्नुहुनेछ जब तपाईंको प्रोफाइल स्वीकृत हुन्छ।"
+msgstr "तपाईंले एक ईमेल सूचना प्राप्त गर्नुहुनेछ जब तपाईंको प्रोफाइल स्वीकृत हुन्छ।"
 
 msgid "Manage Your Content"
 msgstr "तपाईंको सामग्री प्रबन्ध गर्नुहोस्"
@@ -201,8 +184,7 @@ msgid ""
 "Create an account to register as an independent candidate and connect with "
 "voters."
 msgstr ""
-"एक स्वतन्त्र उम्मेद्वारको रूपमा दर्ता गर्न र मतदाताहरूसँग जडान गर्न खाता "
-"सिर्जना गर्नुहोस्।"
+"स्वतन्त्र उम्मेदवारको रूपमा दर्ता गर्न र मतदाताहरूसँग जडान गर्न खाता सिर्जना गर्नुहोस्।"
 
 msgid "Full Name"
 msgstr "पूरा नाम"
@@ -222,27 +204,140 @@ msgstr "पहिले नै खाता छ?"
 msgid ""
 "By registering, you agree to follow election laws and provide truthful "
 "information."
-msgstr ""
-"दर्ता गरेर, तपाईं निर्वाचन कानून पछ्याउन र सत्य जानकारी प्रदान गर्न सहमत "
-"हुनुहुन्छ।"
+msgstr "दर्ता गरेर, तपाईं निर्वाचन कानून पछ्याउन र सत्य जानकारी प्रदान गर्न सहमत हुनुहुन्छ।"
 
-#| msgid "Add Event"
-msgid "Add Campaign Event"
-msgstr "घटना थप्नुहोस्"
+# Candidate card translations
+msgid "Seat"
+msgstr "सिट"
 
-msgid "Announce your campaign events, rallies, and meetings to inform voters."
-msgstr ""
-"तपाईंको अभियानका कार्यक्रमहरू, जनजता, र मतदाताहरुलाई सूचित गर्न घोषणा "
-"गर्नुहोस्।"
+# Additional translations for candidate detail page
+#, fuzzy
+#| msgid "Office:"
+msgid "Office"
+msgstr "कार्यालय:"
+
+msgid "Age"
+msgstr "उमेर:"
+
+#, fuzzy
+#| msgid "Past Experience & Achievements"
+msgid "List your key achievements"
+msgstr "विगत अनुभव"
+
+msgid "Please enter a valid Nepal phone number."
+msgstr "कृपया वैध नेपाल फोन नम्बर प्रविष्ट गर्नुहोस्।"
+
+msgid "Municipality is required for all positions."
+msgstr "सबै पदहरूका लागि नगरपालिका आवश्यक छ।"
+
+msgid "Ward number is required for all positions."
+msgstr "सबै पदहरूका लागि वडा नम्बर आवश्यक छ।"
+
+#, fuzzy
+#| msgid "Post Title (English)"
+msgid "Post Title"
+msgstr "पोष्ट शीर्षक (अंग्रेजी)"
+
+#, fuzzy
+#| msgid "Profile Content"
+msgid "Post Content"
+msgstr "प्रोफाइल सामग्री"
+
+#, fuzzy
+#| msgid "Post Title (English)"
+msgid "Title (English)"
+msgstr "पोष्ट शीर्षक (अंग्रेजी)"
+
+#, fuzzy
+#| msgid "Post Content (English)"
+msgid "Content (English)"
+msgstr "सामग्री पोष्ट गर्नुहोस् (अंग्रेजी)"
+
+#, fuzzy
+#| msgid "Your password must contain at least 8 characters."
+msgid "Title must be at least 5 characters long."
+msgstr "तपाईंको पासवर्डमा कम्तीमा ८ अक्षरहरू हुनुपर्छ।"
+
+#, fuzzy
+#| msgid "Event Title (English)"
+msgid "Event Title"
+msgstr "घटना शीर्षक (अंग्रेजी)"
+
+#, fuzzy
+#| msgid "Location"
+msgid "Event Location"
+msgstr "स्थान"
 
 msgid "Event Title (English)"
 msgstr "घटना शीर्षक (अंग्रेजी)"
 
-#| msgid ""
-#| "Enter content in English. It will be automatically translated to Nepali."
+#, fuzzy
+#| msgid "Event Description (English)"
+msgid "Description (English)"
+msgstr "घटना विवरण (अंग्रेजी)"
+
+msgid "Location (English)"
+msgstr "स्थान"
+
+msgid "Event date cannot be in the past."
+msgstr "घटना मिति विगतमा हुन सक्दैन।"
+
+msgid "Ward Chairperson"
+msgstr "वडा अध्यक्ष"
+
+msgid "Ward Member"
+msgstr "वडा नम्बर"
+
+msgid "Mayor/Chairperson"
+msgstr "मेयर/अध्यक्ष"
+
+msgid "Deputy Mayor/Vice Chairperson"
+msgstr "मेयर/अध्यक्ष"
+
+msgid "Provincial Assembly Member"
+msgstr "प्रादेशिक सभा सदस्य"
+
+msgid "House of Representatives Member"
+msgstr "स्थानीय प्रतिनिधि"
+
+msgid "National Assembly Member"
+msgstr "प्रादेशिक सभा सदस्य"
+
+msgid "Federal"
+msgstr "संघीय"
+
+#, fuzzy
+#| msgid "provincial"
+msgid "Provincial"
+msgstr "प्रादेशिक"
+
+#, fuzzy
+#| msgid "Municipality"
+msgid "Municipal"
+msgstr "नगरपालिका"
+
+msgid "Ward"
+msgstr "वडा"
+
+#, fuzzy
+#| msgid "Profile Under Review"
+msgid "Pending Review"
+msgstr "समीक्षा अन्तर्गत प्रोफाइल"
+
+msgid "Approved"
+msgstr "स्वीकृत"
+
+msgid "Rejected"
+msgstr "अस्वीकृत"
+
+msgid "Add Campaign Event"
+msgstr "घटना थप्नुहोस्"
+
+msgid "Announce your campaign events, rallies, and meetings to inform voters."
+msgstr "तपाईंको अभियानका कार्यक्रमहरू, जनजता, र मतदाताहरुलाई सूचित गर्न घोषणा गर्नुहोस्।"
+
 msgid "Will be automatically translated to Nepali"
-msgstr ""
-"अंग्रेजीमा सामग्री प्रविष्ट गर्नुहोस्।यो स्वतः नेपालीमा अनुवाद गरिएको छ।"
+msgstr "अंग्रेजीमा सामग्री प्रविष्ट गर्नुहोस्।यो स्वतः नेपालीमा अनुवाद गरिएको छ।"
 
 msgid "Event Description (English)"
 msgstr "घटना विवरण (अंग्रेजी)"
@@ -256,50 +351,38 @@ msgstr "घटना मिति र समय"
 msgid "Must be a future date"
 msgstr "भविष्यको मिति हुनुपर्दछ"
 
-#| msgid "Location"
-msgid "Location (English)"
-msgstr "स्थान"
-
-#| msgid "Enter your email address"
 msgid "Venue or address"
 msgstr "तपाईंको ईमेल ठेगाना प्रविष्ट गर्नुहोस्"
 
-#| msgid "Published"
 msgid "Publish event"
 msgstr "प्रकाशित गरिएको"
 
 msgid "Published events will be visible on your profile"
 msgstr "प्रकाशित घटनाहरू तपाईंको प्रोफाइलमा दृश्यात्मक हुनेछ"
 
-#| msgid "Create Post"
 msgid "Create Event"
 msgstr "पोस्ट बनाउनुहोस्"
 
-#| msgid "Upcoming Events"
 msgid "Your Upcoming Events"
 msgstr "आगामी कार्यक्रमहरू"
 
 msgid "Published"
 msgstr "प्रकाशित गरिएको"
 
-#| msgid "Published"
 msgid "Not Published"
 msgstr "प्रकाशित गरिएको"
 
-#| msgid "Add New"
 msgid "Add New Post"
 msgstr "नयाँ थप्नुहोस्"
 
-#| msgid "Campaign Posts"
 msgid "Add Campaign Post"
 msgstr "अभियान पोष्टहरू"
 
 msgid ""
-"Share updates about your campaign with voters. Posts will be visible on your"
-" profile page."
+"Share updates about your campaign with voters. Posts will be visible on your "
+"profile page."
 msgstr ""
-"मतदातासँग तपाईंको अभियानको बारेमा अद्यावधिकहरू साझेदारी गर्नुहोस्।पोष्टहरू "
-"तपाईंको प्रोफाइल पृष्ठमा दृश्यात्मक हुनेछ।"
+"मतदातासँग तपाईंको अभियानको बारेमा अद्यावधिकहरू साझेदारी गर्नुहोस्।पोष्टहरू तपाईंको "
 
 msgid "Post Title (English)"
 msgstr "पोष्ट शीर्षक (अंग्रेजी)"
@@ -310,7 +393,6 @@ msgstr "सामग्री पोष्ट गर्नुहोस् (अ�
 msgid "Write your campaign update, announcement, or message to voters"
 msgstr "तपाईंको अभियान अपडेट, घोषणा, वा मतदाताहरूमा सन्देश लेख्नुहोस्"
 
-#| msgid "Published"
 msgid "Publish immediately"
 msgstr "प्रकाशित गरिएको"
 
@@ -320,16 +402,17 @@ msgstr "ड्राफ्टको रूपमा बचत गर्न अ�
 msgid "Create Post"
 msgstr "पोस्ट बनाउनुहोस्"
 
-#| msgid "Recent Posts"
 msgid "Your Recent Posts"
 msgstr "भर्खरका पोष्टहरू"
 
 msgid "Draft"
 msgstr "मंच"
 
-#| msgid "No Candidates Found"
 msgid "Candidate Dashboard"
 msgstr "कुनै उम्मेदवार फेला परेन"
+
+msgid "Welcome back"
+msgstr "फेरि स्वागत छ"
 
 msgid "Profile Under Review"
 msgstr "समीक्षा अन्तर्गत प्रोफाइल"
@@ -338,8 +421,7 @@ msgid ""
 "Your profile is being reviewed by our admin team. This usually takes 24-48 "
 "hours."
 msgstr ""
-"तपाईंको प्रोफाइल हाम्रो व्यवस्थापक टीम द्वारा समीक्षा भइरहेको छ।यसले "
-"सामान्यतया 2 -4--48 घण्टा लिन्छ।"
+"तपाईंको प्रोफाइल हाम्रो व्यवस्थापक टीम द्वारा समीक्षा भइरहेको छ।यसले सामान्यतया 2 "
 
 msgid "Profile Not Approved"
 msgstr "प्रोफाइल अनुमोदित छैन"
@@ -347,91 +429,161 @@ msgstr "प्रोफाइल अनुमोदित छैन"
 msgid "Reason"
 msgstr "कारण"
 
-msgid "Please contact support for more information."
+#, fuzzy
+#| msgid "Please contact support for more information."
+msgid "Please contact support at"
 msgstr "अधिक जानकारीको लागि समर्थन समर्थन गर्नुहोस्।"
 
 msgid "Profile Active"
 msgstr "प्रोफाइल सक्रिय"
 
-msgid "Your profile is live and visible to voters!"
-msgstr "तपाईंको प्रोफाइल लाइभ र मतदाताहरूलाई दृश्यात्मक छ!"
-
-#| msgid "View Full Profile"
 msgid "View Public Profile"
 msgstr "पूर्ण प्रोफाइल हेर्नुहोस्"
 
-msgid "Profile Status"
-msgstr "प्रोफाइल स्थिति"
-
-msgid "Campaign Posts"
-msgstr "अभियान पोष्टहरू"
-
-msgid "Upcoming Events"
-msgstr "आगामी कार्यक्रमहरू"
-
-msgid "Profile Views"
-msgstr "प्रोफाइल दृश्य"
-
-#| msgid "Contact Information"
-msgid "Profile Information"
+#, fuzzy
+#| msgid "Profile Information"
+msgid "Personal Information"
 msgstr "सम्पर्क जानकारी"
 
-msgid "Name"
-msgstr "नाम"
-
-#| msgid "All Positions"
 msgid "Position"
 msgstr "सबै पदहरू"
 
 msgid "Location"
 msgstr "स्थान"
 
-msgid "Ward"
-msgstr "वडा"
+msgid "years"
+msgstr "वर्ष"
 
-#| msgid "Phone:"
 msgid "Phone"
 msgstr "फोन:"
 
-msgid "Joined"
-msgstr "सामेल भए"
+#, fuzzy
+#| msgid "Email:"
+msgid "Email"
+msgstr "इमेल:"
 
-#| msgid "View Profile"
-msgid "Edit Profile"
+#, fuzzy
+#| msgid "Edit Profile"
+msgid "Edit Profile Details"
 msgstr "प्रोफाइल हेर्नुहोस्"
 
-msgid "Recent Posts"
-msgstr "भर्खरका पोष्टहरू"
+#, fuzzy
+#| msgid "Add Campaign Event"
+msgid "Schedule Campaign Event"
+msgstr "घटना थप्नुहोस्"
 
-msgid "Add New"
-msgstr "नयाँ थप्नुहोस्"
+#, fuzzy
+#| msgid "Event Date & Time"
+msgid "Event Name"
+msgstr "घटना मिति र समय"
 
-msgid "No posts yet."
-msgstr "कुनै पोष्टहरू छैन।"
+msgid "e.g., Community Meeting"
+msgstr "उदाहरण: सामुदायिक बैठक"
 
-#| msgid "Upcoming Events"
-msgid "No upcoming events."
-msgstr "आगामी कार्यक्रमहरू"
+#, fuzzy
+#| msgid "Event Date & Time"
+msgid "Date & Time"
+msgstr "घटना मिति र समय"
 
-#| msgid "Quick Filters"
-msgid "Quick Actions"
-msgstr "द्रुत फिल्टरहरू"
+#, fuzzy
+#| msgid "Enter your email address"
+msgid "Enter venue address"
+msgstr "तपाईंको ईमेल ठेगाना प्रविष्ट गर्नुहोस्"
+
+#, fuzzy
+#| msgid "Position"
+msgid "Description"
+msgstr "सबै पदहरू"
+
+msgid "Optional"
+msgstr "ऐच्छिक"
+
+msgid "Brief description of the event agenda"
+msgstr "कार्यक्रमको एजेन्डाको संक्षिप्त विवरण"
+
+msgid "Maximum 500 characters"
+msgstr "अधिकतम ५०० अक्षरहरू"
 
 msgid "Add Event"
 msgstr "घटना थप्नुहोस्"
 
-#| msgid "Change Location"
-msgid "Manage Donations"
-msgstr "स्थान परिवर्तन गर्नुहोस्"
+msgid "Upcoming Events"
+msgstr "आगामी कार्यक्रमहरू"
+
+msgid "scheduled"
+msgstr "निर्धारित"
+
+#, fuzzy
+#| msgid "Published events will be visible on your profile"
+msgid "Events are visible on your public profile"
+msgstr "प्रकाशित घटनाहरू तपाईंको प्रोफाइलमा दृश्यात्मक हुनेछ"
+
+msgid "No events scheduled yet"
+msgstr "अहिलेसम्म कुनै कार्यक्रम निर्धारित छैन"
+
+#, fuzzy
+#| msgid "Add Campaign Event"
+msgid "Add your first campaign event above"
+msgstr "घटना थप्नुहोस्"
+
+msgid "Biography"
+msgstr "जीवनी"
+
+msgid "Tell voters about yourself"
+msgstr "मतदाताहरूलाई आफ्नो बारेमा बताउनुहोस्"
+
+msgid "Manifesto"
+msgstr "घोषणापत्र"
+
+msgid "Your campaign promises and vision"
+msgstr "तपाईंको अभियान प्रतिज्ञा र दृष्टिकोण"
+
+msgid "Experience"
+msgstr "अनुभव"
+
+msgid "Your relevant experience and background"
+msgstr "तपाईंको सान्दर्भिक अनुभव र पृष्ठभूमि"
+
+msgid "Education"
+msgstr "शिक्षा"
+
+#, fuzzy
+#| msgid "Education Background"
+msgid "Your educational background"
+msgstr "शिक्षा"
+
+msgid "Website"
+msgstr "वेबसाइट"
+
+msgid "Facebook Page"
+msgstr "फेसबुक"
+
+msgid "Donation Link"
+msgstr "दान लिंकहरू थप्नुहोस्"
+
+msgid "Link to donation page (optional)"
+msgstr "दान पृष्ठको लिङ्क (वैकल्पिक)"
+
+msgid "What will donations be used for?"
+msgstr "दानहरू केका लागि प्रयोग गरिनेछ?"
+
+msgid "e.g., Campaign materials, community outreach programs"
+msgstr "उदाहरण: अभियान सामग्री, सामुदायिक पहुँच कार्यक्रमहरू"
+
+msgid "Maximum 200 characters"
+msgstr "अधिकतम २०० अक्षरहरू"
+
+msgid "Save Changes"
+msgstr "परिवर्तन गर्नुहोस्"
+
+msgid "Are you sure you want to delete this event?"
+msgstr "के तपाईं यो कार्यक्रम मेटाउन निश्चित हुनुहुन्छ?"
 
 msgid "Independent Candidate"
 msgstr "स्वतन्त्र उम्मेदवार"
 
 msgid "Age:"
 msgstr "उमेर:"
-
-msgid "years"
-msgstr "वर्ष"
 
 # Additional translations for candidate detail page
 msgid "Office:"
@@ -443,9 +595,6 @@ msgstr "सिट:"
 # Position seat descriptions
 msgid "Member of Parliament"
 msgstr "संसद सदस्य"
-
-msgid "Provincial Assembly Member"
-msgstr "प्रादेशिक सभा सदस्य"
 
 msgid "Mayor"
 msgstr "मेयर"
@@ -459,10 +608,12 @@ msgstr "वडा प्रतिनिधि"
 msgid "From:"
 msgstr "स्थान:"
 
-msgid "Education"
-msgstr "शिक्षा"
-
 msgid "Past Experience"
+msgstr "विगत अनुभव"
+
+#, fuzzy
+#| msgid "Past Experience & Achievements"
+msgid "Key Achievements"
 msgstr "विगत अनुभव"
 
 msgid "Motivation"
@@ -486,25 +637,34 @@ msgstr "सामाजिक मिडिया:"
 msgid "Facebook Profile"
 msgstr "फेसबुक प्रोफाइल"
 
-msgid "Support Campaign"
+#, fuzzy
+#| msgid "Contact Information"
+msgid "No contact information available"
+msgstr "सम्पर्क जानकारी"
+
+#, fuzzy
+#| msgid "Support Campaign"
+msgid "Support This Campaign"
 msgstr "अभियान समर्थन"
+
+msgid "Your support helps make a difference in our community"
+msgstr "तपाईंको समर्थनले हाम्रो समुदायमा फरक पार्न मद्दत गर्छ"
+
+msgid "Donate Now"
+msgstr "अहिले दान गर्नुहोस्"
 
 msgid "Back"
 msgstr "फिर्ता"
 
-#| msgid "View Profile"
+msgid "Edit Profile"
+msgstr "प्रोफाइल हेर्नुहोस्"
+
 msgid "Edit Your Profile"
 msgstr "प्रोफाइल हेर्नुहोस्"
 
-#| msgid "Contact Information"
 msgid "Basic Information"
 msgstr "सम्पर्क जानकारी"
 
-#| msgid "Age:"
-msgid "Age"
-msgstr "उमेर:"
-
-#| msgid "Ward Number"
 msgid "Phone Number"
 msgstr "वडा नम्बर"
 
@@ -514,41 +674,17 @@ msgstr "प्रोफाइल तस्बिर"
 msgid "Current photo"
 msgstr "वर्तमान फोटो"
 
-#| msgid "Contact"
 msgid "Content"
 msgstr "सम्पर्क"
 
-#| msgid ""
-#| "Enter content in English. It will be automatically translated to Nepali."
 msgid "Content will be automatically translated to Nepali"
-msgstr ""
-"अंग्रेजीमा सामग्री प्रविष्ट गर्नुहोस्।यो स्वतः नेपालीमा अनुवाद गरिएको छ।"
-
-msgid "Biography"
-msgstr "जीवनी"
-
-msgid "Experience"
-msgstr "अनुभव"
-
-msgid "Manifesto"
-msgstr "घोषणापत्र"
+msgstr "अंग्रेजीमा सामग्री प्रविष्ट गर्नुहोस्।यो स्वतः नेपालीमा अनुवाद गरिएको छ।"
 
 msgid "Online Presence"
 msgstr "अनलाइन उपस्थिति"
 
-msgid "Website"
-msgstr "वेबसाइट"
-
-#| msgid "Facebook"
 msgid "Facebook URL"
 msgstr "फेसबुक"
-
-#| msgid "Add donation links"
-msgid "Donation Link"
-msgstr "दान लिंकहरू थप्नुहोस्"
-
-msgid "Save Changes"
-msgstr "परिवर्तन गर्नुहोस्"
 
 msgid "Search candidates..."
 msgstr "उम्मेदवार खोज्नुहोस्..."
@@ -577,34 +713,11 @@ msgstr "नगरपालिका"
 msgid "All Municipalities"
 msgstr "सबै नगरपालिकाहरू"
 
-#| msgid "All Positions"
 msgid "Seat/Position"
 msgstr "सबै पदहरू"
 
 msgid "All Positions"
 msgstr "सबै पदहरू"
-
-msgid "Ward Chairperson"
-msgstr "वडा अध्यक्ष"
-
-#| msgid "Ward Number"
-msgid "Ward Member"
-msgstr "वडा नम्बर"
-
-msgid "Mayor/Chairperson"
-msgstr "मेयर/अध्यक्ष"
-
-#| msgid "Mayor/Chairperson"
-msgid "Deputy Mayor/Vice Chairperson"
-msgstr "मेयर/अध्यक्ष"
-
-#| msgid "Local Representative"
-msgid "House of Representatives Member"
-msgstr "स्थानीय प्रतिनिधि"
-
-#| msgid "Provincial Assembly Member"
-msgid "National Assembly Member"
-msgstr "प्रादेशिक सभा सदस्य"
 
 msgid "Apply Filters"
 msgstr "फिल्टरहरू लागू गर्नुहोस्"
@@ -615,26 +728,6 @@ msgstr "खाली गर्नुहोस्"
 msgid "Share"
 msgstr "साझा गर्नुहोस्"
 
-# Additional UI strings from templates
-msgid "Previous"
-msgstr "अघिल्लो"
-
-msgid "More"
-msgstr "थप"
-
-msgid "Municipality/Rural Municipality"
-msgstr "नगरपालिका/गाउँपालिका"
-
-msgid "Provincial Assembly"
-msgstr "प्रादेशिक सभा"
-
-# Position office titles (only new ones, not duplicates)
-msgid "Federal Parliament"
-msgstr "संघीय संसद"
-
-msgid "Local Government"
-msgstr "स्थानीय सरकार"
-
 msgid "Local Representative"
 msgstr "स्थानीय प्रतिनिधि"
 
@@ -644,57 +737,109 @@ msgstr "उम्मेदवार प्रोफाइल सिर्जन�
 msgid "Create Your Candidate Profile"
 msgstr "तपाईंको उम्मेदवार प्रोफाइल सिर्जना गर्नुहोस्"
 
-msgid "Optional"
-msgstr "ऐच्छिक"
-
 msgid "Upload a professional photo (JPG/PNG, max 5MB)"
 msgstr "व्यावसायिक तस्बिर अपलोड गर्नुहोस् (JPG/PNG, अधिकतम 5MB)"
 
-#| msgid "Position Level"
 msgid "Position & Location"
-msgstr "पद स्तर"
-
-msgid "Position Level"
 msgstr "पद स्तर"
 
 msgid "Ward Number"
 msgstr "वडा नम्बर"
+
+#, fuzzy
+#| msgid "Select Province"
+msgid "Select Ward"
+msgstr "प्रदेश छान्नुहोस्"
 
 msgid "Profile Content"
 msgstr "प्रोफाइल सामग्री"
 
 msgid ""
 "Enter content in English. It will be automatically translated to Nepali."
+msgstr "अंग्रेजीमा सामग्री प्रविष्ट गर्नुहोस्।यो स्वतः नेपालीमा अनुवाद गरिएको छ।"
+
+#, fuzzy
+#| msgid "Admin Review & Verification"
+msgid "Identity Verification"
+msgstr "प्रशासन समीक्षा र प्रमाणिकरण"
+
+msgid ""
+"Upload documents to verify your identity and candidacy. These documents will "
+"remain confidential and will only be reviewed by our admin team."
 msgstr ""
-"अंग्रेजीमा सामग्री प्रविष्ट गर्नुहोस्।यो स्वतः नेपालीमा अनुवाद गरिएको छ।"
+
+msgid "Identity Document"
+msgstr "पहिचान कागजात"
+
+msgid ""
+"Upload your National ID, Citizenship Certificate, or Driver's License (PDF "
+"or Image)"
+msgstr ""
+
+msgid "Election Declaration Document"
+msgstr "निर्वाचन घोषणा कागजात"
+
+msgid ""
+"Upload your official election declaration paper from the Election Commission "
+"(PDF or Image)"
+msgstr ""
+
+msgid ""
+"Your documents are encrypted and securely stored. They will never be "
+"displayed publicly and are only used for verification purposes."
+msgstr ""
 
 msgid "Social Links & Review"
 msgstr "सामाजिक लिङ्कहरू र समीक्षा"
 
-#| msgid "Facebook"
-msgid "Facebook Page"
-msgstr "फेसबुक"
-
-#| msgid "Important Notes"
 msgid "Important"
 msgstr "महत्त्वपूर्ण टिप्पणीहरू"
 
 msgid ""
-"Your profile will be reviewed by our admin team before being published. This"
-" usually takes 24-48 hours."
+"Your profile will be reviewed by our admin team before being published. This "
+"usually takes 24-48 hours."
 msgstr ""
-"तपाईंको प्रोफाइल हाम्रो प्रशासक टोली द्वारा समीक्षा गरिनेछ।यसले सामान्यतया 2"
-" -4--48 घण्टा लिन्छ।"
+"तपाईंको प्रोफाइल हाम्रो प्रशासक टोली द्वारा समीक्षा गरिनेछ।यसले सामान्यतया 2 -4--48 "
+
+msgid "Terms and Conditions"
+msgstr "नियम र सर्तहरू"
+
+#, fuzzy
+#| msgid ""
+#| "I confirm that all information provided is accurate and I agree to follow "
+#| "election laws."
+msgid "All information provided must be accurate and truthful"
+msgstr "प्रदान गरिएका सबै जानकारीहरू सहि र सत्य हुनुपर्छ"
+"म पुष्टि गर्छु कि प्रदान गरिएको सबै जानकारीहरू सही छन् र म निर्वाचन कानून अनुसरण गर्न "
+"सहमत छु।"
+
+#, fuzzy
+#| msgid "Follow all election laws and regulations"
+msgid "You must comply with all election laws and regulations"
+msgstr "सबै निर्वाचन कानून र नियमहरू पालना गर्नुहोस्"
+
+msgid "False information may result in disqualification"
+msgstr "गलत जानकारी अयोग्यतामा परिणाम हुन सक्छ"
+
+#, fuzzy
+#| msgid "Your profile will be visible to voters on the platform."
+msgid "Your profile will be publicly visible once approved"
+msgstr "तपाईंको प्रोफाइल प्लेटफर्ममा मतदाताहरूमा देख्न सकिन्छ।"
+
+msgid "You grant ElectNepal permission to display your information"
+msgstr "तपाईं ElectNepal लाई तपाईंको जानकारी प्रदर्शन गर्न अनुमति दिनुहुन्छ"
 
 msgid ""
-"I confirm that all information provided is accurate and I agree to follow "
-"election laws."
+"I accept the terms and conditions and confirm that all information provided "
+"is accurate"
 msgstr ""
-"म पुष्टि गर्छु कि प्रदान गरिएको सबै जानकारीहरू सही छन् र म निर्वाचन कानून "
-"अनुसरण गर्न सहमत छु।"
 
 msgid "Submit for Review"
 msgstr "समीक्षाका लागि पेश गर्नुहोस्"
+
+# Additional UI strings from templates
+msgid "Previous"
+msgstr "अघिल्लो"
 
 msgid "Next"
 msgstr "अर्को"
@@ -712,23 +857,18 @@ msgid "What happens next?"
 msgstr "अब के हुन्छ?"
 
 msgid "Your profile will be reviewed by our admin team within 24-48 hours."
-msgstr ""
-"तपाईंको प्रोफाइल हाम्रो प्रशासक टोली 2 24--48 घण्टा भित्रमा समीक्षा गरिनेछ।"
+msgstr "तपाईंको प्रोफाइल हाम्रो प्रशासक टोली 2 24--48 घण्टा भित्रमा समीक्षा गरिनेछ।"
 
 msgid "You will receive an email notification once your profile is approved."
-msgstr ""
-"तपाईं एक पटक ईमेल सूचना प्राप्त गर्नुहुनेछ एक पटक तपाईंको प्रोफाइल स्वीकृत "
-"भएपछि।"
+msgstr "तपाईं एक पटक ईमेल सूचना प्राप्त गर्नुहुनेछ एक पटक तपाईंको प्रोफाइल स्वीकृत भएपछि।"
 
 msgid "Once approved, you can access your dashboard to add posts and events."
-msgstr ""
-"एक पटक स्वीकृत भयो, तपाइँ तपाइँको ड्यासबोर्ड पहुँच गर्न सक्नुहुनेछ पोष्टहरू "
-"र घटनाहरू थप्न।"
+msgstr "एकपटक स्वीकृत भएपछि, तपाईं पोस्ट र कार्यक्रमहरू थप्न आफ्नो ड्यासबोर्ड पहुँच गर्न सक्नुहुन्छ।"
+"एक पटक स्वीकृत भयो, तपाइँ तपाइँको ड्यासबोर्ड पहुँच गर्न सक्नुहुनेछ पोष्टहरू र घटनाहरू थप्न।"
 
 msgid "Your profile will be visible to voters on the platform."
 msgstr "तपाईंको प्रोफाइल प्लेटफर्ममा मतदाताहरूमा देख्न सकिन्छ।"
 
-#| msgid "Go to Homepage"
 msgid "Return to Homepage"
 msgstr "गृहपृष्ठमा जानुहोस्"
 
@@ -753,19 +893,16 @@ msgid ""
 "voters. We believe in transparent, accessible, and fair elections where "
 "every voice matters."
 msgstr ""
-"ElectNepal नेपालमा लोकतन्त्र सुदृढ गर्न डिजाइन गरिएको एक व्यापक प्लेटफर्म हो"
-" जसले स्वतन्त्र उम्मेदवारहरूलाई मतदाताहरूसँग जोडिन ठाउँ प्रदान गर्दछ। हामी "
-"पारदर्शी, पहुँचयोग्य र निष्पक्ष निर्वाचनमा विश्वास गर्छौं जहाँ हरेक आवाज "
-"महत्त्वपूर्ण छ।"
+"ElectNepal नेपालमा लोकतन्त्र सुदृढ गर्न डिजाइन गरिएको एक व्यापक प्लेटफर्म हो जसले "
+"निष्पक्ष निर्वाचनमा विश्वास गर्छौं जहाँ हरेक आवाज महत्त्वपूर्ण छ।"
 
 msgid ""
 "Our platform allows independent candidates to create verified profiles, "
 "share their vision, and engage with constituents across all 7 provinces, 77 "
 "districts, and 753 municipalities of Nepal."
 msgstr ""
-"हाम्रो प्लेटफर्मले स्वतन्त्र उम्मेदवारहरूलाई प्रमाणित प्रोफाइलहरू सिर्जना "
-"गर्न, तिनीहरूको दृष्टिकोण साझा गर्न र नेपालका सबै ७ प्रदेश, ७७ जिल्ला र ७५३ "
-"नगरपालिकाहरूमा निर्वाचकहरूसँग संलग्न हुन अनुमति दिन्छ।"
+"हाम्रो प्लेटफर्मले स्वतन्त्र उम्मेदवारहरूलाई प्रमाणित प्रोफाइलहरू सिर्जना गर्न, तिनीहरूको "
+"निर्वाचकहरूसँग संलग्न हुन अनुमति दिन्छ।"
 
 msgid "Nepal Coverage"
 msgstr "नेपाल कभरेज"
@@ -782,14 +919,10 @@ msgstr "नगरपालिकाहरू"
 msgid "Wards"
 msgstr "वडाहरू"
 
-msgid ""
-"If you're an independent candidate looking to create your profile and "
-"connect with voters, or if you have any questions about our platform, please"
-" reach out to us:"
-msgstr ""
-"यदि तपाईं आफ्नो प्रोफाइल सिर्जना गर्न र मतदाताहरूसँग जोडिन खोज्ने स्वतन्त्र "
-"उम्मेदवार हुनुहुन्छ भने, वा यदि तपाईंसँग हाम्रो प्लेटफर्मको बारेमा कुनै "
-"प्रश्नहरू छन् भने, कृपया हामीलाई सम्पर्क गर्नुहोस्:"
+#, fuzzy
+#| msgid "If you have any questions, please contact us at"
+msgid "If you have any questions about our platform, please reach out to us:"
+msgstr "यदि तपाईंसँग कुनै प्रश्नहरू छन् भने कृपया हामीलाई सम्पर्क गर्नुहोस्"
 
 msgid "How to Vote"
 msgstr "कसरी मतदान गर्ने"
@@ -840,8 +973,7 @@ msgid "Voting is your constitutional right and civic duty"
 msgstr "मतदान तपाईंको संवैधानिक अधिकार र नागरिक कर्तव्य हो"
 
 msgid "Your vote is secret - no one can force you to reveal your choice"
-msgstr ""
-"तपाईंको मत गोप्य छ - कसैले तपाईंलाई आफ्नो छनौट खुलाउन बाध्य पार्न सक्दैन"
+msgstr "तपाईंको मत गोप्य छ - कसैले तपाईंलाई आफ्नो छनौट खुलाउन बाध्य पार्न सक्दैन"
 
 msgid "Report any irregularities to election officials immediately"
 msgstr "कुनै पनि अनियमितता तुरुन्त निर्वाचन अधिकारीहरूलाई रिपोर्ट गर्नुहोस्"
@@ -854,18 +986,27 @@ msgid ""
 "registration status, visit the Election Commission of Nepal website or "
 "contact your local election office."
 msgstr ""
-"मतदान प्रक्रियाको बारेमा थप जानकारी वा आफ्नो मतदाता दर्ता स्थिति जाँच गर्न, "
-"नेपाल निर्वाचन आयोगको वेबसाइट भ्रमण गर्नुहोस् वा आफ्नो स्थानीय निर्वाचन "
-"कार्यालयमा सम्पर्क गर्नुहोस्।"
+"मतदान प्रक्रियाको बारेमा थप जानकारी वा आफ्नो मतदाता दर्ता स्थिति जाँच गर्न, नेपाल "
+"गर्नुहोस्।"
 
 msgid "Back to Home"
 msgstr "गृहपृष्ठमा फर्कनुहोस्"
 
 msgid "This content was automatically translated. Please review for accuracy."
-msgstr ""
-"यो सामग्री स्वचालित रूपमा अनुवाद गरिएको छ। कृपया सटीकताका लागि समीक्षा "
-"गर्नुहोस्।यो सामग्री स्वचालित रूपमा अनुवाद गरिएको थियो। कृपया सटीकताको लागि "
-"समीक्षा गर्नुहोस्।"
+msgstr "यो सामग्री स्वचालित रूपमा अनुवाद गरिएको थियो। सटीकताको लागि कृपया समीक्षा गर्नुहोस्।"
+"यो सामग्री स्वचालित रूपमा अनुवाद गरिएको छ। कृपया सटीकताका लागि समीक्षा गर्नुहोस्।यो "
+"सामग्री स्वचालित रूपमा अनुवाद गरिएको थियो। कृपया सटीकताको लागि समीक्षा गर्नुहोस्।"
+
+msgid "Metropolitan City"
+msgstr "महानगरपालिका"
+
+msgid "Sub-Metropolitan City"
+msgstr "उपमहानगरपालिका"
+
+#, fuzzy
+#| msgid "Your Municipality"
+msgid "Rural Municipality"
+msgstr "तपाईंको नगरपालिका"
 
 msgid "Location outside Nepal boundaries"
 msgstr "नेपालको सीमाना बाहिर स्थान"
@@ -931,9 +1072,7 @@ msgid "Geolocation is not supported by your browser."
 msgstr "तपाईंको ब्राउजरले भौगोलिक स्थान समर्थन गर्दैन।"
 
 msgid "Location permission denied. Please select your location manually."
-msgstr ""
-"स्थान अनुमति अस्वीकार गरियो। कृपया आफ्नो स्थान म्यानुअल रूपमा छनौट "
-"गर्नुहोस्।"
+msgstr "स्थान अनुमति अस्वीकार गरियो। कृपया आफ्नो स्थान म्यानुअल रूपमा छनौट गर्नुहोस्।"
 
 msgid "Location information unavailable. Please select manually."
 msgstr "स्थान जानकारी उपलब्ध छैन। कृपया म्यानुअल रूपमा छनौट गर्नुहोस्।"
@@ -942,8 +1081,7 @@ msgid "Location request timed out. Please try again."
 msgstr "स्थान अनुरोधको समय समाप्त भयो। कृपया फेरि प्रयास गर्नुहोस्।"
 
 msgid "Unable to get your location. Please select manually."
-msgstr ""
-"तपाईंको स्थान प्राप्त गर्न असमर्थ। कृपया म्यानुअल रूपमा छनौट गर्नुहोस्।"
+msgstr "तपाईंको स्थान प्राप्त गर्न असमर्थ। कृपया म्यानुअल रूपमा छनौट गर्नुहोस्।"
 
 msgid "Could not determine location"
 msgstr "स्थान निर्धारण गर्न सकिएन"
@@ -953,9 +1091,6 @@ msgstr "कृपया कम्तीमा एउटा प्रदेश �
 
 msgid "Failed to load candidates"
 msgstr "उम्मेदवारहरू लोड गर्न असफल"
-
-msgid "Federal"
-msgstr "संघीय"
 
 msgid "All"
 msgstr "सबै"
@@ -978,16 +1113,9 @@ msgstr "पहिले जिल्ला छान्नुहोस्"
 msgid "Select province and district first to see specific municipalities"
 msgstr "विशेष नगरपालिकाहरू हेर्न पहिले प्रदेश र जिल्ला चयन गर्नुहोस्"
 
-#| msgid ""
-#| "Select province and district first to see specific municipalities"
 msgid "Select province, district, and municipality first to see wards"
 msgstr "विशेष नगरपालिकाहरू हेर्न पहिले प्रदेश र जिल्ला चयन गर्नुहोस्"
 
-# Candidate card translations
-msgid "Seat"
-msgstr "सिट"
-
-#| msgid "View Profile"
 msgid "Open Profile"
 msgstr "प्रोफाइल हेर्नुहोस्"
 
@@ -1015,7 +1143,6 @@ msgstr "तपाईंको फिल्टर वा खोज शब्द�
 msgid "Independent Candidates"
 msgstr "स्वतन्त्र उम्मेदवारहरू"
 
-#| msgid "View Full Profile"
 msgid "View Profile"
 msgstr "पूर्ण प्रोफाइल हेर्नुहोस्"
 
@@ -1028,7 +1155,6 @@ msgstr "स्वतन्त्र उम्मेदवारहरू दर�
 msgid "Are you an independent candidate?"
 msgstr "के तपाईं स्वतन्त्र उम्मेदवार हुनुहुन्छ?"
 
-#| msgid "Register your profile to connect with voters across Nepal."
 msgid "Register your profile to connect with voters across Nepal."
 msgstr "नेपालभरका मतदाताहरूसँग जोडिन आफ्नो प्रोफाइल दर्ता गर्नुहोस्।"
 
@@ -1039,8 +1165,7 @@ msgid ""
 "Allow ElectNepal to access your location to show independent candidates in "
 "your area."
 msgstr ""
-"तपाईंको क्षेत्रमा स्वतन्त्र उम्मेदवारहरू देखाउन ElectNepal लाई तपाईंको स्थान"
-" पहुँच गर्न अनुमति दिनुहोस्।"
+"तपाईंको क्षेत्रमा स्वतन्त्र उम्मेदवारहरू देखाउन ElectNepal लाई तपाईंको स्थान पहुँच गर्न "
 
 msgid "Allow Location"
 msgstr "स्थान अनुमति दिनुहोस्"
@@ -1048,7 +1173,6 @@ msgstr "स्थान अनुमति दिनुहोस्"
 msgid "Enter Manually"
 msgstr "म्यानुअल रूपमा प्रविष्ट गर्नुहोस्"
 
-#| msgid "Apply Filters"
 msgid "Quick Filters"
 msgstr "फिल्टरहरू लागू गर्नुहोस्"
 
@@ -1064,11 +1188,9 @@ msgstr "सबै उम्मेदवारहरू"
 msgid "Showing all independent candidates"
 msgstr "सबै स्वतन्त्र उम्मेदवारहरू देखाउँदै"
 
-#| msgid "Change Location"
 msgid "Change Location"
 msgstr "स्थान परिवर्तन गर्नुहोस्"
 
-#| msgid "View Full Profile"
 msgid "View Full Profile"
 msgstr "पूर्ण प्रोफाइल हेर्नुहोस्"
 
@@ -1104,9 +1226,7 @@ msgid ""
 "use our platform, you agree to our use of cookies for analytics and "
 "functionality."
 msgstr ""
-"हामी ElectNepal मा तपाईंको अनुभव बढाउन कुकीजहरू प्रयोग गर्छौं। हाम्रो "
-"प्लेटफर्म प्रयोग गरिरहँदा, तपाईं विश्लेषण र कार्यक्षमताका लागि हाम्रो कुकीज "
-"प्रयोगमा सहमत हुनुहुन्छ।"
+"हामी ElectNepal मा तपाईंको अनुभव बढाउन कुकीजहरू प्रयोग गर्छौं। हाम्रो प्लेटफर्म प्रयोग "
 
 msgid "Accept All"
 msgstr "सबै स्वीकार गर्नुहोस्"
@@ -1116,6 +1236,11 @@ msgstr "सेटिङ्गहरू"
 
 msgid "About Us"
 msgstr "हाम्रो बारेमा"
+
+#, fuzzy
+#| msgid "Register here"
+msgid "Register"
+msgstr "यहाँ दर्ता गर"
 
 msgid "English"
 msgstr "अंग्रेजी"
@@ -1133,8 +1258,7 @@ msgid "Coming Soon"
 msgstr "चाँडै आउँदैछ"
 
 msgid ""
-"The Ballot feature is currently under development and will be available "
-"soon."
+"The Ballot feature is currently under development and will be available soon."
 msgstr "मतपत्र सुविधा हाल विकास अन्तर्गत छ र चाँडै उपलब्ध हुनेछ।"
 
 msgid "OK"
@@ -1149,6 +1273,29 @@ msgstr "पृष्ठ"
 msgid "of"
 msgstr "को"
 
+#, fuzzy
+#| msgid "Please select at least a province"
+msgid "Please select a province"
+msgstr "कृपया कम्तीमा एउटा प्रदेश छनौट गर्नुहोस्"
+
+#, fuzzy
+#| msgid "Enter ward number"
+msgid "Please enter a ward number"
+msgstr "वार्ड नम्बर प्रविष्ट गर्नुहोस्"
+
+msgid "Municipality/Rural Municipality"
+msgstr "नगरपालिका/गाउँपालिका"
+
+msgid "Provincial Assembly"
+msgstr "प्रादेशिक सभा"
+
+# Position office titles (only new ones, not duplicates)
+msgid "Federal Parliament"
+msgstr "संघीय संसद"
+
+msgid "Local Government"
+msgstr "स्थानीय सरकार"
+
 msgid "Check out this independent candidate"
 msgstr "यो स्वतन्त्र उम्मेदवारलाई हेर्नुहोस्"
 
@@ -1157,6 +1304,60 @@ msgstr "लिंक क्लिपबोर्डमा कपी गरिय
 
 msgid "Could not copy link"
 msgstr "लिंक कपी गर्न सकिएन"
+
+#~ msgid "Your profile is live and visible to voters!"
+#~ msgstr "तपाईंको प्रोफाइल लाइभ र मतदाताहरूलाई दृश्यात्मक छ!"
+
+#~ msgid "Profile Status"
+#~ msgstr "प्रोफाइल स्थिति"
+
+#~ msgid "Campaign Posts"
+#~ msgstr "अभियान पोष्टहरू"
+
+#~ msgid "Profile Views"
+#~ msgstr "प्रोफाइल दृश्य"
+
+#~ msgid "Name"
+#~ msgstr "नाम"
+
+#~ msgid "Joined"
+#~ msgstr "सामेल भए"
+
+#~ msgid "Recent Posts"
+#~ msgstr "भर्खरका पोष्टहरू"
+
+#~ msgid "Add New"
+#~ msgstr "नयाँ थप्नुहोस्"
+
+#~ msgid "No posts yet."
+#~ msgstr "कुनै पोष्टहरू छैन।"
+
+#~| msgid "Upcoming Events"
+#~ msgid "No upcoming events."
+#~ msgstr "आगामी कार्यक्रमहरू"
+
+#~| msgid "Quick Filters"
+#~ msgid "Quick Actions"
+#~ msgstr "द्रुत फिल्टरहरू"
+
+#~| msgid "Change Location"
+#~ msgid "Manage Donations"
+#~ msgstr "स्थान परिवर्तन गर्नुहोस्"
+
+#~ msgid "More"
+#~ msgstr "थप"
+
+#~ msgid "Position Level"
+#~ msgstr "पद स्तर"
+
+#~ msgid ""
+#~ "If you're an independent candidate looking to create your profile and "
+#~ "connect with voters, or if you have any questions about our platform, "
+#~ "please reach out to us:"
+#~ msgstr ""
+#~ "यदि तपाईं आफ्नो प्रोफाइल सिर्जना गर्न र मतदाताहरूसँग जोडिन खोज्ने स्वतन्त्र उम्मेदवार "
+#~ "हुनुहुन्छ भने, वा यदि तपाईंसँग हाम्रो प्लेटफर्मको बारेमा कुनै प्रश्नहरू छन् भने, कृपया "
+#~ "हामीलाई सम्पर्क गर्नुहोस्:"
 
 #~ msgid "Deputy Mayor"
 #~ msgstr "उपमेयर"

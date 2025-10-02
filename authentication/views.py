@@ -1,63 +1,23 @@
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views.generic import CreateView, TemplateView
 from django.urls import reverse_lazy
-from django import forms
 from django.contrib.auth.models import User
 from django.core.mail import send_mail, mail_admins
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.utils.decorators import method_decorator
+from django_ratelimit.decorators import ratelimit
 import logging
+
+# Import our custom form
+from .forms import CandidateSignupForm
 
 # Get logger for authentication emails
 logger = logging.getLogger('authentication.emails')
-
-
-class CandidateSignupForm(UserCreationForm):
-    """Custom signup form with email field"""
-    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={
-        'class': 'w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-400',
-        'placeholder': 'Email address'
-    }))
-
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'password1', 'password2')
-        widgets = {
-            'username': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-400',
-                'placeholder': 'Username'
-            }),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['password1'].widget.attrs.update({
-            'class': 'w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-400',
-            'placeholder': 'Password'
-        })
-        self.fields['password2'].widget.attrs.update({
-            'class': 'w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-400',
-            'placeholder': 'Confirm Password'
-        })
-
-    def clean_email(self):
-        """Validate email is not already in use"""
-        email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("This email address is already registered.")
-        return email
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.email = self.cleaned_data['email']
-        user.is_active = True  # For now, activate immediately (could require email verification)
-        if commit:
-            user.save()
-        return user
 
 
 class RegistrationInfoView(TemplateView):
@@ -70,6 +30,7 @@ class RegistrationInfoView(TemplateView):
         return context
 
 
+@method_decorator(ratelimit(key='ip', rate='5/h', method='POST', block=True), name='dispatch')
 class CandidateSignupView(CreateView):
     """User registration with automatic redirect to candidate registration"""
     template_name = 'authentication/signup.html'

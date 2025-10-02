@@ -14,11 +14,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  # Added for site framework
     'core',
     'locations',
     'candidates',
     'authentication',
 ]
+
+# Site framework configuration
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

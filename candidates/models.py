@@ -7,8 +7,10 @@ from django.core.mail import send_mail, mail_admins
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from locations.models import Province, District, Municipality
 from .translation import AutoTranslationMixin
+from .validators import validate_file_size, validate_image_size, validate_file_extension, validate_image_extension
 import logging
 
 # Get logger for email operations
@@ -28,32 +30,32 @@ def verification_doc_path(instance, filename):
 class Candidate(AutoTranslationMixin, models.Model):
     POSITION_LEVELS = [
         # Ward Level
-        ('ward_chairperson', 'Ward Chairperson'),
-        ('ward_member', 'Ward Member'),
+        ('ward_chairperson', _('Ward Chairperson')),
+        ('ward_member', _('Ward Member')),
 
         # Local Unit Level (Municipality/Rural Municipality/Metropolitan/Sub-Metropolitan)
-        ('mayor_chairperson', 'Mayor/Chairperson'),
-        ('deputy_mayor_vice_chairperson', 'Deputy Mayor/Vice Chairperson'),
+        ('mayor_chairperson', _('Mayor/Chairperson')),
+        ('deputy_mayor_vice_chairperson', _('Deputy Mayor/Vice Chairperson')),
 
         # Provincial Level
-        ('provincial_assembly', 'Provincial Assembly Member'),
+        ('provincial_assembly', _('Provincial Assembly Member')),
 
         # Federal Level
-        ('house_of_representatives', 'House of Representatives Member'),
-        ('national_assembly', 'National Assembly Member'),
+        ('house_of_representatives', _('House of Representatives Member')),
+        ('national_assembly', _('National Assembly Member')),
     ]
 
     OFFICE_CHOICES = [
-        ('federal', 'Federal'),
-        ('provincial', 'Provincial'),
-        ('municipal', 'Municipal'),
-        ('ward', 'Ward'),
+        ('federal', _('Federal')),
+        ('provincial', _('Provincial')),
+        ('municipal', _('Municipal')),
+        ('ward', _('Ward')),
     ]
 
     STATUS_CHOICES = [
-        ('pending', 'Pending Review'),
-        ('approved', 'Approved'),
-        ('rejected', 'Rejected'),
+        ('pending', _('Pending Review')),
+        ('approved', _('Approved')),
+        ('rejected', _('Rejected')),
     ]
 
     # Fields that should be auto-translated
@@ -61,7 +63,13 @@ class Candidate(AutoTranslationMixin, models.Model):
     
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=200, help_text="Full name as it appears on official documents")
-    photo = models.ImageField(upload_to=candidate_photo_path, blank=True, null=True)
+    photo = models.ImageField(
+        upload_to=candidate_photo_path,
+        blank=True,
+        null=True,
+        validators=[validate_image_size, validate_image_extension],
+        help_text=_("Profile photo (JPG/PNG, max 5MB)")
+    )
     age = models.IntegerField(
         null=True,
         blank=True,
@@ -113,13 +121,15 @@ class Candidate(AutoTranslationMixin, models.Model):
         upload_to='verification_docs/identity/%Y/%m/',
         blank=True,
         null=True,
-        help_text="National ID/Citizenship/Driver's License (confidential)"
+        validators=[validate_file_size, validate_file_extension],
+        help_text=_("National ID/Citizenship/Driver's License (PDF/JPG/PNG, max 10MB, confidential)")
     )
     candidacy_document = models.FileField(
         upload_to='verification_docs/candidacy/%Y/%m/',
         blank=True,
         null=True,
-        help_text="Official election declaration paper (confidential)"
+        validators=[validate_file_size, validate_file_extension],
+        help_text=_("Official election declaration paper (PDF/JPG/PNG, max 10MB, confidential)")
     )
     terms_accepted = models.BooleanField(
         default=False,
@@ -179,7 +189,8 @@ class Candidate(AutoTranslationMixin, models.Model):
             from django.contrib.sites.models import Site
             current_site = Site.objects.get_current()
             return f"http://{current_site.domain}"
-        except:
+        except (ImportError, Site.DoesNotExist) as e:
+            logger.warning(f"Site framework not configured: {e}")
             return "http://localhost:8000"
 
     def send_registration_confirmation(self):
@@ -220,8 +231,8 @@ class Candidate(AutoTranslationMixin, models.Model):
                     message=f"Failed to send registration confirmation to {self.full_name} ({self.user.email}). Error: {str(e)}",
                     fail_silently=True
                 )
-            except:
-                pass
+            except Exception as admin_err:
+                logger.error(f"Failed to notify admin of email failure: {admin_err}")
 
             return False
 
@@ -306,8 +317,8 @@ class Candidate(AutoTranslationMixin, models.Model):
                     message=f"Failed to send approval notification to {self.full_name} ({self.user.email}). Please contact them manually. Error: {str(e)}",
                     fail_silently=True
                 )
-            except:
-                pass
+            except Exception as admin_err:
+                logger.error(f"Failed to notify admin of approval email failure: {admin_err}")
 
             return False
 
@@ -350,8 +361,8 @@ class Candidate(AutoTranslationMixin, models.Model):
                     message=f"Failed to send rejection notification to {self.full_name} ({self.user.email}). They may not know about the rejection. Error: {str(e)}",
                     fail_silently=True
                 )
-            except:
-                pass
+            except Exception as admin_err:
+                logger.error(f"Failed to notify admin of rejection email failure: {admin_err}")
 
             return False
 

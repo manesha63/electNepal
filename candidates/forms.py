@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from .models import Candidate, CandidatePost, CandidateEvent
 
 
@@ -21,18 +22,18 @@ class CandidateRegistrationForm(forms.ModelForm):
             'identity_document', 'candidacy_document', 'terms_accepted'
         ]
         labels = {
-            'position_level': 'Seat',  # Rename Position Level to Seat
-            'office': 'Office',
+            'position_level': _('Seat'),  # Rename Position Level to Seat
+            'office': _('Office'),
         }
         widgets = {
-            'age': forms.NumberInput(attrs={'min': 18, 'max': 120, 'placeholder': 'Age'}),
+            'age': forms.NumberInput(attrs={'min': 18, 'max': 120, 'placeholder': _('Age')}),
             'bio_en': forms.Textarea(attrs={'rows': 4}),
             'bio_ne': forms.Textarea(attrs={'rows': 4}),
             'education_en': forms.Textarea(attrs={'rows': 3}),
             'education_ne': forms.Textarea(attrs={'rows': 3}),
             'experience_en': forms.Textarea(attrs={'rows': 3}),
             'experience_ne': forms.Textarea(attrs={'rows': 3}),
-            'achievements_en': forms.Textarea(attrs={'rows': 3, 'placeholder': 'List your key achievements'}),
+            'achievements_en': forms.Textarea(attrs={'rows': 3, 'placeholder': _('List your key achievements')}),
             'achievements_ne': forms.Textarea(attrs={'rows': 3}),
             'manifesto_en': forms.Textarea(attrs={'rows': 5}),
             'manifesto_ne': forms.Textarea(attrs={'rows': 5}),
@@ -43,11 +44,27 @@ class CandidateRegistrationForm(forms.ModelForm):
     def clean_phone_number(self):
         phone = self.cleaned_data.get('phone_number')
         if phone:
-            # Remove spaces and dashes
-            phone = phone.replace(' ', '').replace('-', '')
-            # Nepal phone number validation
-            if not (phone.startswith('+977') or phone.startswith('977') or phone.startswith('98') or phone.startswith('97')):
-                raise ValidationError("Please enter a valid Nepal phone number.")
+            # Remove spaces, dashes, and parentheses
+            phone = phone.replace(' ', '').replace('-', '').replace('(', '').replace(')', '')
+
+            # Remove country code if present
+            if phone.startswith('+977'):
+                phone = phone[4:]
+            elif phone.startswith('977'):
+                phone = phone[3:]
+
+            # Validate Nepal mobile number format (must start with 98 or 97)
+            # Nepal mobile numbers are 10 digits starting with 98 or 97
+            import re
+            nepal_mobile_pattern = r'^(98|97)\d{8}$'
+
+            if not re.match(nepal_mobile_pattern, phone):
+                raise ValidationError(
+                    _("Please enter a valid Nepal mobile number (10 digits starting with 98 or 97). Example: 9812345678")
+                )
+
+            # Return in standard format with country code
+            return f"+977{phone}"
         return phone
     
     def clean(self):
@@ -58,11 +75,28 @@ class CandidateRegistrationForm(forms.ModelForm):
         ward_number = cleaned_data.get('ward_number')
         municipality = cleaned_data.get('municipality')
 
-        # Municipality and ward are required for ALL positions
-        if not municipality:
-            raise ValidationError("Municipality is required for all positions.")
-        if not ward_number:
-            raise ValidationError("Ward number is required for all positions.")
+        # Define position types that require specific location levels
+        ward_level_positions = ['ward_chairperson', 'ward_member', 'ward']
+        local_level_positions = ['mayor_chairperson', 'deputy_mayor_vice_chairperson', 'municipal', 'local']
+        district_level_positions = ['chief_district_coordination', 'deputy_chief_district', 'district']
+        provincial_positions = ['provincial_assembly', 'provincial']
+        federal_positions = ['house_of_representatives', 'national_assembly', 'federal']
+
+        # Ward-level positions require both municipality and ward
+        if position_level in ward_level_positions:
+            if not municipality:
+                raise ValidationError(_("Municipality is required for ward-level positions."))
+            if not ward_number:
+                raise ValidationError(_("Ward number is required for ward-level positions."))
+
+        # Local-level positions require municipality but not ward
+        elif position_level in local_level_positions:
+            if not municipality:
+                raise ValidationError(_("Municipality is required for local-level positions."))
+            # Ward is optional for local level
+
+        # District, Provincial, and Federal positions don't require municipality or ward
+        # But district and province are still required (handled by field required=True)
 
         return cleaned_data
     
@@ -129,18 +163,18 @@ class CandidatePostForm(forms.ModelForm):
         model = CandidatePost
         fields = ['title_en', 'content_en', 'is_published']
         widgets = {
-            'title_en': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-lg', 'placeholder': 'Post Title'}),
-            'content_en': forms.Textarea(attrs={'rows': 8, 'class': 'w-full px-4 py-2 border rounded-lg', 'placeholder': 'Post Content'}),
+            'title_en': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-lg', 'placeholder': _('Post Title')}),
+            'content_en': forms.Textarea(attrs={'rows': 8, 'class': 'w-full px-4 py-2 border rounded-lg', 'placeholder': _('Post Content')}),
         }
         labels = {
-            'title_en': 'Title (English)',
-            'content_en': 'Content (English)',
+            'title_en': _('Title (English)'),
+            'content_en': _('Content (English)'),
         }
 
     def clean_title_en(self):
         title = self.cleaned_data.get('title_en')
         if len(title) < 5:
-            raise ValidationError("Title must be at least 5 characters long.")
+            raise ValidationError(_("Title must be at least 5 characters long."))
         return title
 
 
@@ -151,20 +185,20 @@ class CandidateEventForm(forms.ModelForm):
         model = CandidateEvent
         fields = ['title_en', 'description_en', 'event_date', 'location_en', 'is_published']
         widgets = {
-            'title_en': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-lg', 'placeholder': 'Event Title'}),
+            'title_en': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-lg', 'placeholder': _('Event Title')}),
             'description_en': forms.Textarea(attrs={'rows': 4, 'class': 'w-full px-4 py-2 border rounded-lg'}),
             'event_date': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'w-full px-4 py-2 border rounded-lg'}),
-            'location_en': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-lg', 'placeholder': 'Event Location'}),
+            'location_en': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-lg', 'placeholder': _('Event Location')}),
         }
         labels = {
-            'title_en': 'Event Title (English)',
-            'description_en': 'Description (English)',
-            'location_en': 'Location (English)',
+            'title_en': _('Event Title (English)'),
+            'description_en': _('Description (English)'),
+            'location_en': _('Location (English)'),
         }
     
     def clean_event_date(self):
         from django.utils import timezone
         event_date = self.cleaned_data.get('event_date')
         if event_date and event_date < timezone.now():
-            raise ValidationError("Event date cannot be in the past.")
+            raise ValidationError(_("Event date cannot be in the past."))
         return event_date

@@ -558,8 +558,6 @@ window.ElectNepal = {
     showLoading,
     hideLoading,
     switchLanguage,
-    toggleLanguage,
-    setLanguage,
     requestLocationAndLoadCandidates,
     skipLocation,
     closeLocationModal

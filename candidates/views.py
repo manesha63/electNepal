@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.db.models import Q, Case, When, Value, IntegerField
 from django.utils import timezone
 from django.utils.translation import get_language, gettext as _
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 from django.core.paginator import Paginator, EmptyPage
 from django.core.cache import cache
 from django.contrib.auth.decorators import login_required
@@ -544,6 +544,7 @@ def candidate_cards_api(request):
 
 # Candidate Registration and Dashboard Views
 @login_required
+@ratelimit(key='user', rate='3/h', method='POST', block=True)
 def candidate_register(request):
     """Handle candidate registration for authenticated users."""
     # Check if user already has a candidate profile
@@ -699,6 +700,46 @@ def add_event(request):
         'form': form,
         'candidate': candidate
     })
+
+
+@login_required
+@require_POST
+def delete_post(request, post_id):
+    """Delete a candidate post (AJAX endpoint)."""
+    try:
+        # Get the post and verify ownership
+        post = get_object_or_404(CandidatePost, id=post_id)
+
+        # Check if user owns this post
+        if post.candidate.user != request.user:
+            return JsonResponse({'error': 'Unauthorized'}, status=403)
+
+        # Delete the post
+        post.delete()
+
+        return JsonResponse({'success': True, 'message': 'Post deleted successfully'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_POST
+def delete_event(request, event_id):
+    """Delete a candidate event (AJAX endpoint)."""
+    try:
+        # Get the event and verify ownership
+        event = get_object_or_404(CandidateEvent, id=event_id)
+
+        # Check if user owns this event
+        if event.candidate.user != request.user:
+            return JsonResponse({'error': 'Unauthorized'}, status=403)
+
+        # Delete the event
+        event.delete()
+
+        return JsonResponse({'success': True, 'message': 'Event deleted successfully'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 def registration_success(request):

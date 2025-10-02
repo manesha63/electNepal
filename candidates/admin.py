@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
 from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
 from .models import Candidate, CandidatePost, CandidateEvent
 
 
@@ -17,39 +18,39 @@ class CandidateAdmin(admin.ModelAdmin):
     actions = ['approve_candidates', 'reject_candidates', 'mark_as_pending']
 
     fieldsets = (
-        ('Verification Status', {
+        (_('Verification Status'), {
             'fields': ('status', 'admin_notes', 'approved_at', 'approved_by'),
-            'description': 'Manage the candidate verification status'
+            'description': _('Manage the candidate verification status')
         }),
-        ('User Information', {
+        (_('User Information'), {
             'fields': ('user', 'full_name', 'photo', 'age', 'phone_number')
         }),
-        ('Biography', {
+        (_('Biography'), {
             'fields': ('bio_en', 'bio_ne'),
             'classes': ('collapse',)
         }),
-        ('Education & Experience', {
+        (_('Education & Experience'), {
             'fields': ('education_en', 'education_ne', 'experience_en', 'experience_ne',
                       'achievements_en', 'achievements_ne'),
             'classes': ('collapse',)
         }),
-        ('Manifesto', {
+        (_('Manifesto'), {
             'fields': ('manifesto_en', 'manifesto_ne'),
             'classes': ('collapse',)
         }),
-        ('Position & Location', {
+        (_('Position & Location'), {
             'fields': ('office', 'position_level', 'province', 'district', 'municipality',
                       'ward_number', 'constituency_code')
         }),
-        ('Online Presence', {
+        (_('Online Presence'), {
             'fields': ('website', 'facebook_url', 'donation_link')
         }),
-        ('Verification Documents (Confidential)', {
+        (_('Verification Documents (Confidential)'), {
             'fields': ('identity_document', 'candidacy_document', 'terms_accepted'),
             'classes': ('collapse',),
-            'description': 'Confidential documents for admin review only - not displayed publicly'
+            'description': _('Confidential documents for admin review only - not displayed publicly')
         }),
-        ('Timestamps', {
+        (_('Timestamps'), {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
@@ -67,7 +68,7 @@ class CandidateAdmin(admin.ModelAdmin):
             colors.get(obj.status, '#6C757D'),
             obj.get_status_display()
         )
-    get_status_badge.short_description = 'Status'
+    get_status_badge.short_description = _('Status')
 
     def approve_candidates(self, request, queryset):
         """Approve selected candidates"""
@@ -101,7 +102,7 @@ class CandidateAdmin(admin.ModelAdmin):
             self.message_user(request, msg)
         else:
             self.message_user(request, 'No pending candidates to approve.')
-    approve_candidates.short_description = 'Approve selected candidates'
+    approve_candidates.short_description = _('Approve selected candidates')
 
     def reject_candidates(self, request, queryset):
         """Reject selected candidates"""
@@ -110,13 +111,13 @@ class CandidateAdmin(admin.ModelAdmin):
             self.message_user(request, f'{count} candidate(s) rejected.')
         else:
             self.message_user(request, 'No pending candidates to reject.')
-    reject_candidates.short_description = 'Reject selected candidates'
+    reject_candidates.short_description = _('Reject selected candidates')
 
     def mark_as_pending(self, request, queryset):
         """Mark candidates as pending (for re-review)"""
         count = queryset.update(status='pending', approved_at=None, approved_by=None)
         self.message_user(request, f'{count} candidate(s) marked as pending.')
-    mark_as_pending.short_description = 'Mark as pending for review'
+    mark_as_pending.short_description = _('Mark as pending for review')
 
     def save_model(self, request, obj, form, change):
         """Override save to handle status changes and send emails"""
