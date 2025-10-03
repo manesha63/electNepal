@@ -4,11 +4,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
-    <meta name="description" content="{% trans 'ElectNepal - Platform for Independent Candidates in Nepal Elections' %}">
-    <meta name="keywords" content="Nepal, Elections, Independent Candidates, Democracy, Voting">
+    <meta name="description" content="{% trans 'ElectNepal - Platform for Candidates in Nepal Elections' %}">
+    <meta name="keywords" content="Nepal, Elections, Candidates, Democracy, Voting">
     <meta name="author" content="ElectNepal">
     
-    <title>{% block title %}ElectNepal - {% trans "Independent Candidates Platform" %}{% endblock %}</title>
+    <title>{% block title %}ElectNepal - {% trans "Candidates Platform" %}{% endblock %}</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
@@ -24,6 +24,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/colors.css' %}?v=1">
     <link rel="stylesheet" href="{% static 'css/main.css' %}?v=4">
+    <link rel="stylesheet" href="{% static 'css/print.css' %}?v=1" media="print">
 
     <!-- Tailwind CSS (for additional utility classes) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -54,10 +55,10 @@
                 <p>{% trans "We use cookies to enhance your experience on ElectNepal. By continuing to use our platform, you agree to our use of cookies for analytics and functionality." %}</p>
             </div>
             <div class="cookie-buttons">
-                <button onclick="ElectNepal.acceptCookies()" class="cookie-btn cookie-accept">
+                <button class="cookie-btn cookie-accept">
                     {% trans "Accept All" %}
                 </button>
-                <button onclick="ElectNepal.showCookieSettings()" class="cookie-btn cookie-settings">
+                <button class="cookie-btn cookie-settings">
                     {% trans "Settings" %}
                 </button>
             </div>
@@ -74,19 +75,37 @@
                     <span>ElectNepal</span>
                 </a>
 
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle md:hidden"
+                        aria-label="{% trans 'Toggle navigation menu' %}"
+                        aria-expanded="false">
+                    <span class="hamburger-icon">☰</span>
+                </button>
+
                 <!-- Center Navigation Links -->
-                <div class="nav-links">
+                <div class="nav-links" id="navLinks">
                     <a href="{% url 'candidates:ballot' %}" class="nav-link">{% trans "Ballot" %}</a>
-                    <a href="{% url 'home' %}" class="nav-link">{% trans "Independent Candidates" %}</a>
+                    <a href="{% url 'home' %}" class="nav-link">{% trans "Candidates" %}</a>
                     <a href="{% url 'how_to_vote' %}" class="nav-link">{% trans "How to Vote" %}</a>
                     <a href="{% url 'about' %}" class="nav-link">{% trans "About Us" %}</a>
                     <a href="{% url 'authentication:register_info' %}" class="nav-link" style="color: #60A5FA; font-weight: 600;">{% trans "Register" %}</a>
+
+                    <!-- Language Switcher in Mobile Menu -->
+                    <div class="mobile-lang-switch md:hidden">
+                        <button class="nav-link" data-lang-switch="mobile"
+                                style="color: #60A5FA; font-weight: 600;">
+                            {% if request.LANGUAGE_CODE == 'ne' %}Switch to English{% else %}नेपालीमा{% endif %}
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Right side: Language Switcher Only -->
-                <div class="flex items-center">
+                <!-- Right side: Language Switcher Only (Desktop) -->
+                <div class="flex items-center hidden md:flex">
                     <!-- Language Switcher -->
-                    <button class="lang-btn" onclick="switchLanguage()">
+                    <button class="lang-btn"
+                            role="button"
+                            aria-label="{% trans 'Switch language' %}"
+                            tabindex="0">
                         <span id="currentLang">{% if request.LANGUAGE_CODE == 'ne' %}{% trans "English" %}{% else %}{% trans "Nepali" %}{% endif %}</span>
                     </button>
                 </div>
@@ -117,11 +136,17 @@
     {% endblock %}
 
     <!-- Coming Soon Modal -->
-    <div id="comingSoonModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
+    <div id="comingSoonModal"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="comingSoonTitle"
+         aria-describedby="comingSoonDesc"
+         style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
         <div style="background: white; padding: 2rem; border-radius: 0.5rem; max-width: 400px; text-align: center;">
-            <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">{% trans "Coming Soon" %}</h2>
-            <p style="color: #6b7280; margin-bottom: 1.5rem;">{% trans "The Ballot feature is currently under development and will be available soon." %}</p>
-            <button onclick="hideComingSoon()" style="background: #4b5563; color: white; padding: 0.5rem 1.5rem; border-radius: 0.25rem; border: none; cursor: pointer;">
+            <h2 id="comingSoonTitle" style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">{% trans "Coming Soon" %}</h2>
+            <p id="comingSoonDesc" style="color: #6b7280; margin-bottom: 1.5rem;">{% trans "The Ballot feature is currently under development and will be available soon." %}</p>
+            <button id="comingSoonOkBtn"
+                    style="background: #4b5563; color: white; padding: 0.5rem 1.5rem; border-radius: 0.25rem; border: none; cursor: pointer;">
                 {% trans "OK" %}
             </button>
         </div>
@@ -135,6 +160,7 @@
     <!-- JavaScript -->
     <script src="{% url 'javascript-catalog' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/secure-handlers.js' %}"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     {% block extra_js %}{% endblock %}

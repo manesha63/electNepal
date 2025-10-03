@@ -30,14 +30,14 @@ CSRF_USE_SESSIONS = False
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = (
     "'self'",
-    "'unsafe-inline'",  # Required for inline scripts, remove in production
+    # "'unsafe-inline'" removed - all inline scripts moved to external files
     "https://cdn.tailwindcss.com",
     "https://cdn.jsdelivr.net",
     "https://cdnjs.cloudflare.com",
 )
 CSP_STYLE_SRC = (
     "'self'",
-    "'unsafe-inline'",  # Required for inline styles, remove in production
+    "'unsafe-inline'",  # Still required for Tailwind CSS utility classes
     "https://fonts.googleapis.com",
     "https://cdnjs.cloudflare.com",
 )

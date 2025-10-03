@@ -86,29 +86,11 @@ def auto_translate_model_fields(instance, fields_to_translate):
                 logger.error(f"Failed to translate {en_field}: {str(e)}")
 
 # Signal handlers for automatic translation
-@receiver(pre_save, sender='candidates.Candidate')
-def auto_translate_candidate(sender, instance, **kwargs):
-    """
-    Automatically translate Candidate fields before saving
-    """
-    fields_to_translate = ['bio', 'education', 'experience', 'manifesto']
-    auto_translate_model_fields(instance, fields_to_translate)
+# Note: Candidate translation is now handled asynchronously in the model's save method
+# to prevent registration delays
 
-@receiver(pre_save, sender='candidates.CandidatePost')
-def auto_translate_post(sender, instance, **kwargs):
-    """
-    Automatically translate CandidatePost fields before saving
-    """
-    fields_to_translate = ['title', 'content']
-    auto_translate_model_fields(instance, fields_to_translate)
 
-@receiver(pre_save, sender='candidates.CandidateEvent')
-def auto_translate_event(sender, instance, **kwargs):
-    """
-    Automatically translate CandidateEvent fields before saving
-    """
-    fields_to_translate = ['title', 'description', 'location']
-    auto_translate_model_fields(instance, fields_to_translate)
+# Note: CandidateEvent translation is also handled asynchronously in the model's save method
 
 # Location model translations
 @receiver(post_save, sender='locations.Province')
@@ -148,7 +130,7 @@ def translate_all_existing_content():
     """
     One-time function to translate all existing content in the database
     """
-    from candidates.models import Candidate, CandidatePost, CandidateEvent
+    from candidates.models import Candidate, CandidateEvent
     from locations.models import Province, District, Municipality
 
     smart_translator = SmartTranslator()
@@ -159,13 +141,6 @@ def translate_all_existing_content():
         fields = ['bio', 'education', 'experience', 'manifesto']
         auto_translate_model_fields(candidate, fields)
         candidate.save()
-
-    # Translate all posts
-    print("Translating posts...")
-    for post in CandidatePost.objects.all():
-        fields = ['title', 'content']
-        auto_translate_model_fields(post, fields)
-        post.save()
 
     # Translate all events
     print("Translating events...")

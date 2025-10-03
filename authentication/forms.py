@@ -11,7 +11,7 @@ class CandidateSignupForm(UserCreationForm):
         label=_("Email Address"),
         help_text=_("Required. Enter a valid email address."),
         widget=forms.EmailInput(attrs={
-            'class': 'w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-400',
+            'class': 'w-full px-4 py-3 min-h-[44px] border rounded-lg focus:outline-none focus:border-blue-400',
             'placeholder': _('Email address')
         })
     )
@@ -21,7 +21,7 @@ class CandidateSignupForm(UserCreationForm):
         fields = ('username', 'email', 'password1', 'password2')
         widgets = {
             'username': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-400',
+                'class': 'w-full px-4 py-3 min-h-[44px] border rounded-lg focus:outline-none focus:border-blue-400',
                 'placeholder': _('Username')
             }),
         }
@@ -29,11 +29,11 @@ class CandidateSignupForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['password1'].widget.attrs.update({
-            'class': 'w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-400',
+            'class': 'w-full px-4 py-3 min-h-[44px] border rounded-lg focus:outline-none focus:border-blue-400',
             'placeholder': _('Password')
         })
         self.fields['password2'].widget.attrs.update({
-            'class': 'w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-400',
+            'class': 'w-full px-4 py-3 min-h-[44px] border rounded-lg focus:outline-none focus:border-blue-400',
             'placeholder': _('Confirm Password')
         })
 

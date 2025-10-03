@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n sanitize_filters %}
 {% if value %}
 <div class="bilingual-field-wrapper">
     {% if label %}
@@ -12,7 +12,7 @@
     </h3>
     {% endif %}
     <div class="field-content text-gray-700">
-        {{ value|linebreaksbr }}
+        {{ value|sanitize_linebreaks }}
     </div>
 </div>
 {% endif %}

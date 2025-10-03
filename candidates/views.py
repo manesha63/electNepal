@@ -2,9 +2,12 @@ from django.views.generic import ListView, DetailView, TemplateView
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.db.models import Q, Case, When, Value, IntegerField
+from django.db import transaction
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.utils import timezone
 from django.utils.translation import get_language, gettext as _
 from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.cache import cache_page
 from django.core.paginator import Paginator, EmptyPage
 from django.core.cache import cache
 from django.contrib.auth.decorators import login_required
@@ -461,6 +464,7 @@ def ballot_view(request):
 
 
 @require_GET
+@cache_page(60 * 5)  # Cache for 5 minutes
 @ratelimit(key='ip', rate='60/m', method='GET', block=True)  # 60 requests per minute for general browsing
 def candidate_cards_api(request):
     """API endpoint for candidate cards with pagination."""
@@ -479,19 +483,42 @@ def candidate_cards_api(request):
     # Build queryset - only show approved candidates
     qs = Candidate.objects.filter(status='approved').select_related('province', 'district', 'municipality')
 
-    # Apply search filter if provided - search in all relevant fields
+    # Apply search filter if provided - use PostgreSQL full-text search for better performance
+    search_applied = False
     if q:
-        qs = qs.filter(
-            Q(full_name__icontains=q) |
-            Q(bio_en__icontains=q) |
-            Q(bio_ne__icontains=q) |
-            Q(education_en__icontains=q) |
-            Q(education_ne__icontains=q) |
-            Q(experience_en__icontains=q) |
-            Q(experience_ne__icontains=q) |
-            Q(manifesto_en__icontains=q) |
-            Q(manifesto_ne__icontains=q)
-        )
+        try:
+            # Try to use PostgreSQL full-text search for better performance
+            # Create a search vector combining all searchable fields
+            search_vector = SearchVector('full_name', weight='A') + \
+                           SearchVector('bio_en', 'bio_ne', weight='B') + \
+                           SearchVector('education_en', 'education_ne', weight='C') + \
+                           SearchVector('experience_en', 'experience_ne', weight='C') + \
+                           SearchVector('manifesto_en', 'manifesto_ne', weight='D')
+
+            # Create search query (handles multiple words, stemming, etc.)
+            search_query = SearchQuery(q)
+
+            # Apply search with ranking
+            qs = qs.annotate(
+                search=search_vector,
+                rank=SearchRank(search_vector, search_query)
+            ).filter(search=search_query)
+            search_applied = True
+
+        except Exception as e:
+            # Fallback to original implementation if PostgreSQL full-text search fails
+            # This ensures backward compatibility and works with non-PostgreSQL databases
+            qs = qs.filter(
+                Q(full_name__icontains=q) |
+                Q(bio_en__icontains=q) |
+                Q(bio_ne__icontains=q) |
+                Q(education_en__icontains=q) |
+                Q(education_ne__icontains=q) |
+                Q(experience_en__icontains=q) |
+                Q(experience_ne__icontains=q) |
+                Q(manifesto_en__icontains=q) |
+                Q(manifesto_ne__icontains=q)
+            )
 
     # Apply location filters
     if province_id:
@@ -503,8 +530,13 @@ def candidate_cards_api(request):
     if position_level:
         qs = qs.filter(position_level=position_level)
 
-    # Order by creation date and name
-    qs = qs.order_by('-created_at', 'full_name')
+    # Order by creation date and name (or by search rank if search was applied)
+    if search_applied:
+        # When search is applied with PostgreSQL FTS, order by relevance rank first
+        qs = qs.order_by('-rank', '-created_at', 'full_name')
+    else:
+        # Default ordering when no search or fallback search
+        qs = qs.order_by('-created_at', 'full_name')
 
     # Paginate
     paginator = Paginator(qs, page_size)
@@ -555,23 +587,29 @@ def candidate_register(request):
     if request.method == 'POST':
         form = CandidateRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
-            candidate = form.save(commit=False)
-            candidate.user = request.user
-            candidate.status = 'pending'  # Set to pending for admin review
-            candidate.save()
-
-            # Send email notifications
             try:
-                # Send confirmation to candidate
-                candidate.send_registration_confirmation()
-                # Notify admins about new registration
-                candidate.notify_admin_new_registration()
-            except Exception as e:
-                # Log error but don't fail the registration
-                print(f"Email notification error: {e}")
+                with transaction.atomic():
+                    candidate = form.save(commit=False)
+                    candidate.user = request.user
+                    candidate.status = 'pending'  # Set to pending for admin review
+                    candidate.save()
 
-            messages.success(request, 'Your candidate profile has been submitted for review! You will be notified once approved.')
-            return redirect('candidates:registration_success')
+                # Send email notifications (outside transaction for performance)
+                try:
+                    # Send confirmation to candidate
+                    candidate.send_registration_confirmation()
+                    # Notify admins about new registration
+                    candidate.notify_admin_new_registration()
+                except Exception as e:
+                    # Log error but don't fail the registration
+                    print(f"Email notification error: {e}")
+
+                messages.success(request, 'Your candidate profile has been submitted for review! You will be notified once approved.')
+                return redirect('candidates:registration_success')
+            except Exception as e:
+                # If any error occurs during save (including translation), show error
+                messages.error(request, f'Registration failed: {str(e)}. Please try again.')
+                # Form will be re-displayed with the entered data
     else:
         form = CandidateRegistrationForm()
 
@@ -623,22 +661,27 @@ def edit_profile(request):
         return redirect('candidates:dashboard')
 
     if request.method == 'POST':
-        # Handle simple form data from dashboard modal
-        candidate.bio_en = request.POST.get('bio_en', candidate.bio_en)
-        candidate.manifesto_en = request.POST.get('manifesto_en', candidate.manifesto_en)
-        candidate.experience_en = request.POST.get('experience_en', candidate.experience_en)
-        candidate.education_en = request.POST.get('education_en', candidate.education_en)
-        candidate.website = request.POST.get('website', candidate.website)
-        candidate.facebook_url = request.POST.get('facebook_url', candidate.facebook_url)
-        candidate.donation_link = request.POST.get('donation_link', candidate.donation_link)
-        candidate.donation_description = request.POST.get('donation_description', candidate.donation_description)
+        try:
+            with transaction.atomic():
+                # Handle simple form data from dashboard modal
+                candidate.bio_en = request.POST.get('bio_en', candidate.bio_en)
+                candidate.manifesto_en = request.POST.get('manifesto_en', candidate.manifesto_en)
+                candidate.experience_en = request.POST.get('experience_en', candidate.experience_en)
+                candidate.education_en = request.POST.get('education_en', candidate.education_en)
+                candidate.website = request.POST.get('website', candidate.website)
+                candidate.facebook_url = request.POST.get('facebook_url', candidate.facebook_url)
+                candidate.donation_link = request.POST.get('donation_link', candidate.donation_link)
+                candidate.donation_description = request.POST.get('donation_description', candidate.donation_description)
 
-        # Auto-translate if needed
-        candidate.autotranslate_missing()
-        candidate.save()
+                # Auto-translate if needed
+                candidate.autotranslate_missing()
+                candidate.save()
 
-        messages.success(request, 'Your profile has been updated successfully!')
-        return redirect('candidates:dashboard')
+            messages.success(request, 'Your profile has been updated successfully!')
+            return redirect('candidates:dashboard')
+        except Exception as e:
+            messages.error(request, f'Profile update failed: {str(e)}. Please try again.')
+            return redirect('candidates:dashboard')
 
     # If someone directly accesses /candidates/edit/ via GET, redirect to dashboard
     return redirect('candidates:dashboard')
@@ -689,11 +732,16 @@ def add_event(request):
     if request.method == 'POST':
         form = CandidateEventForm(request.POST)
         if form.is_valid():
-            event = form.save(commit=False)
-            event.candidate = candidate
-            event.save()
-            messages.success(request, 'Event created successfully!')
-            return redirect('candidates:dashboard')
+            try:
+                with transaction.atomic():
+                    event = form.save(commit=False)
+                    event.candidate = candidate
+                    event.save()
+                messages.success(request, 'Event created successfully!')
+                return redirect('candidates:dashboard')
+            except Exception as e:
+                messages.error(request, f'Event creation failed: {str(e)}. Please try again.')
+                # Form will be re-displayed with the entered data
     else:
         form = CandidateEventForm()
 

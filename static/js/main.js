@@ -75,6 +75,27 @@ function initSmoothScroll() {
     });
 }
 
+// Toggle Mobile Menu (called from button onclick)
+function toggleMobileMenu() {
+    const navLinks = document.getElementById('navLinks');
+    const menuToggle = document.querySelector('.mobile-menu-toggle');
+
+    if (navLinks) {
+        navLinks.classList.toggle('mobile-active');
+
+        // Update ARIA attributes
+        const isExpanded = navLinks.classList.contains('mobile-active');
+        if (menuToggle) {
+            menuToggle.setAttribute('aria-expanded', isExpanded.toString());
+            // Change icon
+            const icon = menuToggle.querySelector('.hamburger-icon');
+            if (icon) {
+                icon.textContent = isExpanded ? '✕' : '☰';
+            }
+        }
+    }
+}
+
 // Mobile Menu Toggle
 function initMobileMenu() {
     // Create mobile menu functionality for navigation
@@ -82,22 +103,10 @@ function initMobileMenu() {
     const navLinks = document.querySelector('.nav-links');
 
     if (navbar && navLinks && window.innerWidth <= 767) {
-        // Add click handler to the navbar container (using the ::after pseudo element area)
-        navbar.addEventListener('click', function(e) {
-            // Check if click is on the hamburger menu area (right side of navbar)
-            const rect = this.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const rightArea = rect.width - 60; // 60px from right edge
-
-            if (clickX > rightArea) {
-                navLinks.classList.toggle('mobile-active');
-                e.stopPropagation();
-            }
-        });
-
         // Close menu when clicking outside
         document.addEventListener('click', (e) => {
-            if (!navbar.contains(e.target) && !navLinks.contains(e.target)) {
+            const menuToggle = document.querySelector('.mobile-menu-toggle');
+            if (!navbar.contains(e.target) && !navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
                 navLinks.classList.remove('mobile-active');
             }
         });

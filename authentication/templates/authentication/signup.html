@@ -16,7 +16,7 @@
             {% endfor %}
         {% endif %}
 
-        <form method="post">
+        <form method="post" x-data="{ submitting: false }" @submit="submitting = true">
             {% csrf_token %}
 
             {% if form.non_field_errors %}
@@ -66,8 +66,14 @@
                 {% endif %}
             </div>
 
-            <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200">
-                {% trans "Create Account" %}
+            <button type="submit"
+                    :disabled="submitting"
+                    class="w-full bg-blue-500 text-white py-3 px-4 min-h-[44px] rounded-lg hover:bg-blue-600 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+                <span x-show="!submitting">{% trans "Create Account" %}</span>
+                <span x-show="submitting" class="flex items-center">
+                    <span class="loading-spinner mr-2"></span>
+                    {% trans "Creating Account..." %}
+                </span>
             </button>
         </form>
 
@@ -82,4 +88,23 @@
 
     </div>
 </div>
+
+<style>
+/* Loading spinner styles */
+.loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 50%;
+    border-top-color: #ffffff;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+</style>
 {% endblock %}

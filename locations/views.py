@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.views import View
 from django.views.decorators.http import require_GET
+from django.views.decorators.cache import cache_page
 from django.utils.translation import gettext as _
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
@@ -9,6 +10,7 @@ from .models import Province, District, Municipality
 from .analytics import GeolocationAnalytics
 
 
+@method_decorator(cache_page(60 * 10), name='get')  # Cache for 10 minutes
 @method_decorator(ratelimit(key='ip', rate='60/m', method='GET', block=True), name='get')
 class DistrictsByProvinceView(View):
     def get(self, request):
@@ -19,6 +21,7 @@ class DistrictsByProvinceView(View):
         return JsonResponse(list(qs), safe=False)
 
 
+@method_decorator(cache_page(60 * 10), name='get')  # Cache for 10 minutes
 @method_decorator(ratelimit(key='ip', rate='60/m', method='GET', block=True), name='get')
 class MunicipalitiesByDistrictView(View):
     def get(self, request):
@@ -258,6 +261,7 @@ def geo_analytics_stats(request):
 
 
 @require_GET
+@cache_page(60 * 30)  # Cache for 30 minutes (ward data doesn't change often)
 @ratelimit(key='ip', rate='60/m', method='GET', block=True)
 def municipality_wards_view(request, municipality_id):
     """Return the total number of wards for a specific municipality"""

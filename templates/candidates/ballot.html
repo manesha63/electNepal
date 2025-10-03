@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n static %}
+{% load i18n static breadcrumbs %}
 
 {% block title %}{% trans "Ballot" %} - ElectNepal{% endblock %}
 
@@ -8,41 +8,104 @@
     .ballot-container {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 2rem 1rem;
+        padding: 1rem;
+    }
+
+    @media (min-width: 640px) {
+        .ballot-container {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .ballot-container {
+            padding: 2rem 1rem;
+        }
     }
 
     .ballot-header {
         text-align: center;
-        margin-bottom: 3rem;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+        .ballot-header {
+            margin-bottom: 3rem;
+        }
     }
 
     .ballot-title {
-        font-size: 2.5rem;
+        font-size: 1.5rem;
         font-weight: 700;
         color: #1a202c;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    @media (min-width: 640px) {
+        .ballot-title {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .ballot-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
     }
 
     .ballot-subtitle {
-        font-size: 1.125rem;
+        font-size: 0.875rem;
         color: #4a5568;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    @media (min-width: 640px) {
+        .ballot-subtitle {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .ballot-subtitle {
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+        }
     }
 
     .location-button {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        padding: 1rem 2rem;
+        padding: 0.75rem 1.5rem;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
         border-radius: 50px;
-        font-size: 1.125rem;
+        font-size: 0.875rem;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        width: 100%;
+        justify-content: center;
+    }
+
+    @media (min-width: 640px) {
+        .location-button {
+            padding: 0.875rem 1.75rem;
+            font-size: 1rem;
+            width: auto;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .location-button {
+            padding: 1rem 2rem;
+            font-size: 1.125rem;
+        }
     }
 
     .location-button:hover {
@@ -58,16 +121,45 @@
     .manual-selection {
         background: white;
         border-radius: 12px;
-        padding: 2rem;
+        padding: 1rem;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        margin-top: 2rem;
+        margin-top: 1rem;
+    }
+
+    @media (min-width: 640px) {
+        .manual-selection {
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .manual-selection {
+            padding: 2rem;
+            margin-top: 2rem;
+        }
     }
 
     .form-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.5rem;
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    @media (min-width: 640px) {
+        .form-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .form-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            margin-bottom: 1.5rem;
+        }
     }
 
     .form-group {
@@ -89,6 +181,8 @@
         font-size: 1rem;
         background: white;
         transition: border-color 0.2s;
+        width: 100%;
+        min-height: 44px; /* Touch-friendly target size */
     }
 
     .form-select:focus {
@@ -103,6 +197,8 @@
         border-radius: 8px;
         font-size: 1rem;
         transition: border-color 0.2s;
+        width: 100%;
+        min-height: 44px; /* Touch-friendly target size */
     }
 
     .form-input:focus {
@@ -112,19 +208,34 @@
     }
 
     .search-button {
-        padding: 0.75rem 2rem;
+        padding: 0.75rem 1.5rem;
         background: #667eea;
         color: white;
         border: none;
         border-radius: 8px;
-        font-size: 1rem;
+        font-size: 0.875rem;
         font-weight: 600;
         cursor: pointer;
         transition: background 0.2s;
+        width: 100%;
+        min-height: 44px; /* Touch-friendly target size */
+    }
+
+    @media (min-width: 640px) {
+        .search-button {
+            width: auto;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+        }
     }
 
     .search-button:hover {
         background: #5a67d8;
+    }
+
+    .search-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
     }
 
     /* Grid container for cards - adjusted to match location box */
@@ -176,25 +287,63 @@
 
     .candidate-photo {
         width: 100%;
-        height: 200px;
+        height: 150px;
         object-fit: cover;
+    }
+
+    @media (min-width: 640px) {
+        .candidate-photo {
+            height: 180px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .candidate-photo {
+            height: 200px;
+        }
     }
 
     .candidate-photo-placeholder {
         width: 100%;
-        height: 200px;
+        height: 150px;
         background: linear-gradient(135deg, #E2E2E2, #D1D5DB);
         display: flex;
         align-items: center;
         justify-content: center;
         color: #6B7280;
-        font-size: 3rem;
+        font-size: 2.5rem;
+    }
+
+    @media (min-width: 640px) {
+        .candidate-photo-placeholder {
+            height: 180px;
+            font-size: 2.75rem;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .candidate-photo-placeholder {
+            height: 200px;
+            font-size: 3rem;
+        }
     }
 
     .candidate-info {
         flex: 1;
-        padding: 16px;
+        padding: 12px;
         text-align: center;
+    }
+
+    @media (min-width: 640px) {
+        .candidate-info {
+            padding: 14px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .candidate-info {
+            padding: 16px;
+        }
     }
 
     .candidate-name-link {
@@ -207,41 +356,96 @@
     }
 
     .candidate-name {
-        font-size: 1.125rem;
+        font-size: 1rem;
         font-weight: 700;
         color: #1F2937;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
         cursor: pointer;
         transition: color 0.2s;
+        line-height: 1.2;
+    }
+
+    @media (min-width: 640px) {
+        .candidate-name {
+            font-size: 1.0625rem;
+            margin-bottom: 7px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .candidate-name {
+            font-size: 1.125rem;
+            margin-bottom: 8px;
+        }
     }
 
     .candidate-office {
-        font-size: 1rem;
+        font-size: 0.875rem;
         color: #1F2937;
-        margin-bottom: 4px;
+        margin-bottom: 3px;
         font-weight: 500;
+    }
+
+    @media (min-width: 640px) {
+        .candidate-office {
+            font-size: 0.9375rem;
+            margin-bottom: 4px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .candidate-office {
+            font-size: 1rem;
+        }
     }
 
     .candidate-seat {
-        font-size: 0.875rem;
+        font-size: 0.8125rem;
         color: #374151;
-        margin-bottom: 4px;
+        margin-bottom: 3px;
         font-weight: 500;
+    }
+
+    @media (min-width: 640px) {
+        .candidate-seat {
+            font-size: 0.875rem;
+            margin-bottom: 4px;
+        }
     }
 
     .candidate-location {
-        font-size: 0.875rem;
+        font-size: 0.75rem;
         color: #4B5563;
-        margin-top: 4px;
+        margin-top: 3px;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 4px;
+        gap: 3px;
         font-weight: 500;
     }
 
+    @media (min-width: 640px) {
+        .candidate-location {
+            font-size: 0.8125rem;
+            gap: 4px;
+            margin-top: 4px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .candidate-location {
+            font-size: 0.875rem;
+        }
+    }
+
     .candidate-location i {
-        font-size: 0.625rem;
+        font-size: 0.5625rem;
+    }
+
+    @media (min-width: 640px) {
+        .candidate-location i {
+            font-size: 0.625rem;
+        }
     }
 
     .card-actions {
@@ -320,18 +524,36 @@
         background: #fed7d7;
         border: 1px solid #fc8181;
         color: #742a2a;
-        padding: 1rem;
+        padding: 0.75rem;
         border-radius: 8px;
-        margin: 1rem 0;
+        margin: 0.75rem 0;
+        font-size: 0.875rem;
+    }
+
+    @media (min-width: 640px) {
+        .error-message {
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 1rem;
+        }
     }
 
     .info-message {
         background: #bee3f8;
         border: 1px solid #90cdf4;
         color: #2c5282;
-        padding: 1rem;
+        padding: 0.75rem;
         border-radius: 8px;
-        margin: 1rem 0;
+        margin: 0.75rem 0;
+        font-size: 0.875rem;
+    }
+
+    @media (min-width: 640px) {
+        .info-message {
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 1rem;
+        }
     }
 
     .divider {
@@ -360,12 +582,14 @@
 {% block content %}
 {% get_current_language as LANGUAGE_CODE %}
 <div class="ballot-container" x-data="ballotApp()" x-init="currentLanguage = '{{ LANGUAGE_CODE }}'; requestLocation()">
+    <!-- Breadcrumb Navigation -->
+    {% breadcrumbs "My Ballot" %}
     <!-- Loading state while getting location -->
     <template x-if="loading && !error">
-        <div class="text-center py-8">
-            <div class="loading-spinner" style="width: 40px; height: 40px; margin: 0 auto;"></div>
-            <p class="mt-4 text-lg text-gray-600">{% trans "Finding candidates in your area..." %}</p>
-            <p class="mt-2 text-sm text-gray-500">{% trans "Please allow location access when prompted" %}</p>
+        <div class="text-center py-6 sm:py-8">
+            <div class="loading-spinner" style="width: 36px; height: 36px; margin: 0 auto;"></div>
+            <p class="mt-3 sm:mt-4 text-base sm:text-lg text-gray-600">{% trans "Finding candidates in your area..." %}</p>
+            <p class="mt-1.5 sm:mt-2 text-xs sm:text-sm text-gray-500">{% trans "Please allow location access when prompted" %}</p>
         </div>
     </template>
 
@@ -382,7 +606,7 @@
     </template>
 
     <div class="manual-selection" x-show="!loading || error">
-        <h3 class="text-lg font-semibold mb-4">{% trans "Select Your Location" %}</h3>
+        <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">{% trans "Select Your Location" %}</h3>
         <div class="form-grid">
             <div class="form-group">
                 <label class="form-label">{% trans "Province" %}</label>
@@ -454,12 +678,12 @@
     <!-- Results section -->
     <template x-if="candidates.length > 0 && !loading">
         <div>
-            <div class="text-center mb-6">
-                <h1 class="text-3xl font-bold text-gray-800 mb-2">{% trans "Your Ballot" %}</h1>
-                <p class="text-lg text-gray-600">
-                    <span x-text="totalCandidates"></span> {% trans "independent candidates in your voting area" %}
+            <div class="text-center mb-4 sm:mb-5 md:mb-6">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-1.5 sm:mb-2">{% trans "Your Ballot" %}</h1>
+                <p class="text-base sm:text-lg text-gray-600">
+                    <span x-text="totalCandidates"></span> {% trans "candidates in your voting area" %}
                     <template x-if="totalPages > 1">
-                        <span class="text-sm text-gray-500">
+                        <span class="text-xs sm:text-sm text-gray-500">
                             ({% trans "Page" %} <span x-text="currentPage"></span> {% trans "of" %} <span x-text="totalPages"></span>)
                         </span>
                     </template>
@@ -521,34 +745,30 @@
             </div>
 
             <!-- Pagination Controls -->
-            <!-- Pagination Controls -->
             <template x-if="totalPages > 1">
-                <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 20px; margin: 30px 0;">
+                <div class="pagination-controls flex justify-center items-center gap-3 sm:gap-4 md:gap-5 my-6 sm:my-8">
                     <!-- Show appropriate navigation based on page position -->
                     <template x-if="currentPage === 1 && hasNext">
                         <!-- First page with more pages: show > only -->
                         <button
                             @click="nextPage()"
-                            class="px-6 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-                            style="display: flex; align-items: center;">
-                            <i class="fas fa-chevron-right"></i>
+                            class="flex items-center justify-center px-4 py-3 sm:px-5 sm:py-2.5 md:px-6 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition min-w-[44px] min-h-[44px] sm:min-h-[40px]">
+                            <i class="fas fa-chevron-right text-sm sm:text-base"></i>
                         </button>
                     </template>
 
                     <template x-if="currentPage > 1 && hasNext">
                         <!-- Middle pages: show < > -->
-                        <div style="display: flex; align-items: center; gap: 20px;">
+                        <div class="flex items-center gap-3 sm:gap-4 md:gap-5">
                             <button
                                 @click="previousPage()"
-                                class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-                                style="display: flex; align-items: center;">
-                                <i class="fas fa-chevron-left"></i>
+                                class="flex items-center justify-center px-4 py-3 sm:px-4 sm:py-2.5 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition min-w-[44px] min-h-[44px] sm:min-h-[40px]">
+                                <i class="fas fa-chevron-left text-sm sm:text-base"></i>
                             </button>
                             <button
                                 @click="nextPage()"
-                                class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-                                style="display: flex; align-items: center;">
-                                <i class="fas fa-chevron-right"></i>
+                                class="flex items-center justify-center px-4 py-3 sm:px-4 sm:py-2.5 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition min-w-[44px] min-h-[44px] sm:min-h-[40px]">
+                                <i class="fas fa-chevron-right text-sm sm:text-base"></i>
                             </button>
                         </div>
                     </template>
@@ -557,9 +777,8 @@
                         <!-- Last page: show << only -->
                         <button
                             @click="previousPage()"
-                            class="px-6 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-                            style="display: flex; align-items: center;">
-                            <i class="fas fa-chevron-double-left"></i>
+                            class="flex items-center justify-center px-4 py-3 sm:px-5 sm:py-2.5 md:px-6 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition min-w-[44px] min-h-[44px] sm:min-h-[40px]">
+                            <i class="fas fa-chevron-double-left text-sm sm:text-base"></i>
                         </button>
                     </template>
                 </div>
@@ -568,11 +787,11 @@
     </template>
 
     <template x-if="searched && candidates.length === 0 && !loading">
-        <div class="text-center py-8">
+        <div class="text-center py-6 sm:py-8">
             <div class="info-message">
-                <h3 class="text-xl font-semibold mb-2">{% trans "No Candidates Found" %}</h3>
-                <p>{% trans "No independent candidates are currently registered in your area." %}</p>
-                <p class="mt-2">{% trans "Try selecting a different location or check back later." %}</p>
+                <h3 class="text-lg sm:text-xl font-semibold mb-1.5 sm:mb-2">{% trans "No Candidates Found" %}</h3>
+                <p class="text-sm sm:text-base">{% trans "No candidates are currently registered in your area." %}</p>
+                <p class="mt-1.5 sm:mt-2 text-sm sm:text-base">{% trans "Try selecting a different location or check back later." %}</p>
             </div>
         </div>
     </template>

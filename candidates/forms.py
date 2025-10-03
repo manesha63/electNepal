@@ -34,23 +34,31 @@ class CandidateRegistrationForm(forms.ModelForm):
             'office': _('Office'),
         }
         widgets = {
-            'age': forms.NumberInput(attrs={'min': 18, 'max': 120, 'placeholder': _('Age')}),
-            'photo': forms.FileInput(attrs={'accept': 'image/jpeg,image/jpg,image/png', 'class': 'w-full'}),
-            'bio_en': forms.Textarea(attrs={'rows': 4}),
-            'bio_ne': forms.Textarea(attrs={'rows': 4}),
-            'education_en': forms.Textarea(attrs={'rows': 3}),
-            'education_ne': forms.Textarea(attrs={'rows': 3}),
-            'experience_en': forms.Textarea(attrs={'rows': 3}),
-            'experience_ne': forms.Textarea(attrs={'rows': 3}),
-            'achievements_en': forms.Textarea(attrs={'rows': 3, 'placeholder': _('List your key achievements')}),
-            'achievements_ne': forms.Textarea(attrs={'rows': 3}),
-            'manifesto_en': forms.Textarea(attrs={'rows': 5}),
-            'manifesto_ne': forms.Textarea(attrs={'rows': 5}),
-            'ward_number': forms.Select(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
-            'identity_document': forms.FileInput(attrs={'accept': 'image/*,application/pdf'}),
-            'candidacy_document': forms.FileInput(attrs={'accept': 'image/*,application/pdf'}),
+            'age': forms.NumberInput(attrs={'min': 18, 'max': 120, 'placeholder': _('Age'), 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'photo': forms.FileInput(attrs={'accept': 'image/jpeg,image/jpg,image/png', 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'bio_en': forms.Textarea(attrs={'rows': 4, 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'bio_ne': forms.Textarea(attrs={'rows': 4, 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'education_en': forms.Textarea(attrs={'rows': 3, 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'education_ne': forms.Textarea(attrs={'rows': 3, 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'experience_en': forms.Textarea(attrs={'rows': 3, 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'experience_ne': forms.Textarea(attrs={'rows': 3, 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'achievements_en': forms.Textarea(attrs={'rows': 3, 'placeholder': _('List your key achievements'), 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'achievements_ne': forms.Textarea(attrs={'rows': 3, 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'manifesto_en': forms.Textarea(attrs={'rows': 5, 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'manifesto_ne': forms.Textarea(attrs={'rows': 5, 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'ward_number': forms.Select(attrs={'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'identity_document': forms.FileInput(attrs={'accept': 'image/*,application/pdf', 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'candidacy_document': forms.FileInput(attrs={'accept': 'image/*,application/pdf', 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
         }
     
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Add responsive classes to all remaining fields not in widgets
+        for field_name, field in self.fields.items():
+            if field_name not in ['terms_accepted']:  # Skip checkbox
+                if 'class' not in field.widget.attrs:
+                    field.widget.attrs['class'] = 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+
     def clean_phone_number(self):
         phone = self.cleaned_data.get('phone_number')
         if phone:

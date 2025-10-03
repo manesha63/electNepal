@@ -1,10 +1,13 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n sanitize_filters breadcrumbs %}
 
 {% block title %}{% trans "Candidate Dashboard" %} - ElectNepal{% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto mt-6 px-4 py-6">
+    <!-- Breadcrumb Navigation -->
+    {% breadcrumbs "Dashboard" %}
+
     <!-- Header with Welcome Message -->
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900">{% trans "Welcome back" %}, {{ candidate.full_name }}</h1>
@@ -75,7 +78,7 @@
 
 
     <!-- Main Content Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
 
         <!-- Profile Information -->
         <div class="lg:col-span-2">
@@ -240,7 +243,7 @@
                         {% for event in events %}
                         <div class="relative group bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
                             <div class="pr-8">
-                                <h3 class="font-medium text-gray-900">{{ event.title_en }}</h3>
+                                <h3 class="font-medium text-gray-900">{{ event.title_en|sanitize }}</h3>
                                 <div class="mt-2 space-y-1">
                                     <p class="text-sm text-gray-600 flex items-center">
                                         <svg class="mr-2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -253,11 +256,11 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         </svg>
-                                        {{ event.location_en|default:"Location TBD" }}
+                                        {{ event.location_en|default:"Location TBD"|sanitize }}
                                     </p>
                                 </div>
                                 {% if event.description_en %}
-                                <p class="text-sm text-gray-700 mt-2">{{ event.description_en }}</p>
+                                <p class="text-sm text-gray-700 mt-2">{{ event.description_en|sanitize }}</p>
                                 {% endif %}
                             </div>
                             {% if can_edit %}
@@ -299,7 +302,7 @@
         <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onclick="closeEditModal()"></div>
 
         <!-- Modal panel -->
-        <div class="inline-block w-full max-w-3xl px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:p-6">
+        <div class="inline-block w-full max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:p-6">
             <div class="absolute top-0 right-0 pt-4 pr-4">
                 <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-500 focus:outline-none">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

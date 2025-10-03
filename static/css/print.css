@@ -1,0 +1,425 @@
+/**
+ * Print Styles for ElectNepal
+ * Optimized for clean, readable printed pages
+ */
+
+@media print {
+    /* ===== Reset & Base Styles ===== */
+    * {
+        background: transparent !important;
+        color: #000 !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    /* Page setup */
+    @page {
+        margin: 2cm;
+        size: A4;
+    }
+
+    /* Body and main containers */
+    body {
+        font-family: 'Georgia', 'Times New Roman', serif;
+        font-size: 12pt;
+        line-height: 1.6;
+        color: #000;
+        background: #fff;
+    }
+
+    .main-content {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* ===== Hide Non-Essential Elements ===== */
+    /* Navigation and UI controls */
+    .navbar,
+    .nav-links,
+    .lang-btn,
+    .filter-wrapper,
+    .filter-button,
+    .filter-dropdown,
+    .search-header,
+    .search-bar,
+    .footer,
+    .footer-content,
+    .cookie-consent,
+    #comingSoonModal,
+    #loader,
+    .loading-spinner,
+    .action-btn,
+    .btn-secondary,
+    button[onclick*="share"],
+    button[onclick*="filter"],
+    .pagination,
+    .page-navigation,
+    script,
+    noscript {
+        display: none !important;
+    }
+
+    /* ===== Headers and Typography ===== */
+    h1, h2, h3, h4, h5, h6 {
+        page-break-after: avoid;
+        page-break-inside: avoid;
+        font-weight: bold;
+        margin-top: 1em;
+        margin-bottom: 0.5em;
+    }
+
+    h1 {
+        font-size: 20pt;
+        border-bottom: 2px solid #000;
+        padding-bottom: 5pt;
+    }
+
+    h2 {
+        font-size: 16pt;
+    }
+
+    h3 {
+        font-size: 14pt;
+    }
+
+    p, li, td, th {
+        font-size: 12pt;
+        line-height: 1.6;
+    }
+
+    /* ===== Links ===== */
+    a {
+        text-decoration: underline;
+        color: #000 !important;
+    }
+
+    /* Show URL after links (except for internal navigation) */
+    a[href^="http"]:after,
+    a[href^="https"]:after {
+        content: " (" attr(href) ")";
+        font-size: 10pt;
+        font-style: italic;
+    }
+
+    /* Don't show URL for internal links */
+    a[href^="#"]:after,
+    a[href^="javascript"]:after {
+        content: "";
+    }
+
+    /* ===== Candidate Profile Specific ===== */
+    .candidate-detail {
+        page-break-inside: avoid;
+    }
+
+    .candidate-header {
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 10pt;
+        margin-bottom: 15pt;
+    }
+
+    .candidate-photo {
+        width: 100px !important;
+        height: 100px !important;
+        float: left;
+        margin-right: 15pt;
+        margin-bottom: 10pt;
+        border: 1px solid #000;
+    }
+
+    .candidate-info {
+        overflow: auto;
+    }
+
+    .candidate-name {
+        font-size: 18pt;
+        font-weight: bold;
+        margin-bottom: 5pt;
+    }
+
+    .candidate-position,
+    .candidate-location {
+        font-size: 12pt;
+        margin-bottom: 3pt;
+    }
+
+    .badge,
+    .status-badge {
+        border: 1px solid #000;
+        padding: 2pt 4pt;
+        margin-right: 5pt;
+        display: inline-block;
+    }
+
+    /* ===== Candidate Cards Grid ===== */
+    .candidates-grid {
+        display: block !important;
+    }
+
+    .candidate-card {
+        page-break-inside: avoid;
+        border: 1px solid #000;
+        padding: 10pt;
+        margin-bottom: 15pt;
+        display: block !important;
+    }
+
+    .candidate-card img {
+        width: 60pt !important;
+        height: 60pt !important;
+        float: left;
+        margin-right: 10pt;
+        border: 1px solid #ccc;
+    }
+
+    .card-actions,
+    .card-footer {
+        display: none !important;
+    }
+
+    /* ===== Content Sections ===== */
+    .content-section {
+        page-break-inside: avoid;
+        margin-bottom: 20pt;
+    }
+
+    .content-section h2 {
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 3pt;
+        margin-bottom: 10pt;
+    }
+
+    .bio-section,
+    .manifesto-section,
+    .education-section,
+    .experience-section {
+        margin-bottom: 15pt;
+    }
+
+    /* ===== Tables ===== */
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        page-break-inside: auto;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    th, td {
+        border: 1px solid #000;
+        padding: 5pt;
+        text-align: left;
+    }
+
+    th {
+        font-weight: bold;
+        background: #f0f0f0 !important;
+    }
+
+    /* ===== Forms (for reference, usually not printed) ===== */
+    form {
+        display: none;
+    }
+
+    /* Show form data as text if needed */
+    input[type="text"]:not([type="hidden"]),
+    input[type="email"]:not([type="hidden"]),
+    textarea,
+    select {
+        border: none !important;
+        padding: 0 !important;
+        display: inline !important;
+        width: auto !important;
+    }
+
+    /* ===== Images ===== */
+    img {
+        max-width: 100% !important;
+        page-break-inside: avoid;
+    }
+
+    /* ===== Lists ===== */
+    ul, ol {
+        margin-left: 20pt;
+        margin-bottom: 10pt;
+    }
+
+    li {
+        margin-bottom: 3pt;
+    }
+
+    /* ===== Page Breaks ===== */
+    .page-break {
+        page-break-after: always;
+    }
+
+    .no-break {
+        page-break-inside: avoid;
+    }
+
+    /* ===== Ballot Specific ===== */
+    .ballot-container {
+        width: 100%;
+    }
+
+    .ballot-header {
+        text-align: center;
+        margin-bottom: 20pt;
+        border-bottom: 2px solid #000;
+        padding-bottom: 10pt;
+    }
+
+    .location-info {
+        margin-bottom: 15pt;
+        padding: 10pt;
+        border: 1px solid #000;
+    }
+
+    /* ===== How to Vote Page ===== */
+    .voting-steps {
+        counter-reset: step-counter;
+    }
+
+    .voting-step {
+        counter-increment: step-counter;
+        margin-bottom: 15pt;
+        page-break-inside: avoid;
+    }
+
+    .voting-step:before {
+        content: counter(step-counter) ". ";
+        font-weight: bold;
+        font-size: 14pt;
+    }
+
+    /* ===== About Page ===== */
+    .about-content {
+        text-align: justify;
+    }
+
+    .team-member {
+        page-break-inside: avoid;
+        margin-bottom: 10pt;
+        padding: 5pt;
+        border: 1px solid #ccc;
+    }
+
+    /* ===== Utilities ===== */
+    .print-only {
+        display: block !important;
+    }
+
+    .no-print,
+    .screen-only {
+        display: none !important;
+    }
+
+    /* ===== Footer Info (for print) ===== */
+    .print-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 10pt;
+        padding-top: 10pt;
+        border-top: 1px solid #ccc;
+    }
+
+    /* Add page numbers */
+    @page {
+        @bottom-right {
+            content: "Page " counter(page) " of " counter(pages);
+            font-size: 10pt;
+        }
+    }
+
+    /* ===== Accessibility ===== */
+    /* Ensure contrast for printed text */
+    .text-gray-500,
+    .text-gray-600,
+    .text-gray-700 {
+        color: #000 !important;
+    }
+
+    /* Background colors become borders */
+    .bg-blue-100,
+    .bg-green-100,
+    .bg-yellow-100,
+    .bg-red-100 {
+        background: transparent !important;
+        border: 1px solid #000 !important;
+        padding: 5pt !important;
+    }
+
+    /* ===== Responsive Adjustments ===== */
+    /* Remove all responsive grid/flex layouts for print */
+    .grid,
+    .flex {
+        display: block !important;
+    }
+
+    .grid > *,
+    .flex > * {
+        display: block !important;
+        width: 100% !important;
+        margin-bottom: 10pt;
+    }
+
+    /* Container width */
+    .container,
+    .max-w-4xl,
+    .max-w-6xl,
+    .max-w-7xl {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+}
+
+/* ===== Print-Specific Utility Classes ===== */
+@media screen {
+    .print-only {
+        display: none !important;
+    }
+}
+
+/* Add print header/footer placeholders */
+.print-header,
+.print-footer {
+    display: none;
+}
+
+@media print {
+    .print-header {
+        display: block;
+        text-align: center;
+        font-size: 14pt;
+        font-weight: bold;
+        margin-bottom: 20pt;
+        padding-bottom: 10pt;
+        border-bottom: 2px solid #000;
+    }
+
+    .print-footer {
+        display: block;
+        margin-top: 30pt;
+        padding-top: 10pt;
+        border-top: 1px solid #000;
+        font-size: 10pt;
+        text-align: center;
+    }
+
+    .print-footer:after {
+        content: "© 2024 ElectNepal | Printed on " attr(data-date);
+    }
+}

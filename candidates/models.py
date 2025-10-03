@@ -407,41 +407,68 @@ class Candidate(AutoTranslationMixin, models.Model):
         self._fill_missing_pair("manifesto_en", "manifesto_ne", "is_mt_manifesto_ne")
 
     def save(self, *args, **kwargs):
-        # Auto-translate missing Nepali fields (never overwrites existing)
-        self.autotranslate_missing()
+        # Optimize photo if it's being uploaded or changed
+        if self.photo:
+            # Check if this is a new upload or photo has changed
+            if self.pk is None:  # New instance
+                should_optimize = True
+            else:
+                # Check if photo has changed by comparing with database
+                try:
+                    old_instance = Candidate.objects.get(pk=self.pk)
+                    should_optimize = old_instance.photo != self.photo
+                except Candidate.DoesNotExist:
+                    should_optimize = True
+
+            if should_optimize:
+                from .image_utils import optimize_image, should_optimize_image
+
+                # Only optimize if necessary (large file or dimensions)
+                if should_optimize_image(self.photo):
+                    optimized = optimize_image(self.photo)
+                    if optimized:
+                        self.photo = optimized
+
+        # Check if this is a new instance or if we need translation
+        is_new = self.pk is None
+        needs_translation = False
+
+        # Check if any Nepali fields are missing while English fields exist
+        if is_new or not self.bio_ne or not self.education_ne or not self.experience_ne or not self.manifesto_ne:
+            fields_to_check = [
+                ('bio_en', 'bio_ne'),
+                ('education_en', 'education_ne'),
+                ('experience_en', 'experience_ne'),
+                ('manifesto_en', 'manifesto_ne')
+            ]
+            for en_field, ne_field in fields_to_check:
+                en_value = getattr(self, en_field, "") or ""
+                ne_value = getattr(self, ne_field, "") or ""
+                if en_value and not ne_value:
+                    needs_translation = True
+                    break
+
+        # Save the instance first
         super().save(*args, **kwargs)
+
+        # If translation is needed, do it asynchronously AFTER saving
+        if needs_translation:
+            from .async_translation import translate_candidate_async
+
+            # Prepare fields to translate
+            fields_to_translate = [
+                ('bio_en', 'bio_ne', 'is_mt_bio_ne'),
+                ('education_en', 'education_ne', 'is_mt_education_ne'),
+                ('experience_en', 'experience_ne', 'is_mt_experience_ne'),
+                ('manifesto_en', 'manifesto_ne', 'is_mt_manifesto_ne')
+            ]
+
+            # Trigger async translation
+            translate_candidate_async(self.pk, fields_to_translate)
 
     def __str__(self):
         return f"{self.full_name} ({self.get_position_level_display()})"
 
-
-class CandidatePost(AutoTranslationMixin, models.Model):
-    # Fields that should be auto-translated
-    TRANSLATABLE_FIELDS = ['title', 'content']
-
-    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name='posts')
-
-    title_en = models.CharField(max_length=200)
-    title_ne = models.CharField(max_length=200, blank=True)
-    is_mt_title_ne = models.BooleanField(default=False, help_text='True if title_ne is machine translated')
-
-    content_en = models.TextField()
-    content_ne = models.TextField(blank=True)
-    is_mt_content_ne = models.BooleanField(default=False, help_text='True if content_ne is machine translated')
-
-    is_published = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        ordering = ['-created_at']
-        indexes = [
-            models.Index(fields=['candidate', '-created_at']),
-            models.Index(fields=['is_published', '-created_at']),
-        ]
-    
-    def __str__(self):
-        return f"{self.candidate.full_name}: {self.title_en}"
 
 
 class CandidateEvent(AutoTranslationMixin, models.Model):
@@ -474,5 +501,41 @@ class CandidateEvent(AutoTranslationMixin, models.Model):
             models.Index(fields=['is_published', 'event_date']),
         ]
     
+    def save(self, *args, **kwargs):
+        # Check if this is a new instance or if we need translation
+        is_new = self.pk is None
+        needs_translation = False
+
+        # Check if any Nepali fields are missing while English fields exist
+        if is_new or not self.title_ne or not self.description_ne or not self.location_ne:
+            fields_to_check = [
+                ('title_en', 'title_ne'),
+                ('description_en', 'description_ne'),
+                ('location_en', 'location_ne')
+            ]
+            for en_field, ne_field in fields_to_check:
+                en_value = getattr(self, en_field, "") or ""
+                ne_value = getattr(self, ne_field, "") or ""
+                if en_value and not ne_value:
+                    needs_translation = True
+                    break
+
+        # Save the instance first (skip AutoTranslationMixin's save)
+        models.Model.save(self, *args, **kwargs)
+
+        # If translation is needed, do it asynchronously AFTER saving
+        if needs_translation:
+            from .async_translation import translate_event_async
+
+            # Prepare fields to translate
+            fields_to_translate = [
+                ('title_en', 'title_ne', 'is_mt_title_ne'),
+                ('description_en', 'description_ne', 'is_mt_description_ne'),
+                ('location_en', 'location_ne', 'is_mt_location_ne')
+            ]
+
+            # Trigger async translation
+            translate_event_async(self.pk, fields_to_translate)
+
     def __str__(self):
         return f"{self.candidate.full_name}: {self.title_en}"

@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n breadcrumbs %}
 
 {% block title %}{% trans "Create Candidate Profile" %} - ElectNepal{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto mt-8 px-4">
+    {% breadcrumbs "Register as Candidate" %}
     <h1 class="text-3xl font-bold mb-6">{% trans "Create Your Candidate Profile" %}</h1>
 
     {% if messages %}
@@ -16,20 +17,26 @@
     {% endif %}
 
     <!-- Progress Indicator -->
-    <div class="mb-8">
-        <div class="flex justify-between items-center text-sm">
-            <span class="font-semibold text-blue-600">1. Basic Info</span>
-            <span class="text-gray-400">→</span>
-            <span class="text-gray-600">2. Location</span>
-            <span class="text-gray-400">→</span>
-            <span class="text-gray-600">3. Content</span>
-            <span class="text-gray-400">→</span>
-            <span class="text-gray-600">4. Documents</span>
-            <span class="text-gray-400">→</span>
-            <span class="text-gray-600">5. Review</span>
+    <div class="mb-6 sm:mb-8">
+        <!-- Mobile: Show only current step -->
+        <div class="sm:hidden text-center">
+            <span class="font-semibold text-blue-600 text-base">Step 1 of 5: Basic Info</span>
+        </div>
+
+        <!-- Desktop: Show all steps -->
+        <div class="hidden sm:flex justify-between items-center text-xs sm:text-sm overflow-x-auto">
+            <span class="font-semibold text-blue-600 whitespace-nowrap">1. Basic Info</span>
+            <span class="text-gray-400 px-1">→</span>
+            <span class="text-gray-600 whitespace-nowrap">2. Location</span>
+            <span class="text-gray-400 px-1">→</span>
+            <span class="text-gray-600 whitespace-nowrap">3. Content</span>
+            <span class="text-gray-400 px-1">→</span>
+            <span class="text-gray-600 whitespace-nowrap">4. Documents</span>
+            <span class="text-gray-400 px-1">→</span>
+            <span class="text-gray-600 whitespace-nowrap">5. Review</span>
         </div>
         <div class="mt-2 h-2 bg-gray-200 rounded-full">
-            <div class="h-full bg-blue-600 rounded-full" style="width: 25%;"></div>
+            <div class="h-full bg-blue-600 rounded-full transition-all duration-300" style="width: 25%;"></div>
         </div>
     </div>
 
@@ -289,8 +296,15 @@
                 </label>
             </div>
 
-            <button type="submit" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 font-semibold">
-                {% trans "Submit for Review" %}
+            <button type="submit"
+                    @click="submitting = true"
+                    :disabled="submitting"
+                    class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+                <span x-show="!submitting">{% trans "Submit for Review" %}</span>
+                <span x-show="submitting" class="flex items-center">
+                    <span class="loading-spinner mr-2"></span>
+                    {% trans "Submitting..." %}
+                </span>
             </button>
         </div>
 
@@ -516,6 +530,12 @@ function registrationForm() {
             const municipalitySelect = document.getElementById('id_municipality');
             const wardSelect = document.getElementById('id_ward_number');
 
+            // Store the initially selected values (from server-side validation)
+            const initialProvince = provinceSelect ? provinceSelect.value : null;
+            const initialDistrict = districtSelect ? districtSelect.value : null;
+            const initialMunicipality = municipalitySelect ? municipalitySelect.value : null;
+            const initialWard = wardSelect ? wardSelect.value : null;
+
             if (provinceSelect) {
                 provinceSelect.addEventListener('change', async function() {
                     const provinceId = this.value;
@@ -598,6 +618,96 @@ function registrationForm() {
                     }
                 });
             }
+
+            // Restore initial selections if they exist (after validation errors)
+            if (initialProvince) {
+                // Load districts for the selected province
+                this.loadDistrictsForProvince(initialProvince, initialDistrict);
+
+                // If district was also selected, load municipalities
+                if (initialDistrict) {
+                    this.loadMunicipalitiesForDistrict(initialDistrict, initialMunicipality);
+
+                    // If municipality was also selected, load wards
+                    if (initialMunicipality) {
+                        this.loadWardsForMunicipality(initialMunicipality, initialWard);
+                    }
+                }
+            }
+        },
+
+        async loadDistrictsForProvince(provinceId, selectedDistrictId = null) {
+            const districtSelect = document.getElementById('id_district');
+            if (provinceId && districtSelect) {
+                try {
+                    const response = await fetch(`/api/districts/?province=${provinceId}`);
+                    const districts = await response.json();
+
+                    // Preserve the current selection if it exists
+                    const currentSelection = selectedDistrictId || districtSelect.value;
+
+                    districtSelect.innerHTML = '<option value="">Select District</option>';
+                    districts.forEach(district => {
+                        const option = new Option(district.name_en, district.id);
+                        if (district.id == currentSelection) {
+                            option.selected = true;
+                        }
+                        districtSelect.add(option);
+                    });
+                } catch (error) {
+                    console.error('Error loading districts:', error);
+                }
+            }
+        },
+
+        async loadMunicipalitiesForDistrict(districtId, selectedMunicipalityId = null) {
+            const municipalitySelect = document.getElementById('id_municipality');
+            if (districtId && municipalitySelect) {
+                try {
+                    const response = await fetch(`/api/municipalities/?district=${districtId}`);
+                    const municipalities = await response.json();
+
+                    // Preserve the current selection if it exists
+                    const currentSelection = selectedMunicipalityId || municipalitySelect.value;
+
+                    municipalitySelect.innerHTML = '<option value="">Select Municipality</option>';
+                    municipalities.forEach(municipality => {
+                        const option = new Option(municipality.name_en, municipality.id);
+                        if (municipality.id == currentSelection) {
+                            option.selected = true;
+                        }
+                        municipalitySelect.add(option);
+                    });
+                } catch (error) {
+                    console.error('Error loading municipalities:', error);
+                }
+            }
+        },
+
+        async loadWardsForMunicipality(municipalityId, selectedWardNumber = null) {
+            const wardSelect = document.getElementById('id_ward_number');
+            if (municipalityId && wardSelect) {
+                try {
+                    const response = await fetch(`/api/municipalities/${municipalityId}/wards/`);
+                    const data = await response.json();
+
+                    // Preserve the current selection if it exists
+                    const currentSelection = selectedWardNumber || wardSelect.value;
+
+                    wardSelect.innerHTML = '<option value="">--- Select Ward ---</option>';
+                    for (let i = 1; i <= data.total_wards; i++) {
+                        const option = document.createElement('option');
+                        option.value = i;
+                        option.textContent = `Ward ${i}`;
+                        if (i == currentSelection) {
+                            option.selected = true;
+                        }
+                        wardSelect.appendChild(option);
+                    }
+                } catch (error) {
+                    console.error('Error loading wards:', error);
+                }
+            }
         }
     }
 }
@@ -620,6 +730,23 @@ function registrationForm() {
 
     form textarea {
         min-height: 100px;
+    }
+
+    /* Loading spinner styles */
+    .loading-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 50%;
+        border-top-color: #ffffff;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
     }
 </style>
 {% endblock %}

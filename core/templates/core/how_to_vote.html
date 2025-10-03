@@ -1,25 +1,26 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n breadcrumbs %}
 
 {% block title %}{% trans "How to Vote" %} - ElectNepal{% endblock %}
 
 {% block content %}
 <div class="info-section">
+    {% breadcrumbs "How to Vote" %}
     <h1 class="hero-title" style="font-size: 2.5rem; margin-bottom: 2rem;">
         {% trans "How to Vote in Nepal" %}
     </h1>
     
     <div class="info-content">
         <h2 class="info-title">{% trans "Voting Requirements" %}</h2>
-        <ul style="list-style: disc; margin-left: 2rem; line-height: 2;">
+        <ul class="ml-4 sm:ml-6 md:ml-8" style="list-style: disc; line-height: 2;">
             <li>{% trans "Must be a Nepali citizen aged 18 or above" %}</li>
             <li>{% trans "Must have a valid Voter ID card" %}</li>
             <li>{% trans "Must be registered in the voter list" %}</li>
             <li>{% trans "Must vote at your designated polling station" %}</li>
         </ul>
-        
+
         <h2 class="info-title" style="margin-top: 2rem;">{% trans "Voting Process" %}</h2>
-        <ol style="list-style: decimal; margin-left: 2rem; line-height: 2;">
+        <ol class="ml-4 sm:ml-6 md:ml-8" style="list-style: decimal; line-height: 2;">
             <li>{% trans "Go to your designated polling station on election day" %}</li>
             <li>{% trans "Present your Voter ID card to the election officials" %}</li>
             <li>{% trans "Receive your ballot papers" %}</li>

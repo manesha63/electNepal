@@ -41,9 +41,16 @@
         border: 1px solid #E6E6E6;
         border-radius: 4px;
         height: 36px;
-        width: 874px;
+        width: 100%;
+        max-width: 874px;
         transition: all 0.3s;
         position: relative;
+    }
+
+    @media (max-width: 768px) {
+        .search-bar {
+            height: 44px; /* Touch-friendly height */
+        }
     }
 
     .search-bar:focus-within {
@@ -123,7 +130,25 @@
         padding: 20px;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         z-index: 1000;
-        min-width: 400px;
+        min-width: 320px;
+    }
+
+    @media (min-width: 640px) {
+        .filter-dropdown {
+            min-width: 400px;
+        }
+    }
+
+    @media (max-width: 639px) {
+        .filter-dropdown {
+            position: fixed;
+            left: 10px;
+            right: 10px;
+            width: auto;
+            min-width: unset;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
     }
 
     .filter-dropdown.show {
@@ -343,21 +368,30 @@
                    id="searchInput"
                    class="search-input"
                    placeholder="{% trans 'Search candidates...' %}"
-                   value="{{ request.GET.q }}"
-                   onkeypress="if(event.key === 'Enter') performSearch()">
-            <button class="search-btn" onclick="performSearch()">
+                   value="{{ request.GET.q }}">
+            <button class="search-btn">
                 {% trans 'Search' %}
             </button>
         </div>
 
         <!-- Filter Button - KEEP AS IS -->
         <div class="filter-wrapper">
-            <button class="filter-button" onclick="toggleFilterDropdown()">
-                <i class="fas fa-filter"></i>
+            <button class="filter-button"
+                    aria-label="{% trans 'Filter candidates' %}"
+                    aria-expanded="false"
+                    aria-controls="filterDropdown"
+                    role="button"
+                    id="filterToggleBtn">
+                <i class="fas fa-filter" aria-hidden="true"></i>
             </button>
 
             <!-- Filter Dropdown with hierarchical location search -->
-            <div id="filterDropdown" class="filter-dropdown" x-data="filterComponent()" x-init="init()">
+            <div id="filterDropdown"
+                 class="filter-dropdown"
+                 role="region"
+                 aria-labelledby="filterToggleBtn"
+                 x-data="filterComponent()"
+                 x-init="init()">
                 <h3 class="text-lg font-semibold mb-4">{% trans "Filter Candidates" %}</h3>
 
                 <div class="space-y-4">
@@ -537,277 +571,50 @@
 </div>
 
 <script src="{% static 'js/position-utils.js' %}"></script>
+<script src="{% static 'js/candidate-feed.js' %}"></script>
 <script>
-// Alpine.js Component for Candidate Grid
-function candidateGrid() {
-    return {
-        candidates: [],
-        visibleCandidates: [],
-        currentPage: 1,
-        totalPages: 1,
-        pageSize: 9, // 3 rows * 3 columns
-        hasMore: true,
-        hasPrevious: false,
-        searchQuery: '',
+// Province data for filter component - injected from Django template
+window.ELECTNEPAL_PROVINCES = [
+    {% for province in provinces %}
+    {
+        id: {{ province.id }},
+        name_en: "{{ province.name_en }}",
+        name_ne: "{{ province.name_ne }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
 
-        async fetchCandidates(page = 1) {
-            try {
-                // Get all parameters from URL
-                const urlParams = new URLSearchParams(window.location.search);
-                this.searchQuery = urlParams.get('q') || document.getElementById('searchInput')?.value || '';
+// Fallback candidate data - injected from Django template
+window.ELECTNEPAL_FALLBACK_CANDIDATES = [
+    {% for candidate in candidates %}
+    {
+        id: {{ candidate.id }},
+        name: "{{ candidate.full_name }}",
+        photo: {% if candidate.photo %}"{{ candidate.photo.url }}"{% else %}null{% endif %},
+        position_level: "{{ candidate.position_level }}",
+        office: "{{ candidate.office }}",
+        province: "{% if candidate.province %}{% if LANGUAGE_CODE == 'ne' and candidate.province.name_ne %}{{ candidate.province.name_ne }}{% else %}{{ candidate.province.name_en }}{% endif %}{% endif %}",
+        district: "{% if candidate.district %}{% if LANGUAGE_CODE == 'ne' and candidate.district.name_ne %}{{ candidate.district.name_ne }}{% else %}{{ candidate.district.name_en }}{% endif %}{% endif %}",
+        municipality: "{% if candidate.municipality %}{% if LANGUAGE_CODE == 'ne' and candidate.municipality.name_ne %}{{ candidate.municipality.name_ne }}{% else %}{{ candidate.municipality.name_en %}{% endif %}{% endif %}",
+        ward: {% if candidate.ward_number %}{{ candidate.ward_number }}{% else %}null{% endif %},
+        detail_url: "{% if LANGUAGE_CODE == 'ne' %}/ne{% endif %}/candidates/{{ candidate.id }}/"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
 
-                // Build query params including filters
-                const params = new URLSearchParams();
-                params.set('page', page);
-                params.set('page_size', 9); // Fixed 3x3 grid
-
-                // Add search query if exists
-                if (this.searchQuery) params.set('q', this.searchQuery);
-
-                // Add filter parameters from URL
-                if (urlParams.get('province')) params.set('province', urlParams.get('province'));
-                if (urlParams.get('district')) params.set('district', urlParams.get('district'));
-                if (urlParams.get('municipality')) params.set('municipality', urlParams.get('municipality'));
-                if (urlParams.get('position')) params.set('position', urlParams.get('position'));
-
-                // Get the current language prefix from URL
-                const currentPath = window.location.pathname;
-                const langPrefix = currentPath.startsWith('/ne/') ? '/ne' : '';
-
-                const response = await fetch(`${langPrefix}/candidates/api/cards/?${params.toString()}`);
-                const data = await response.json();
-
-                this.candidates = data.items || [];
-                this.visibleCandidates = this.candidates;
-                this.currentPage = data.page || 1;
-                this.totalPages = data.num_pages || 1;
-                this.hasMore = data.has_next || false;
-                this.hasPrevious = data.has_previous || false;
-
-            } catch (error) {
-                console.error('Error fetching candidates:', error);
-                // Fallback to template data if available
-                this.loadFallbackData();
-            }
-        },
-
-        loadMore() {
-            if (this.hasMore) {
-                this.fetchCandidates(this.currentPage + 1);
-            }
-        },
-
-        loadPrevious() {
-            if (this.hasPrevious) {
-                this.fetchCandidates(this.currentPage - 1);
-            }
-        },
-
-        getColumnCount() {
-            const width = window.innerWidth;
-            if (width >= 1280) return 4; // xl
-            if (width >= 1024) return 3; // lg
-            if (width >= 640) return 2;  // sm
-            return 1;
-        },
-
-        formatLocation(candidate) {
-            const parts = [];
-            // Ward should be an integer, display as "Ward X" or "वडा X"
-            if (candidate.ward && typeof candidate.ward === 'number') {
-                const wardLabel = "{% trans 'Ward' %}";
-                parts.push(`${wardLabel} ${candidate.ward}`);
-            }
-            // Municipality, District, Province should be strings
-            if (candidate.municipality && typeof candidate.municipality === 'string') {
-                parts.push(candidate.municipality);
-            }
-            if (candidate.district && typeof candidate.district === 'string') {
-                parts.push(candidate.district);
-            }
-            if (candidate.province && typeof candidate.province === 'string') {
-                parts.push(candidate.province);
-            }
-            return parts.join(', ') || 'Nepal';
-        },
-
-        getOfficeDisplay(office) {
-            // Display the office field value
-            const officeMap = {
-                'federal': '{% trans "Federal" %}',
-                'provincial': '{% trans "Provincial" %}',
-                'municipal': '{% trans "Municipal" %}',
-                'ward': '{% trans "Ward" %}'
-            };
-            return officeMap[office] || office;
-        },
-
-        getSeatDescription(position_level) {
-            const translations = {
-                wardChairperson: '{% trans "Ward Chairperson" %}',
-                wardMember: '{% trans "Ward Member" %}',
-                mayorChairperson: '{% trans "Mayor/Chairperson" %}',
-                deputyMayorViceChairperson: '{% trans "Deputy Mayor/Vice Chairperson" %}',
-                provincialAssemblyMember: '{% trans "Provincial Assembly Member" %}',
-                houseRepresentativesMember: '{% trans "House of Representatives Member" %}',
-                nationalAssemblyMember: '{% trans "National Assembly Member" %}',
-                memberParliament: '{% trans "Member of Parliament" %}',
-                localRepresentative: '{% trans "Local Representative" %}',
-                wardRepresentative: '{% trans "Ward Representative" %}'
-            };
-            return PositionUtils.getSeatDescription(position_level, translations);
-        },
-
-        shareCandidate(id) {
-            // Implement share functionality
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Check out this candidate',
-                    url: `/candidates/${id}/`
-                });
-            } else {
-                // Fallback to copying URL
-                const url = `${window.location.origin}/candidates/${id}/`;
-                navigator.clipboard.writeText(url);
-                alert('Link copied to clipboard!');
-            }
-        },
-
-        loadFallbackData() {
-            // Use template data as fallback
-            this.candidates = [
-                {% for candidate in candidates %}
-                {
-                    id: {{ candidate.id }},
-                    name: "{{ candidate.full_name }}",
-                    photo: {% if candidate.photo %}"{{ candidate.photo.url }}"{% else %}null{% endif %},
-                    position_level: "{{ candidate.position_level }}",
-                    province: "{% if candidate.province %}{% if LANGUAGE_CODE == 'ne' and candidate.province.name_ne %}{{ candidate.province.name_ne }}{% else %}{{ candidate.province.name_en }}{% endif %}{% endif %}",
-                    district: "{% if candidate.district %}{% if LANGUAGE_CODE == 'ne' and candidate.district.name_ne %}{{ candidate.district.name_ne }}{% else %}{{ candidate.district.name_en }}{% endif %}{% endif %}",
-                    municipality: "{% if candidate.municipality %}{% if LANGUAGE_CODE == 'ne' and candidate.municipality.name_ne %}{{ candidate.municipality.name_ne }}{% else %}{{ candidate.municipality.name_en }}{% endif %}{% endif %}",
-                    ward: {% if candidate.ward_number %}{{ candidate.ward_number }}{% else %}null{% endif %},
-                    detail_url: "{% if LANGUAGE_CODE == 'ne' %}/ne{% endif %}/candidates/{{ candidate.id }}/"
-                },
-                {% endfor %}
-            ];
-            this.visibleCandidates = this.candidates.slice(0, this.pageSize);
-            this.hasMore = this.candidates.length > this.pageSize;
-        }
+// Load provinces into filter component on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Province data will be loaded from window.ELECTNEPAL_PROVINCES in the external JS
+    const filterEl = document.querySelector('[x-data="filterComponent()"]');
+    if (filterEl && window.Alpine) {
+        // The external filterComponent() will use window.ELECTNEPAL_PROVINCES
     }
-}
 
-// Filter Component for hierarchical location search
-function filterComponent() {
-    return {
-        provinces: [],
-        districts: [],
-        municipalities: [],
-        selectedProvince: '',
-        selectedDistrict: '',
-        selectedMunicipality: '',
-        selectedPosition: '',
-        currentLanguage: '{{ LANGUAGE_CODE }}',
-
-        async init() {
-            // Load provinces on initialization
-            await this.loadProvinces();
-        },
-
-        async loadProvinces() {
-            try {
-                // Load provinces from the Django context
-                this.provinces = [
-                    {% for province in provinces %}
-                    {
-                        id: {{ province.id }},
-                        name_en: "{{ province.name_en }}",
-                        name_ne: "{{ province.name_ne }}"
-                    },
-                    {% endfor %}
-                ];
-            } catch (error) {
-                console.error('Error loading provinces:', error);
-            }
-        },
-
-        async loadDistricts() {
-            if (!this.selectedProvince) {
-                this.districts = [];
-                this.municipalities = [];
-                this.selectedDistrict = '';
-                this.selectedMunicipality = '';
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/districts/?province=${this.selectedProvince}`);
-                this.districts = await response.json();
-                this.municipalities = [];
-                this.selectedDistrict = '';
-                this.selectedMunicipality = '';
-            } catch (error) {
-                console.error('Error loading districts:', error);
-            }
-        },
-
-        async loadMunicipalities() {
-            if (!this.selectedDistrict) {
-                this.municipalities = [];
-                this.selectedMunicipality = '';
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/municipalities/?district=${this.selectedDistrict}`);
-                this.municipalities = await response.json();
-                this.selectedMunicipality = '';
-            } catch (error) {
-                console.error('Error loading municipalities:', error);
-            }
-        },
-
-        applyFilters() {
-            const params = new URLSearchParams();
-            if (this.selectedProvince) params.set('province', this.selectedProvince);
-            if (this.selectedDistrict) params.set('district', this.selectedDistrict);
-            if (this.selectedMunicipality) params.set('municipality', this.selectedMunicipality);
-            if (this.selectedPosition) params.set('position', this.selectedPosition);
-
-            const searchQuery = document.getElementById('searchInput')?.value;
-            if (searchQuery) params.set('q', searchQuery);
-
-            // Preserve language in URL
-            const currentPath = window.location.pathname;
-            const langPrefix = currentPath.startsWith('/ne/') ? '/ne' : '';
-
-            window.location.href = `${langPrefix}/?${params.toString()}`;
-        },
-
-        clearFilters() {
-            this.selectedProvince = '';
-            this.selectedDistrict = '';
-            this.selectedMunicipality = '';
-            this.selectedPosition = '';
-            this.districts = [];
-            this.municipalities = [];
-
-            // Clear and reload without filters
-            const currentPath = window.location.pathname;
-            const langPrefix = currentPath.startsWith('/ne/') ? '/ne' : '';
-            window.location.href = `${langPrefix}/`;
-        }
+    // Fallback candidate data will be loaded from window.ELECTNEPAL_FALLBACK_CANDIDATES in the external JS
+    const gridEl = document.querySelector('[x-data="candidateGrid()"]');
+    if (gridEl && window.Alpine) {
+        // The external candidateGrid() will use window.ELECTNEPAL_FALLBACK_CANDIDATES
     }
-}
-
-// Keep existing search and filter functions
-function performSearch() {
-    const searchTerm = document.getElementById('searchInput').value;
-    window.location.href = `?q=${encodeURIComponent(searchTerm)}`;
-}
-
-function toggleFilterDropdown() {
-    const dropdown = document.getElementById('filterDropdown');
-    dropdown.classList.toggle('show');
-}
+});
 </script>
 {% endblock %}
