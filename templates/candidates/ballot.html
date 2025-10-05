@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n static breadcrumbs %}
+{% load i18n static %}
 
 {% block title %}{% trans "Ballot" %} - ElectNepal{% endblock %}
 
@@ -582,8 +582,6 @@
 {% block content %}
 {% get_current_language as LANGUAGE_CODE %}
 <div class="ballot-container" x-data="ballotApp()" x-init="currentLanguage = '{{ LANGUAGE_CODE }}'; requestLocation()">
-    <!-- Breadcrumb Navigation -->
-    {% breadcrumbs "My Ballot" %}
     <!-- Loading state while getting location -->
     <template x-if="loading && !error">
         <div class="text-center py-6 sm:py-8">

@@ -15,10 +15,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',  # Added for site framework
+
+    # Third-party apps
+    'rest_framework',
+    'drf_spectacular',
+
+    # Local apps
     'core',
     'locations',
     'candidates',
     'authentication',
+    'api_auth',
+    'analytics',
 ]
 
 # Site framework configuration
@@ -33,6 +41,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'analytics.middleware.AnalyticsMiddleware',  # Analytics tracking
 ]
 
 ROOT_URLCONF = 'nepal_election_app.urls'
@@ -120,3 +129,46 @@ DEFAULT_CANDIDATE_AVATAR = '/static/images/default-avatar.png'
 
 # Import logging configuration
 from .logging import LOGGING
+
+# REST Framework Configuration
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'api_auth.authentication.APIKeyAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+}
+
+# DRF Spectacular Configuration for API Documentation
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'ElectNepal API',
+    'DESCRIPTION': 'API documentation for ElectNepal - Platform for Independent Candidates in Nepal Elections',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,
+        'displayOperationId': False,
+    },
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SCHEMA_PATH_PREFIX': r'/api/',
+    'APPEND_COMPONENTS': {
+        'securitySchemes': {
+            'ApiKeyAuth': {
+                'type': 'apiKey',
+                'in': 'header',
+                'name': 'X-API-Key'
+            }
+        }
+    },
+    'SECURITY': [{'ApiKeyAuth': []}],
+}

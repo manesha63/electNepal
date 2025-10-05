@@ -634,14 +634,24 @@ class CandidateDashboardView(LoginRequiredMixin, TemplateView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        from django.db.models import Prefetch
+
         context = super().get_context_data(**kwargs)
-        candidate = self.request.user.candidate
+
+        # Optimize query by prefetching filtered events
+        upcoming_events = CandidateEvent.objects.filter(
+            event_date__gte=timezone.now()
+        ).order_by('event_date')[:5]
+
+        candidate = Candidate.objects.select_related(
+            'user', 'province', 'district', 'municipality'
+        ).prefetch_related(
+            Prefetch('events', queryset=upcoming_events, to_attr='upcoming_events')
+        ).get(user=self.request.user)
 
         context['candidate'] = candidate
         # Removed posts - candidates can only create events
-        context['events'] = candidate.events.filter(
-            event_date__gte=timezone.now()
-        ).order_by('event_date')[:5]
+        context['events'] = candidate.upcoming_events
         context['can_edit'] = candidate.status == 'approved'
 
         return context

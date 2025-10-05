@@ -43,10 +43,10 @@ function candidateGrid() {
                 const response = await fetch(`${langPrefix}/candidates/api/cards/?${params.toString()}`);
                 const data = await response.json();
 
-                this.candidates = data.items || [];
+                this.candidates = data.results || [];
                 this.visibleCandidates = this.candidates;
                 this.currentPage = data.page || 1;
-                this.totalPages = data.num_pages || 1;
+                this.totalPages = data.total_pages || 1;
                 this.hasMore = data.has_next || false;
                 this.hasPrevious = data.has_previous || false;
 

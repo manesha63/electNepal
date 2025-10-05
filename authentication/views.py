@@ -1,9 +1,9 @@
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm
 from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.views.generic import CreateView, TemplateView
+from django.views.generic import CreateView, TemplateView, View
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from django.core.mail import send_mail, mail_admins
@@ -11,10 +11,13 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
+from django.http import Http404
 import logging
+import uuid
 
-# Import our custom form
+# Import our custom form and models
 from .forms import CandidateSignupForm
+from .models import EmailVerification, PasswordResetToken
 
 # Get logger for authentication emails
 logger = logging.getLogger('authentication.emails')
@@ -37,43 +40,47 @@ class CandidateSignupView(CreateView):
     form_class = CandidateSignupForm
     success_url = reverse_lazy('candidates:register')
 
-    def send_welcome_email(self, user):
-        """Send welcome email to newly registered user"""
+    def send_verification_email(self, user, verification_token):
+        """Send email verification link to newly registered user"""
         try:
-            subject = "[ElectNepal] Welcome to ElectNepal!"
+            subject = "[ElectNepal] Verify Your Email Address"
 
             # Get domain for email links
             domain = self.request.get_host()
             protocol = 'https' if self.request.is_secure() else 'http'
 
+            verification_url = f"{protocol}://{domain}/auth/verify-email/{verification_token}/"
+
             context = {
                 'user': user,
                 'domain': f"{protocol}://{domain}",
+                'verification_url': verification_url,
+                'expiry_hours': 72
             }
 
-            # Create welcome email content
+            # Create verification email content
             html_message = render_to_string(
-                'authentication/emails/welcome.html',
+                'authentication/emails/email_verification.html',
                 context
             )
 
             plain_message = f"""
-            Welcome to ElectNepal, {user.username}!
+            Hello {user.username}!
 
-            Thank you for creating an account. You can now register as a candidate and participate in Nepal's democratic process.
+            Please verify your email address to activate your ElectNepal account.
 
-            Next Steps:
-            1. Complete your candidate profile
-            2. Submit for verification
-            3. Once approved, your profile will be visible to voters
+            Click the link below to verify your email:
+            {verification_url}
 
-            Login: {protocol}://{domain}/auth/login/
+            This link will expire in 72 hours.
+
+            If you did not create this account, please ignore this email.
 
             Best regards,
             The ElectNepal Team
             """
 
-            logger.info(f"Sending welcome email to {user.email}")
+            logger.info(f"Sending verification email to {user.email}")
 
             send_mail(
                 subject=subject,
@@ -84,28 +91,38 @@ class CandidateSignupView(CreateView):
                 fail_silently=False,
             )
 
-            logger.info(f"Welcome email sent successfully to {user.email}")
+            logger.info(f"Verification email sent successfully to {user.email}")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to send welcome email to {user.email}: {str(e)}", exc_info=True)
-            # Don't block registration if email fails
+            logger.error(f"Failed to send verification email to {user.email}: {str(e)}", exc_info=True)
             return False
 
     def form_valid(self, form):
-        # Save the user
-        user = form.save()
+        # Save the user but keep them inactive until email is verified
+        user = form.save(commit=False)
+        user.is_active = False  # Require email verification first
+        user.save()
 
-        # Send welcome email (don't block registration if it fails)
-        try:
-            self.send_welcome_email(user)
-        except Exception as e:
-            logger.error(f"Welcome email error for {user.username}: {e}")
+        # Create email verification record
+        verification = EmailVerification.objects.create(user=user)
 
-        # Log them in automatically
-        login(self.request, user)
-        messages.success(self.request, 'Account created successfully! Now create your candidate profile.')
-        return redirect('candidates:register')
+        # Send verification email
+        email_sent = self.send_verification_email(user, verification.token)
+
+        if email_sent:
+            messages.success(
+                self.request,
+                f'Account created! Please check your email ({user.email}) to verify your account before logging in.'
+            )
+        else:
+            messages.warning(
+                self.request,
+                'Account created but we could not send the verification email. Please contact support.'
+            )
+
+        # Don't log them in automatically - require verification first
+        return redirect('authentication:login')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -160,12 +177,230 @@ class CustomLogoutView(LogoutView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class CustomPasswordResetView(PasswordResetView):
-    """Password reset with custom template"""
-    template_name = 'authentication/password_reset.html'
-    email_template_name = 'authentication/password_reset_email.html'
-    success_url = reverse_lazy('login')
+class EmailVerificationView(View):
+    """Handle email verification link clicks"""
 
-    def form_valid(self, form):
-        messages.info(self.request, 'If an account exists with this email, password reset instructions will be sent.')
-        return super().form_valid(form)
+    def get(self, request, token):
+        try:
+            # Find the verification record
+            verification = EmailVerification.objects.get(token=token)
+
+            # Check if already verified
+            if verification.is_verified:
+                messages.info(request, 'Your email has already been verified. You can log in.')
+                return redirect('authentication:login')
+
+            # Check if expired
+            if verification.is_expired():
+                messages.error(
+                    request,
+                    'This verification link has expired. Please request a new one.'
+                )
+                return redirect('authentication:resend_verification')
+
+            # Verify the email
+            if verification.verify():
+                messages.success(
+                    request,
+                    'Your email has been verified successfully! You can now log in.'
+                )
+                return redirect('authentication:login')
+            else:
+                messages.error(request, 'Verification failed. Please try again or contact support.')
+                return redirect('authentication:login')
+
+        except EmailVerification.DoesNotExist:
+            messages.error(request, 'Invalid verification link.')
+            return redirect('authentication:login')
+
+
+class ResendVerificationView(TemplateView):
+    """Resend email verification link"""
+    template_name = 'authentication/resend_verification.html'
+
+    def post(self, request):
+        email = request.POST.get('email')
+
+        try:
+            user = User.objects.get(email=email)
+
+            # Check if already verified
+            if hasattr(user, 'email_verification'):
+                if user.email_verification.is_verified:
+                    messages.info(request, 'Your email is already verified. You can log in.')
+                else:
+                    # Regenerate token and send new email
+                    new_token = user.email_verification.regenerate_token()
+
+                    # Send new verification email
+                    self._send_verification_email(user, new_token)
+                    messages.success(
+                        request,
+                        f'A new verification email has been sent to {email}'
+                    )
+            else:
+                # Create new verification record
+                verification = EmailVerification.objects.create(user=user)
+                self._send_verification_email(user, verification.token)
+                messages.success(
+                    request,
+                    f'A verification email has been sent to {email}'
+                )
+
+        except User.DoesNotExist:
+            # Don't reveal if email exists or not
+            messages.info(
+                request,
+                'If an account exists with this email, a verification link will be sent.'
+            )
+
+        return redirect('authentication:login')
+
+    def _send_verification_email(self, user, token):
+        """Helper to send verification email"""
+        domain = self.request.get_host()
+        protocol = 'https' if self.request.is_secure() else 'http'
+        verification_url = f"{protocol}://{domain}/auth/verify-email/{token}/"
+
+        context = {
+            'user': user,
+            'verification_url': verification_url,
+            'expiry_hours': 72
+        }
+
+        html_message = render_to_string(
+            'authentication/emails/email_verification.html',
+            context
+        )
+
+        send_mail(
+            subject="[ElectNepal] Verify Your Email Address",
+            message=f"Click here to verify your email: {verification_url}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            html_message=html_message,
+            fail_silently=False,
+        )
+
+
+class ForgotPasswordView(TemplateView):
+    """Custom password reset request view"""
+    template_name = 'authentication/forgot_password.html'
+
+    def post(self, request):
+        email = request.POST.get('email')
+
+        try:
+            user = User.objects.get(email=email)
+
+            # Create password reset token
+            reset_token = PasswordResetToken.objects.create(user=user)
+
+            # Send reset email
+            self._send_reset_email(user, reset_token.token)
+
+        except User.DoesNotExist:
+            # Don't reveal if email exists
+            pass
+
+        messages.info(
+            request,
+            'If an account exists with this email, password reset instructions will be sent.'
+        )
+        return redirect('authentication:login')
+
+    def _send_reset_email(self, user, token):
+        """Send password reset email"""
+        domain = self.request.get_host()
+        protocol = 'https' if self.request.is_secure() else 'http'
+        reset_url = f"{protocol}://{domain}/auth/reset-password/{token}/"
+
+        context = {
+            'user': user,
+            'reset_url': reset_url,
+            'expiry_hours': 24
+        }
+
+        html_message = render_to_string(
+            'authentication/emails/password_reset.html',
+            context
+        )
+
+        plain_message = f"""
+        Hello {user.username},
+
+        You requested a password reset for your ElectNepal account.
+
+        Click the link below to reset your password:
+        {reset_url}
+
+        This link will expire in 24 hours.
+
+        If you did not request this, please ignore this email.
+
+        Best regards,
+        The ElectNepal Team
+        """
+
+        send_mail(
+            subject="[ElectNepal] Password Reset Request",
+            message=plain_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            html_message=html_message,
+            fail_silently=False,
+        )
+
+
+class ResetPasswordView(TemplateView):
+    """Handle password reset with token"""
+    template_name = 'authentication/reset_password.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        token = kwargs.get('token')
+
+        try:
+            reset_token = PasswordResetToken.objects.get(token=token, is_used=False)
+
+            if reset_token.is_expired():
+                context['error'] = 'This password reset link has expired.'
+            else:
+                context['valid_token'] = True
+                context['token'] = token
+
+        except PasswordResetToken.DoesNotExist:
+            context['error'] = 'Invalid or already used password reset link.'
+
+        return context
+
+    def post(self, request, token):
+        try:
+            reset_token = PasswordResetToken.objects.get(token=token, is_used=False)
+
+            if reset_token.is_expired():
+                messages.error(request, 'This password reset link has expired.')
+                return redirect('authentication:forgot_password')
+
+            # Get new password
+            password = request.POST.get('password')
+            password_confirm = request.POST.get('password_confirm')
+
+            if password != password_confirm:
+                messages.error(request, 'Passwords do not match.')
+                return redirect('authentication:reset_password', token=token)
+
+            # Update password
+            user = reset_token.user
+            user.set_password(password)
+            user.save()
+
+            # Mark token as used
+            reset_token.mark_as_used()
+
+            messages.success(request, 'Your password has been reset successfully! You can now log in.')
+            return redirect('authentication:login')
+
+        except PasswordResetToken.DoesNotExist:
+            messages.error(request, 'Invalid password reset link.')
+            return redirect('authentication:forgot_password')

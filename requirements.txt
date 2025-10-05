@@ -3,6 +3,8 @@ bleach==6.2.0
 dj-database-url==3.0.1
 Django==4.2.7
 django-ratelimit==4.1.0
+djangorestframework==3.16.1
+drf-spectacular==0.28.0
 googletrans==4.0.0rc1
 gunicorn==23.0.0
 httpx==0.13.3

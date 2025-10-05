@@ -68,8 +68,13 @@
                 </a>
             </p>
             <p class="mt-2">
-                <a href="{% url 'authentication:password_reset' %}" class="text-blue-500 hover:text-blue-700">
+                <a href="{% url 'authentication:forgot_password' %}" class="text-blue-500 hover:text-blue-700">
                     {% trans "Forgot your password?" %}
+                </a>
+            </p>
+            <p class="mt-2">
+                <a href="{% url 'authentication:resend_verification' %}" class="text-gray-500 hover:text-gray-700 text-xs">
+                    {% trans "Resend verification email" %}
                 </a>
             </p>
         </div>

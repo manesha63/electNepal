@@ -1,11 +1,10 @@
 {% extends 'base.html' %}
-{% load i18n breadcrumbs %}
+{% load i18n %}
 
 {% block title %}{% trans "Create Candidate Profile" %} - ElectNepal{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto mt-8 px-4">
-    {% breadcrumbs "Register as Candidate" %}
     <h1 class="text-3xl font-bold mb-6">{% trans "Create Your Candidate Profile" %}</h1>
 
     {% if messages %}

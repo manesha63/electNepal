@@ -164,6 +164,25 @@ A Django-based web application for tracking and displaying independent candidate
    - **7 Position Types**: All positions from database (Ward Chairperson, Mayor, etc.)
    - **Working Filters**: Province, District, Municipality, and Position filters functional
 
+#### 16. **API Documentation with OpenAPI/Swagger** (NEW - Oct 5, 2025)
+   - **Complete REST API**: Fully documented RESTful API for all endpoints
+   - **OpenAPI 3.0 Specification**: Industry-standard API documentation format
+   - **Interactive Documentation**: Swagger UI at `/api/docs/` for testing APIs
+   - **ReDoc Interface**: Beautiful API documentation at `/api/redoc/`
+   - **Comprehensive Coverage**: All location and candidate endpoints documented
+   - **Request/Response Examples**: Complete examples for all endpoints
+   - **Serializers**: DRF serializers for proper data validation and documentation
+   - **Pagination Support**: All list endpoints support pagination
+   - **Filter Documentation**: Complete documentation of search and filter parameters
+   - **Bilingual API**: All endpoints support English/Nepali content
+   - **Test Suite**: Automated API testing script (`test_api_endpoints.py`)
+   - **API Guide**: Complete API documentation in `API_DOCUMENTATION.md`
+
+   **Available Endpoints**:
+   - Location APIs: Districts, Municipalities, Wards, Statistics, Georesolve
+   - Candidate APIs: Cards (with pagination), My Ballot (location-based), Search/Filter
+   - Documentation: Schema, Swagger UI, ReDoc
+
 ## Technical Stack
 
 ### Backend
@@ -182,6 +201,8 @@ A Django-based web application for tracking and displaying independent candidate
 ### Key Dependencies
 ```
 Django==4.2.7
+djangorestframework==3.16.1
+drf-spectacular==0.28.0
 psycopg2-binary==2.9.9
 pillow==10.1.0
 python-decouple==3.8
@@ -203,9 +224,12 @@ django-ratelimit==4.1.0
 ├── manage.py                # Django management script
 ├── requirements.txt         # Python dependencies
 ├── CLAUDE.md               # This documentation file
+├── API_DOCUMENTATION.md    # Complete API documentation (NEW)
 ├── BALLOT_FEATURE.md       # Ballot feature documentation
 ├── CANDIDATE_PROFILE_TEMPLATE.md  # Standard candidate profile format
 ├── CANDIDATE_REGISTRATION_FLOW_PLAN.md  # Registration flow documentation
+├── test_api_endpoints.py   # API testing script (NEW)
+├── api_documentation.py    # API documentation views (NEW)
 │
 ├── nepal_election_app/     # Main Django project
 │   ├── __init__.py
@@ -251,7 +275,9 @@ django-ratelimit==4.1.0
 │
 ├── locations/              # Locations management
 │   ├── models.py          # Province, District, Municipality models
-│   ├── views.py           # API views for location filtering
+│   ├── views.py           # Legacy API views (being phased out)
+│   ├── api_views.py       # Documented REST API views (NEW)
+│   ├── serializers.py     # DRF serializers for API (NEW)
 │   ├── urls.py            # API endpoint configuration
 │   ├── admin.py           # Enhanced admin with filters
 │   ├── apps.py            # App configuration
@@ -262,8 +288,10 @@ django-ratelimit==4.1.0
 │           └── load_nepal_locations.py  # Data loader command
 │
 ├── candidates/             # Candidate management
-│   ├── models.py          # Bilingual Candidate, Post, Event models
-│   ├── views.py           # Language-aware views and APIs
+│   ├── models.py          # Bilingual Candidate, Event models
+│   ├── views.py           # Language-aware views
+│   ├── api_views.py       # Documented REST API views (NEW)
+│   ├── serializers.py     # DRF serializers for API (NEW)
 │   ├── urls.py            # Candidate URL patterns
 │   ├── admin.py           # Enhanced admin with bilingual fields
 │   ├── apps.py            # App configuration
@@ -1046,7 +1074,16 @@ The core functionality is fully operational. Remaining work:
 4. Implement caching layer
 5. Add email notifications
 
-### Latest Major Update (Sep 25, 2025)
+### Latest Major Update (Oct 5, 2025)
+- ✅ Implemented complete API Documentation with OpenAPI/Swagger
+- ✅ Created DRF serializers for all API endpoints
+- ✅ Added Swagger UI and ReDoc for interactive documentation
+- ✅ Documented all location and candidate APIs
+- ✅ Created comprehensive API testing script
+- ✅ Fixed location_match field in ballot API
+- ✅ Published complete API guide (API_DOCUMENTATION.md)
+
+### Previous Major Update (Sep 25, 2025)
 - ✅ Implemented complete Authentication System
 - ✅ Created multi-step Candidate Registration Flow
 - ✅ Added admin approval workflow with timestamps

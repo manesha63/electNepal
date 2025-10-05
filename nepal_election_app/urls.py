@@ -7,6 +7,9 @@ from django.views.i18n import JavaScriptCatalog
 from candidates import views as candidate_views
 from core import views as core_views
 
+# Import API documentation views
+from api_documentation import documentation_urlpatterns
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),
@@ -15,6 +18,9 @@ urlpatterns = [
     # Language switching
     path('set-language/', core_views.set_language, name='set_language'),
 ]
+
+# Add API documentation URLs
+urlpatterns += documentation_urlpatterns
 
 urlpatterns += i18n_patterns(
     path('', candidate_views.CandidateListView.as_view(), name='home'),  # Candidates list as home

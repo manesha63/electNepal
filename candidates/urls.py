@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import api_views
 
 app_name = 'candidates'
 
@@ -19,9 +20,9 @@ urlpatterns = [
     path('events/<int:event_id>/delete/', views.delete_event, name='delete_event'),
     path('registration-success/', views.registration_success, name='registration_success'),
 
-    # APIs
-    path('api/my-ballot/', views.my_ballot, name='my_ballot'),
-    path('api/cards/', views.candidate_cards_api, name='candidate_cards_api'),
+    # APIs - now using documented API views
+    path('api/my-ballot/', api_views.my_ballot, name='my_ballot'),
+    path('api/cards/', api_views.candidate_cards_api, name='candidate_cards_api'),
 
     # Detail view (keep at the end to avoid conflicts)
     path('<int:pk>/', views.CandidateDetailView.as_view(), name='detail'),

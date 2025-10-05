@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n static sanitize_filters breadcrumbs %}
+{% load i18n static sanitize_filters %}
 
 {% block title %}{{ candidate.full_name }} - {% trans "Independent Candidate" %} - ElectNepal{% endblock %}
 
@@ -9,9 +9,6 @@
     <div class="print-header print-only">
         ElectNepal - Candidate Profile
     </div>
-
-    <!-- Breadcrumb Navigation -->
-    {% breadcrumbs "Candidates" "/candidates/" candidate.full_name %}
     <!-- Main Profile Container -->
     <div class="bg-white rounded-xl border border-gray-300 shadow-lg overflow-hidden p-8 candidate-profile">
         <!-- Top Section with Photo and Location Info -->
@@ -243,27 +240,56 @@
                 <i class="fas fa-calendar-alt mr-2 text-gray-600"></i>
                 {% trans "Upcoming Events" %}
             </h3>
-            <div class="space-y-3">
+            <div class="space-y-4">
                 {% for event in candidate_events %}
-                <div class="border-l-4 border-blue-600 pl-4 py-2">
-                    <div class="font-medium text-gray-800">
+                <div class="border-l-4 border-blue-600 pl-4 py-3 bg-gray-50 rounded-r">
+                    <!-- Event Title -->
+                    <div class="font-semibold text-gray-900 text-base mb-2">
                         {% get_current_language as LANGUAGE_CODE %}
                         {% if LANGUAGE_CODE == 'ne' and event.title_ne %}
-                            {{ event.title_ne }}
+                            {{ event.title_ne|sanitize }}
                         {% else %}
-                            {{ event.title_en }}
+                            {{ event.title_en|sanitize }}
                         {% endif %}
                     </div>
-                    <div class="text-sm text-gray-600">
-                        {{ event.event_date|date:"M d, Y" }}
-                    </div>
+
+                    <!-- Location with icon -->
                     {% if event.location_en or event.location_ne %}
-                    <div class="text-sm text-gray-600">
-                        {% if LANGUAGE_CODE == 'ne' and event.location_ne %}
-                            {{ event.location_ne }}
-                        {% else %}
-                            {{ event.location_en }}
-                        {% endif %}
+                    <div class="flex items-start text-sm text-gray-700 mb-1">
+                        <i class="fas fa-map-marker-alt mr-2 mt-0.5 text-gray-500"></i>
+                        <span>
+                            <strong>{% trans "Location:" %}</strong>
+                            {% if LANGUAGE_CODE == 'ne' and event.location_ne %}
+                                {{ event.location_ne|sanitize }}
+                            {% else %}
+                                {{ event.location_en|sanitize }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Date and Time with icon -->
+                    <div class="flex items-start text-sm text-gray-700 mb-1">
+                        <i class="fas fa-clock mr-2 mt-0.5 text-gray-500"></i>
+                        <span>
+                            <strong>{% trans "Time:" %}</strong>
+                            {{ event.event_date|date:"M d, Y" }} at {{ event.event_date|date:"g:i A" }}
+                        </span>
+                    </div>
+
+                    <!-- Event Description -->
+                    {% if event.description_en or event.description_ne %}
+                    <div class="mt-2 pt-2 border-t border-gray-200">
+                        <div class="text-sm text-gray-600">
+                            <strong>{% trans "Event Details:" %}</strong>
+                        </div>
+                        <div class="text-sm text-gray-700 mt-1">
+                            {% if LANGUAGE_CODE == 'ne' and event.description_ne %}
+                                {{ event.description_ne|sanitize }}
+                            {% else %}
+                                {{ event.description_en|default:"Details to be announced"|sanitize }}
+                            {% endif %}
+                        </div>
                     </div>
                     {% endif %}
                 </div>
