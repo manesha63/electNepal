@@ -71,14 +71,22 @@ class CandidateRegistrationForm(forms.ModelForm):
             elif phone.startswith('977'):
                 phone = phone[3:]
 
-            # Validate Nepal mobile number format (must start with 98 or 97)
-            # Nepal mobile numbers are 10 digits starting with 98 or 97
+            # Validate Nepal phone number format
+            # Accepts:
+            # 1. Mobile: 10 digits starting with 97, 98, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80
+            # 2. Landline: 9-10 digits starting with 01-09 area codes
             import re
-            nepal_mobile_pattern = r'^(98|97)\d{8}$'
 
-            if not re.match(nepal_mobile_pattern, phone):
+            # Mobile pattern: 10 digits starting with 80-98
+            mobile_pattern = r'^(9[0-8]|8[0-9])\d{8}$'
+
+            # Landline pattern: area code (01-09) + 5-8 digits (total 7-10 digits)
+            # Examples: 01-4123456 (Kathmandu), 021-123456 (Pokhara), 061-123456 (Pokhara old)
+            landline_pattern = r'^0[1-9]\d{5,8}$'
+
+            if not (re.match(mobile_pattern, phone) or re.match(landline_pattern, phone)):
                 raise ValidationError(
-                    _("Please enter a valid Nepal mobile number (10 digits starting with 98 or 97). Example: 9812345678")
+                    _("Please enter a valid Nepal phone number. Mobile: 10 digits starting with 80-98 (e.g., 9812345678). Landline: area code + number (e.g., 014123456)")
                 )
 
             # Return in standard format with country code

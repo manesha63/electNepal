@@ -2,6 +2,7 @@
 API Views for Candidates with proper documentation
 """
 
+import re
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -19,6 +20,46 @@ from .serializers import (
     PaginationSerializer,
     SearchSerializer
 )
+
+
+def sanitize_search_input(query_string):
+    """
+    Sanitize user search input to prevent any potential injection attacks.
+
+    Defense-in-depth: While Django ORM already uses parameterized queries,
+    this provides an additional layer of protection by:
+    1. Limiting length to prevent DoS
+    2. Removing control characters
+    3. Normalizing whitespace
+
+    Args:
+        query_string (str): Raw user input
+
+    Returns:
+        str: Sanitized query string safe for database queries
+    """
+    if not query_string:
+        return ''
+
+    # Strip leading/trailing whitespace
+    sanitized = query_string.strip()
+
+    # Limit length to prevent extremely long queries (DoS prevention)
+    max_length = 200
+    if len(sanitized) > max_length:
+        sanitized = sanitized[:max_length]
+
+    # Remove control characters (except space, tab, newline which normalize to space)
+    # Keep alphanumeric, spaces, and common punctuation
+    sanitized = re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]', '', sanitized)
+
+    # Normalize multiple whitespace to single space
+    sanitized = re.sub(r'\s+', ' ', sanitized)
+
+    # Final strip
+    sanitized = sanitized.strip()
+
+    return sanitized
 
 
 @extend_schema(
@@ -64,7 +105,8 @@ def candidate_cards_api(request):
     for display in card format on the main feed.
     """
     # Get parameters
-    q = (request.GET.get('q') or '').strip()
+    q_raw = request.GET.get('q') or ''
+    q = sanitize_search_input(q_raw)  # Sanitize search input for security
     page = int(request.GET.get('page', 1))
     page_size = max(1, min(int(request.GET.get('page_size', 9)), 48))
 
@@ -77,7 +119,7 @@ def candidate_cards_api(request):
     # Build queryset - only show approved candidates
     qs = Candidate.objects.filter(status='approved').select_related('province', 'district', 'municipality')
 
-    # Apply search filter
+    # Apply search filter (using sanitized input)
     if q:
         qs = qs.filter(
             Q(full_name__icontains=q) |
@@ -177,8 +219,51 @@ def my_ballot(request):
     page = int(request.GET.get('page', 1))
     page_size = min(int(request.GET.get('page_size', 20)), 100)
 
-    # Start with approved candidates
-    queryset = Candidate.objects.filter(status='approved').select_related(
+    # Start with approved candidates only
+    # Build Q filters to only include candidates voter can actually vote for
+    # Use OR (|) to combine different position levels
+    base_filter = Q(status='approved')
+    position_filters = Q()  # Empty Q() for combining position-based filters
+
+    # Federal level - House of Representatives (district-based constituencies)
+    if district_id:
+        position_filters |= Q(
+            position_level__in=['house_of_representatives', 'federal'],
+            province_id=province_id,
+            district_id=district_id
+        )
+
+    # Federal level - National Assembly (province-based, elected by electoral college)
+    if province_id:
+        position_filters |= Q(
+            position_level='national_assembly',
+            province_id=province_id
+        )
+
+    # Provincial level (province-based)
+    if province_id:
+        position_filters |= Q(
+            position_level__in=['provincial_assembly', 'provincial'],
+            province_id=province_id
+        )
+
+    # Municipal level (municipality-based)
+    if municipality_id:
+        position_filters |= Q(
+            position_level__in=['mayor_chairperson', 'deputy_mayor_vice_chairperson', 'local_executive', 'mayor', 'deputy_mayor', 'local'],
+            municipality_id=municipality_id
+        )
+
+    # Ward level (ward-based)
+    if ward_number and municipality_id:
+        position_filters |= Q(
+            position_level__in=['ward_chairperson', 'ward_member', 'ward'],
+            municipality_id=municipality_id,
+            ward_number=ward_number
+        )
+
+    # Combine base filter (approved) with position filters (OR of all position types)
+    queryset = Candidate.objects.filter(base_filter & position_filters).select_related(
         'province', 'district', 'municipality'
     )
 

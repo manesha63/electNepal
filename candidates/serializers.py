@@ -70,10 +70,14 @@ class CandidateCardSerializer(serializers.ModelSerializer):
 
     def get_photo_url(self, obj):
         """Get the full URL for the candidate's photo"""
+        from django.conf import settings
         request = self.context.get('request')
         if obj.photo and request:
             return request.build_absolute_uri(obj.photo.url)
-        return None
+        # Return default avatar if no photo
+        if request:
+            return request.build_absolute_uri(settings.DEFAULT_CANDIDATE_AVATAR)
+        return settings.DEFAULT_CANDIDATE_AVATAR
 
     def get_detail_url(self, obj):
         """Get the candidate detail page URL"""
@@ -144,10 +148,14 @@ class CandidateBallotSerializer(serializers.ModelSerializer):
         ]
 
     def get_photo_url(self, obj):
+        from django.conf import settings
         request = self.context.get('request')
         if obj.photo and request:
             return request.build_absolute_uri(obj.photo.url)
-        return None
+        # Return default avatar if no photo
+        if request:
+            return request.build_absolute_uri(settings.DEFAULT_CANDIDATE_AVATAR)
+        return settings.DEFAULT_CANDIDATE_AVATAR
 
 
 class LocationFilterSerializer(serializers.Serializer):

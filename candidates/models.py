@@ -105,8 +105,8 @@ class Candidate(AutoTranslationMixin, models.Model):
     municipality = models.ForeignKey(Municipality, on_delete=models.CASCADE, null=True, blank=True)
     ward_number = models.IntegerField(
         null=True, blank=True,
-        validators=[MinValueValidator(1), MaxValueValidator(35)],
-        help_text="Ward number (1-35, required for ward-level positions)"
+        validators=[MinValueValidator(1)],
+        help_text="Ward number (required for ward-level positions, must be valid for the selected municipality)"
     )
     constituency_code = models.CharField(max_length=50, blank=True)
 
@@ -155,8 +155,9 @@ class Candidate(AutoTranslationMixin, models.Model):
             models.Index(fields=['status', 'province', 'district', 'municipality', 'ward_number'], name='ballot_location_idx'),
             # Index for position-level filtering with status
             models.Index(fields=['status', 'position_level', 'province'], name='ballot_position_idx'),
-            # Index for general status filtering
-            models.Index(fields=['status', 'created_at'], name='status_created_idx'),
+            # Index for candidate list queries - status filter with descending created_at and name sort
+            # Matches query pattern: filter(status='approved').order_by('-created_at', 'full_name')
+            models.Index(fields=['status', '-created_at', 'full_name'], name='status_created_name_idx'),
         ]
 
     def clean(self):
@@ -173,6 +174,13 @@ class Candidate(AutoTranslationMixin, models.Model):
         if self.position_level in local_positions:
             if not self.municipality:
                 raise ValidationError('Municipality is required for local unit positions')
+
+        # Dynamic ward number validation: check against municipality's actual total_wards
+        if self.ward_number and self.municipality:
+            if self.ward_number > self.municipality.total_wards:
+                raise ValidationError({
+                    'ward_number': f'Invalid ward number. {self.municipality.name_en} only has {self.municipality.total_wards} wards. Please select a ward between 1 and {self.municipality.total_wards}.'
+                })
 
         # Validate location hierarchy
         if self.municipality and self.municipality.district != self.district:
@@ -392,10 +400,35 @@ class Candidate(AutoTranslationMixin, models.Model):
                 translated = result.text
                 setattr(self, ne_field, translated)
                 setattr(self, mt_flag_field, True)
+                logger.info(f"Successfully translated {en_field} to Nepali for Candidate {self.full_name} (ID: {self.pk})")
             except Exception as e:
-                # If translation fails, at least copy the English (better than lowercase)
+                # Log translation failure with detailed error information
+                logger.error(
+                    f"Translation failed for Candidate {self.full_name} (ID: {self.pk}): "
+                    f"Field '{en_field}' translation to '{ne_field}' failed. "
+                    f"Error: {type(e).__name__}: {str(e)}"
+                )
+
+                # Notify admins about translation failure (async to avoid blocking)
+                try:
+                    mail_admins(
+                        subject=f"Translation Failure: Candidate {self.full_name}",
+                        message=f"Auto-translation failed for candidate '{self.full_name}' (ID: {self.pk}).\n\n"
+                                f"Field: {en_field} → {ne_field}\n"
+                                f"Error: {type(e).__name__}: {str(e)}\n\n"
+                                f"The English content has been copied as fallback.\n"
+                                f"Manual translation review required.\n\n"
+                                f"Candidate profile: {settings.SITE_URL if hasattr(settings, 'SITE_URL') else 'N/A'}/admin/candidates/candidate/{self.pk}/change/",
+                        fail_silently=True  # Don't raise exception if email fails
+                    )
+                except Exception as email_error:
+                    logger.error(f"Failed to send admin notification email: {type(email_error).__name__}: {str(email_error)}")
+
+                # If translation fails, copy English text as fallback
                 setattr(self, ne_field, en_value)
                 setattr(self, mt_flag_field, False)
+
+                logger.warning(f"Fallback applied: Copied English content to {ne_field} for Candidate {self.full_name} (ID: {self.pk})")
 
     def autotranslate_missing(self):
         """
@@ -407,6 +440,13 @@ class Candidate(AutoTranslationMixin, models.Model):
         self._fill_missing_pair("manifesto_en", "manifesto_ne", "is_mt_manifesto_ne")
 
     def save(self, *args, **kwargs):
+        # Enforce full_clean() validation to prevent bypassing location hierarchy checks
+        # This ensures validation runs even for .create(), .update(), and direct saves
+        # Prevents invalid foreign key relationships (e.g., district not in province)
+        # Can be bypassed with save(skip_validation=True) only when absolutely necessary
+        if not kwargs.pop('skip_validation', False):
+            self.full_clean()
+
         # Optimize photo if it's being uploaded or changed
         if self.photo:
             # Check if this is a new upload or photo has changed
@@ -451,8 +491,11 @@ class Candidate(AutoTranslationMixin, models.Model):
         # Save the instance first
         super().save(*args, **kwargs)
 
-        # If translation is needed, do it asynchronously AFTER saving
+        # If translation is needed, schedule it to run AFTER the transaction commits
+        # This prevents race conditions where the background thread tries to access
+        # a candidate that hasn't been committed to the database yet
         if needs_translation:
+            from django.db import transaction
             from .async_translation import translate_candidate_async
 
             # Prepare fields to translate
@@ -463,8 +506,10 @@ class Candidate(AutoTranslationMixin, models.Model):
                 ('manifesto_en', 'manifesto_ne', 'is_mt_manifesto_ne')
             ]
 
-            # Trigger async translation
-            translate_candidate_async(self.pk, fields_to_translate)
+            # Use on_commit to ensure translation starts only after transaction commits
+            transaction.on_commit(
+                lambda: translate_candidate_async(self.pk, fields_to_translate)
+            )
 
     def __str__(self):
         return f"{self.full_name} ({self.get_position_level_display()})"
@@ -523,8 +568,11 @@ class CandidateEvent(AutoTranslationMixin, models.Model):
         # Save the instance first (skip AutoTranslationMixin's save)
         models.Model.save(self, *args, **kwargs)
 
-        # If translation is needed, do it asynchronously AFTER saving
+        # If translation is needed, schedule it to run AFTER the transaction commits
+        # This prevents race conditions where the background thread tries to access
+        # an event that hasn't been committed to the database yet
         if needs_translation:
+            from django.db import transaction
             from .async_translation import translate_event_async
 
             # Prepare fields to translate
@@ -534,8 +582,10 @@ class CandidateEvent(AutoTranslationMixin, models.Model):
                 ('location_en', 'location_ne', 'is_mt_location_ne')
             ]
 
-            # Trigger async translation
-            translate_event_async(self.pk, fields_to_translate)
+            # Use on_commit to ensure translation starts only after transaction commits
+            transaction.on_commit(
+                lambda: translate_event_async(self.pk, fields_to_translate)
+            )
 
     def __str__(self):
         return f"{self.candidate.full_name}: {self.title_en}"

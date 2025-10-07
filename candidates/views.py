@@ -20,6 +20,47 @@ from .forms import CandidateRegistrationForm, CandidateUpdateForm, CandidateEven
 from locations.models import Province, District, Municipality
 import json
 import hashlib
+import re
+
+
+def sanitize_search_input(query_string):
+    """
+    Sanitize user search input to prevent any potential injection attacks.
+
+    Defense-in-depth: While Django ORM already uses parameterized queries,
+    this provides an additional layer of protection by:
+    1. Limiting length to prevent DoS
+    2. Removing control characters
+    3. Normalizing whitespace
+
+    Args:
+        query_string (str): Raw user input
+
+    Returns:
+        str: Sanitized query string safe for database queries
+    """
+    if not query_string:
+        return ''
+
+    # Strip leading/trailing whitespace
+    sanitized = query_string.strip()
+
+    # Limit length to prevent extremely long queries (DoS prevention)
+    max_length = 200
+    if len(sanitized) > max_length:
+        sanitized = sanitized[:max_length]
+
+    # Remove control characters (except space, tab, newline which normalize to space)
+    # Keep alphanumeric, spaces, and common punctuation
+    sanitized = re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]', '', sanitized)
+
+    # Normalize multiple whitespace to single space
+    sanitized = re.sub(r'\s+', ' ', sanitized)
+
+    # Final strip
+    sanitized = sanitized.strip()
+
+    return sanitized
 
 
 class CandidateListView(ListView):
@@ -32,12 +73,13 @@ class CandidateListView(ListView):
         queryset = Candidate.objects.filter(status='approved')  # Only show approved candidates
 
         # Get filter parameters
-        search = self.request.GET.get('search', '')
+        search_raw = self.request.GET.get('search', '')
+        search = sanitize_search_input(search_raw)  # Sanitize search input for security
         district_id = self.request.GET.get('district')
         municipality_id = self.request.GET.get('municipality')
         position_level = self.request.GET.get('position')
 
-        # Apply filters
+        # Apply filters (using sanitized input)
 
         if search:
             queryset = queryset.filter(
@@ -55,7 +97,7 @@ class CandidateListView(ListView):
         if position_level:
             queryset = queryset.filter(position_level=position_level)
 
-        return queryset.select_related('district', 'municipality', 'province').order_by('full_name')
+        return queryset.select_related('district', 'municipality', 'province').prefetch_related('events').order_by('full_name')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -106,7 +148,16 @@ def nearby_candidates_api(request):
     """API endpoint to get candidates based on location - Instagram feed style"""
     lat = request.GET.get('lat')
     lng = request.GET.get('lng')
-    page = int(request.GET.get('page', 1))
+
+    # Safe type casting with error handling to prevent 500 errors on malformed input
+    try:
+        page = int(request.GET.get('page', 1))
+        # Ensure page is positive (negative indexing causes "Negative indexing is not supported" error)
+        if page < 1:
+            page = 1
+    except (TypeError, ValueError):
+        page = 1
+
     per_page = 10
 
     # Get current language
@@ -190,12 +241,13 @@ def nearby_candidates_api(request):
 @ratelimit(key='ip', rate='60/m', method='GET', block=True)
 def search_candidates_api(request):
     """API endpoint for searching candidates"""
-    search_term = request.GET.get('q', '')
+    search_term_raw = request.GET.get('q', '')
+    search_term = sanitize_search_input(search_term_raw)  # Sanitize search input for security
     district_id = request.GET.get('district')
     municipality_id = request.GET.get('municipality')
-    
+
     queryset = Candidate.objects.filter(status='approved')  # Only show approved candidates
-    
+
     if search_term:
         queryset = queryset.filter(
             Q(full_name__icontains=search_term) |
@@ -252,15 +304,50 @@ def my_ballot(request):
     if not province_id:
         return JsonResponse({'error': 'province_id is required'}, status=400)
 
-    # Generate cache key based on location, language, and pagination
+    # ✅ FIX: Validate and convert parameters BEFORE generating cache key
+    # This ensures cache key reflects actual query parameters, not raw string values
+    # Prevents cache pollution from invalid parameters
+    try:
+        province_id = int(province_id)
+    except (TypeError, ValueError):
+        return JsonResponse({'error': 'Invalid province_id'}, status=400)
+
+    # Convert IDs to integers if provided, set to None if invalid
+    if district_id:
+        try:
+            district_id = int(district_id)
+        except (TypeError, ValueError):
+            district_id = None
+    else:
+        district_id = None
+
+    if municipality_id:
+        try:
+            municipality_id = int(municipality_id)
+        except (TypeError, ValueError):
+            municipality_id = None
+    else:
+        municipality_id = None
+
+    if ward_number:
+        try:
+            ward_number = int(ward_number)
+        except (TypeError, ValueError):
+            ward_number = None
+    else:
+        ward_number = None
+
+    # ✅ FIX: Generate cache key AFTER parameter validation
+    # Use validated integer values or empty string for None
+    # This ensures same query parameters always generate same cache key
     lang = get_language()
     cache_key_parts = [
         'ballot',
         lang,
-        str(province_id),
-        str(district_id or ''),
-        str(municipality_id or ''),
-        str(ward_number or ''),
+        str(province_id),  # Guaranteed to be int
+        str(district_id) if district_id is not None else '',
+        str(municipality_id) if municipality_id is not None else '',
+        str(ward_number) if ward_number is not None else '',
         str(page),
         str(page_size)
     ]
@@ -271,37 +358,24 @@ def my_ballot(request):
     if cached_result:
         return JsonResponse(cached_result)
 
-    try:
-        province_id = int(province_id)
-    except (TypeError, ValueError):
-        return JsonResponse({'error': 'Invalid province_id'}, status=400)
-
-    # Convert IDs to integers if provided
-    if district_id:
-        try:
-            district_id = int(district_id)
-        except (TypeError, ValueError):
-            district_id = None
-
-    if municipality_id:
-        try:
-            municipality_id = int(municipality_id)
-        except (TypeError, ValueError):
-            municipality_id = None
-
-    if ward_number:
-        try:
-            ward_number = int(ward_number)
-        except (TypeError, ValueError):
-            ward_number = None
-
     # Build the filter query based on position levels and location hierarchy
     # Each position level should only show candidates that match the appropriate location level
     filters = Q()
 
-    # Federal level candidates (nationwide) - always included
-    # Support both old and new position values
-    filters |= Q(position_level__in=['house_of_representatives', 'national_assembly', 'federal'])
+    # Federal level candidates - filtered by location (NOT nationwide)
+    # House of Representatives: district-based constituencies
+    if district_id:
+        filters |= Q(
+            position_level__in=['house_of_representatives', 'federal'],
+            province_id=province_id,
+            district_id=district_id
+        )
+
+    # National Assembly: province-based (elected by provincial electoral college)
+    filters |= Q(
+        position_level='national_assembly',
+        province_id=province_id
+    )
 
     # Provincial level candidates - must be in user's province
     filters |= Q(
@@ -463,122 +537,24 @@ def ballot_view(request):
     return render(request, 'candidates/ballot.html', {'provinces': provinces})
 
 
-@require_GET
-@cache_page(60 * 5)  # Cache for 5 minutes
-@ratelimit(key='ip', rate='60/m', method='GET', block=True)  # 60 requests per minute for general browsing
-def candidate_cards_api(request):
-    """API endpoint for candidate cards with pagination."""
-    # Get parameters
-    q = (request.GET.get('q') or '').strip()
-    page = int(request.GET.get('page', 1))
-    # "batch" = 3 rows * variable columns; front-end sends page_size
-    page_size = max(1, min(int(request.GET.get('page_size', 9)), 48))
-
-    # Get filter parameters
-    province_id = request.GET.get('province')
-    district_id = request.GET.get('district')
-    municipality_id = request.GET.get('municipality')
-    position_level = request.GET.get('position')
-
-    # Build queryset - only show approved candidates
-    qs = Candidate.objects.filter(status='approved').select_related('province', 'district', 'municipality')
-
-    # Apply search filter if provided - use PostgreSQL full-text search for better performance
-    search_applied = False
-    if q:
-        try:
-            # Try to use PostgreSQL full-text search for better performance
-            # Create a search vector combining all searchable fields
-            search_vector = SearchVector('full_name', weight='A') + \
-                           SearchVector('bio_en', 'bio_ne', weight='B') + \
-                           SearchVector('education_en', 'education_ne', weight='C') + \
-                           SearchVector('experience_en', 'experience_ne', weight='C') + \
-                           SearchVector('manifesto_en', 'manifesto_ne', weight='D')
-
-            # Create search query (handles multiple words, stemming, etc.)
-            search_query = SearchQuery(q)
-
-            # Apply search with ranking
-            qs = qs.annotate(
-                search=search_vector,
-                rank=SearchRank(search_vector, search_query)
-            ).filter(search=search_query)
-            search_applied = True
-
-        except Exception as e:
-            # Fallback to original implementation if PostgreSQL full-text search fails
-            # This ensures backward compatibility and works with non-PostgreSQL databases
-            qs = qs.filter(
-                Q(full_name__icontains=q) |
-                Q(bio_en__icontains=q) |
-                Q(bio_ne__icontains=q) |
-                Q(education_en__icontains=q) |
-                Q(education_ne__icontains=q) |
-                Q(experience_en__icontains=q) |
-                Q(experience_ne__icontains=q) |
-                Q(manifesto_en__icontains=q) |
-                Q(manifesto_ne__icontains=q)
-            )
-
-    # Apply location filters
-    if province_id:
-        qs = qs.filter(province_id=province_id)
-    if district_id:
-        qs = qs.filter(district_id=district_id)
-    if municipality_id:
-        qs = qs.filter(municipality_id=municipality_id)
-    if position_level:
-        qs = qs.filter(position_level=position_level)
-
-    # Order by creation date and name (or by search rank if search was applied)
-    if search_applied:
-        # When search is applied with PostgreSQL FTS, order by relevance rank first
-        qs = qs.order_by('-rank', '-created_at', 'full_name')
-    else:
-        # Default ordering when no search or fallback search
-        qs = qs.order_by('-created_at', 'full_name')
-
-    # Paginate
-    paginator = Paginator(qs, page_size)
-    page_obj = paginator.get_page(page)
-
-    def candidate_to_dict(c):
-        """Convert candidate to dictionary for JSON response."""
-        from django.utils.translation import get_language
-        lang = get_language()
-        is_nepali = lang == 'ne'
-
-        # Preserve language prefix in detail URL
-        lang_prefix = '/ne' if is_nepali else ''
-
-        return {
-            "id": c.id,
-            "name": c.full_name,
-            "photo": c.photo.url if c.photo else settings.DEFAULT_CANDIDATE_AVATAR,
-            "office": c.office,  # Add office field
-            "position_level": c.position_level,  # Keep for backward compatibility, this is now "Seat"
-            "province": getattr(c.province, 'name_ne' if is_nepali else 'name_en', None) if c.province else None,
-            "district": getattr(c.district, 'name_ne' if is_nepali else 'name_en', None) if c.district else None,
-            "municipality": getattr(c.municipality, 'name_ne' if is_nepali else 'name_en', None) if c.municipality else None,
-            "ward": c.ward_number,
-            "detail_url": f"{lang_prefix}/candidates/{c.id}/",
-        }
-
-    return JsonResponse({
-        "items": [candidate_to_dict(c) for c in page_obj.object_list],
-        "page": page_obj.number,
-        "num_pages": paginator.num_pages,
-        "has_next": page_obj.has_next(),
-        "has_previous": page_obj.has_previous(),
-        "total": paginator.count,
-    })
+# NOTE: candidate_cards_api has been moved to api_views.py for better API organization
+# The active implementation is in candidates/api_views.py and is properly documented with OpenAPI/Swagger
+# URL: /candidates/api/cards/ points to api_views.candidate_cards_api
 
 
 # Candidate Registration and Dashboard Views
 @login_required
-@ratelimit(key='user', rate='3/h', method='POST', block=True)
+@ratelimit(key='user', rate='3/h', method='POST', block=True)  # Limit per user
+@ratelimit(key='ip', rate='5/h', method='POST', block=True)    # Limit per IP address
 def candidate_register(request):
-    """Handle candidate registration for authenticated users."""
+    """
+    Handle candidate registration for authenticated users.
+
+    Rate limiting:
+    - 3 registrations per hour per user account
+    - 5 registrations per hour per IP address
+    This dual approach prevents spam from both single accounts and multiple accounts from same IP.
+    """
     # Check if user already has a candidate profile
     if hasattr(request.user, 'candidate'):
         messages.info(request, 'You already have a candidate profile.')
@@ -594,15 +570,28 @@ def candidate_register(request):
                     candidate.status = 'pending'  # Set to pending for admin review
                     candidate.save()
 
-                # Send email notifications (outside transaction for performance)
-                try:
-                    # Send confirmation to candidate
-                    candidate.send_registration_confirmation()
-                    # Notify admins about new registration
-                    candidate.notify_admin_new_registration()
-                except Exception as e:
-                    # Log error but don't fail the registration
-                    print(f"Email notification error: {e}")
+                    # ✅ FIX: Wrap email notifications in transaction.on_commit()
+                    # This ensures emails are only sent AFTER the database transaction successfully commits
+                    # Prevents race conditions where emails are sent but transaction rolls back
+                    # If transaction fails, on_commit hooks are discarded and emails are never sent
+                    def send_registration_emails():
+                        """Send email notifications after successful database commit"""
+                        try:
+                            # Send confirmation to candidate
+                            candidate.send_registration_confirmation()
+                            # Notify admins about new registration
+                            candidate.notify_admin_new_registration()
+                        except Exception as e:
+                            # Log error but don't fail the registration (already committed)
+                            import logging
+                            logger = logging.getLogger('candidates.emails')
+                            logger.error(
+                                f"Failed to send registration emails for {candidate.full_name} (ID: {candidate.pk}): "
+                                f"{type(e).__name__}: {str(e)}"
+                            )
+
+                    # Schedule emails to run after transaction commits
+                    transaction.on_commit(send_registration_emails)
 
                 messages.success(request, 'Your candidate profile has been submitted for review! You will be notified once approved.')
                 return redirect('candidates:registration_success')

@@ -2,10 +2,11 @@
 API Views for Locations with proper documentation
 """
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from drf_spectacular.types import OpenApiTypes
@@ -19,6 +20,33 @@ from .serializers import (
     GeoResolveResponseSerializer,
     LocationStatsSerializer
 )
+
+
+def _validate_int_param(value, param_name='id'):
+    """
+    Validate and convert request parameter to integer.
+    Prevents SQL injection attempts and invalid input from causing server errors.
+
+    Args:
+        value: String value from request.GET
+        param_name: Name of parameter for error message
+
+    Returns:
+        int or None: Validated integer value, or None if value is empty/None
+
+    Raises:
+        ValueError: If value cannot be converted to integer
+    """
+    if not value:
+        return None
+    try:
+        int_value = int(value)
+        # Additional validation: ensure positive integer (IDs are always positive)
+        if int_value < 1:
+            raise ValueError(f"Invalid {param_name}: must be positive")
+        return int_value
+    except (ValueError, TypeError) as e:
+        raise ValueError(f"Invalid {param_name} parameter: expected integer, got '{value}'")
 
 
 @extend_schema(
@@ -47,13 +75,16 @@ def districts_by_province(request):
     Returns districts with their English and Nepali names.
     Used primarily for location selection dropdowns.
     """
-    province_id = request.GET.get('province')
+    province_id_raw = request.GET.get('province')
 
-    if province_id:
+    if province_id_raw:
+        # Validate province ID parameter BEFORE using it in query
         try:
-            districts = District.objects.filter(province_id=province_id).order_by('name_en')
-        except ValueError:
-            return Response({'error': 'Invalid province ID'}, status=status.HTTP_400_BAD_REQUEST)
+            province_id = _validate_int_param(province_id_raw, 'province')
+        except ValueError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        districts = District.objects.filter(province_id=province_id).order_by('name_en')
     else:
         districts = District.objects.all().order_by('name_en')
 
@@ -87,13 +118,16 @@ def municipalities_by_district(request):
     Returns municipalities with their type (Metropolitan, Sub-Metropolitan, Municipality, Rural Municipality)
     and total number of wards.
     """
-    district_id = request.GET.get('district')
+    district_id_raw = request.GET.get('district')
 
-    if district_id:
+    if district_id_raw:
+        # Validate district ID parameter BEFORE using it in query
         try:
-            municipalities = Municipality.objects.filter(district_id=district_id).order_by('name_en')
-        except ValueError:
-            return Response({'error': 'Invalid district ID'}, status=status.HTTP_400_BAD_REQUEST)
+            district_id = _validate_int_param(district_id_raw, 'district')
+        except ValueError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        municipalities = Municipality.objects.filter(district_id=district_id).order_by('name_en')
     else:
         municipalities = Municipality.objects.all().order_by('name_en')
 
@@ -161,42 +195,70 @@ def municipality_wards(request, municipality_id):
     Converts GPS coordinates (latitude/longitude) to Nepal administrative location.
     Returns the province, district, municipality, and ward information based on coordinates.
 
-    Note: This is a simplified implementation. In production, you would use actual
-    geospatial data and libraries like GeoDjango for accurate coordinate-to-location mapping.
+    Uses improved approximation based on Nepal's actual geographical boundaries.
+    Note: For production accuracy, consider PostGIS with official boundary shapefiles.
+
+    This is a public endpoint that does not require authentication.
+    Supports both GET (with query parameters) and POST (with JSON body) requests.
     """,
+    parameters=[
+        OpenApiParameter(
+            name='lat',
+            type=OpenApiTypes.FLOAT,
+            location=OpenApiParameter.QUERY,
+            description='Latitude (for GET requests)',
+            required=False
+        ),
+        OpenApiParameter(
+            name='lng',
+            type=OpenApiTypes.FLOAT,
+            location=OpenApiParameter.QUERY,
+            description='Longitude (for GET requests)',
+            required=False
+        ),
+    ],
     request=GeoResolveSerializer,
     responses={
         200: GeoResolveResponseSerializer,
         400: OpenApiResponse(description="Invalid coordinates"),
-        501: OpenApiResponse(description="Geolocation service not fully implemented")
+        404: OpenApiResponse(description="Location outside Nepal boundaries")
     },
     tags=['Locations']
 )
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
+@permission_classes([AllowAny])
 def geo_resolve(request):
     """
     Resolve GPS coordinates to Nepal administrative location.
 
-    This endpoint would typically use geospatial data to map coordinates
-    to the correct administrative boundaries.
+    Uses geolocation logic to map coordinates to province, district, and municipality
+    based on Nepal's geographical boundaries.
+
+    Supports both GET (query parameters) and POST (JSON body) methods.
     """
-    serializer = GeoResolveSerializer(data=request.data)
+    # Handle GET requests (query parameters)
+    if request.method == 'GET':
+        try:
+            lat = float(request.GET.get('lat'))
+            lng = float(request.GET.get('lng'))
+        except (TypeError, ValueError):
+            return Response({'error': 'Invalid or missing lat/lng parameters'}, status=status.HTTP_400_BAD_REQUEST)
+    # Handle POST requests (JSON body)
+    else:
+        serializer = GeoResolveSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        lat = serializer.validated_data['lat']
+        lng = serializer.validated_data['lng']
 
-    if not serializer.is_valid():
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # ✅ FIX: Use the actual geolocation logic
+    # Import the geolocation resolution function
+    from .geolocation import resolve_coordinates_to_location
 
-    lat = serializer.validated_data['lat']
-    lng = serializer.validated_data['lng']
+    # Resolve coordinates to location
+    result, status_code = resolve_coordinates_to_location(lat, lng)
 
-    # Note: This is a placeholder implementation
-    # In production, you would use actual geospatial data
-    # For now, returning a sample response
-
-    return Response({
-        'message': 'Geolocation resolution not fully implemented',
-        'note': 'This would require geospatial data and libraries like GeoDjango',
-        'coordinates': {'lat': lat, 'lng': lng}
-    }, status=status.HTTP_501_NOT_IMPLEMENTED)
+    return Response(result, status=status_code)
 
 
 @extend_schema(
@@ -220,9 +282,9 @@ def location_statistics(request):
     districts_count = District.objects.count()
     municipalities_count = Municipality.objects.count()
 
-    # Get total wards
+    # Get total wards (sum of all wards across municipalities)
     total_wards = Municipality.objects.aggregate(
-        total=Count('total_wards')
+        total=Sum('total_wards')
     )['total'] or 0
 
     # Get municipalities by type
