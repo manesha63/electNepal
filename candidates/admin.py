@@ -3,7 +3,10 @@ from django.utils.html import format_html
 from django.utils import timezone
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+import logging
 from .models import Candidate, CandidateEvent  # Removed CandidatePost
+
+logger = logging.getLogger(__name__)
 
 
 @admin.register(Candidate)
@@ -91,7 +94,7 @@ class CandidateAdmin(admin.ModelAdmin):
                     email_failed += 1
             except Exception as e:
                 email_failed += 1
-                print(f"Email error for {candidate.full_name}: {e}")
+                logger.error(f"Email error for {candidate.full_name}: {type(e).__name__}: {str(e)}", exc_info=True)
 
         if count:
             msg = f'{count} candidate(s) approved successfully.'

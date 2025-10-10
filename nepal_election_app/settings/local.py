@@ -1,4 +1,5 @@
 from .base import *
+from .cors import *
 from decouple import config
 import dj_database_url
 

@@ -2,6 +2,7 @@ asgiref==3.9.1
 bleach==6.2.0
 dj-database-url==3.0.1
 Django==4.2.7
+django-cors-headers==4.3.1
 django-ratelimit==4.1.0
 djangorestframework==3.16.1
 drf-spectacular==0.28.0

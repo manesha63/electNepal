@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from locations.models import Province, District, Municipality
 from .translation import AutoTranslationMixin
-from .validators import validate_file_size, validate_image_size, validate_file_extension, validate_image_extension
+from .validators import validate_file_size, validate_image_size, validate_file_extension, validate_image_extension, validate_file_content_type
 import logging
 
 # Get logger for email operations
@@ -61,13 +61,13 @@ class Candidate(AutoTranslationMixin, models.Model):
     # Fields that should be auto-translated
     TRANSLATABLE_FIELDS = ['bio', 'education', 'experience', 'achievements', 'manifesto']
     
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     full_name = models.CharField(max_length=200, help_text="Full name as it appears on official documents")
     photo = models.ImageField(
         upload_to=candidate_photo_path,
         blank=True,
         null=True,
-        validators=[validate_image_size, validate_image_extension],
+        validators=[validate_image_size, validate_image_extension, validate_file_content_type],
         help_text=_("Profile photo (JPG/PNG, max 5MB)")
     )
     age = models.IntegerField(
@@ -121,14 +121,14 @@ class Candidate(AutoTranslationMixin, models.Model):
         upload_to='verification_docs/identity/%Y/%m/',
         blank=True,
         null=True,
-        validators=[validate_file_size, validate_file_extension],
+        validators=[validate_file_size, validate_file_extension, validate_file_content_type],
         help_text=_("National ID/Citizenship/Driver's License (PDF/JPG/PNG, max 10MB, confidential)")
     )
     candidacy_document = models.FileField(
         upload_to='verification_docs/candidacy/%Y/%m/',
         blank=True,
         null=True,
-        validators=[validate_file_size, validate_file_extension],
+        validators=[validate_file_size, validate_file_extension, validate_file_content_type],
         help_text=_("Official election declaration paper (PDF/JPG/PNG, max 10MB, confidential)")
     )
     terms_accepted = models.BooleanField(
@@ -461,13 +461,26 @@ class Candidate(AutoTranslationMixin, models.Model):
                     should_optimize = True
 
             if should_optimize:
-                from .image_utils import optimize_image, should_optimize_image
+                try:
+                    from .image_utils import optimize_image, should_optimize_image
 
-                # Only optimize if necessary (large file or dimensions)
-                if should_optimize_image(self.photo):
-                    optimized = optimize_image(self.photo)
-                    if optimized:
-                        self.photo = optimized
+                    # Only optimize if necessary (large file or dimensions)
+                    if should_optimize_image(self.photo):
+                        optimized = optimize_image(self.photo)
+                        if optimized:
+                            self.photo = optimized
+                            logger.info(f"Successfully optimized photo for candidate {self.full_name}")
+                except ImportError as e:
+                    # Log import error but don't fail the upload
+                    logger.error(f"Failed to import image optimization utilities: {type(e).__name__}: {str(e)}")
+                    logger.warning(f"Photo uploaded without optimization for candidate {self.full_name}")
+                except Exception as e:
+                    # Catch any other unexpected errors during optimization
+                    logger.error(
+                        f"Unexpected error during image optimization for candidate {self.full_name} (ID: {self.pk}): "
+                        f"{type(e).__name__}: {str(e)}"
+                    )
+                    logger.warning(f"Photo uploaded without optimization for candidate {self.full_name}")
 
         # Check if this is a new instance or if we need translation
         is_new = self.pk is None

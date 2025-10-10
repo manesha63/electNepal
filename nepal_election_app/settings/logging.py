@@ -70,6 +70,10 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
         },
     },
+    'root': {
+        'handlers': ['console', 'file'],
+        'level': 'INFO',
+    },
     'loggers': {
         'django': {
             'handlers': ['console', 'file'],
@@ -104,6 +108,26 @@ LOGGING = {
         'locations': {
             'handlers': ['console', 'file'],
             'level': 'DEBUG',
+            'propagate': False,
+        },
+        'core': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'authentication': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'analytics': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'api_auth': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
             'propagate': False,
         },
     },

@@ -46,17 +46,17 @@
                 <!-- Seat/Position below office -->
                 <div class="text-base sm:text-lg font-semibold text-gray-700 mb-2 text-center px-4">
                     <span class="text-gray-600">{% trans "Seat:" %}</span>
-                    {% if candidate.position_level == 'federal' %}
+                    {% if candidate.position_level == 'federal' or candidate.position_level == 'house_of_representatives' or candidate.position_level == 'national_assembly' %}
                         {% trans "Member of Parliament" %}
-                    {% elif candidate.position_level == 'provincial' %}
+                    {% elif candidate.position_level == 'provincial' or candidate.position_level == 'provincial_assembly' %}
                         {% trans "Provincial Assembly Member" %}
-                    {% elif candidate.position_level == 'local_executive' %}
-                        {% if 'Mayor' in candidate.get_position_level_display %}
+                    {% elif candidate.position_level == 'local_executive' or candidate.position_level == 'mayor_chairperson' or candidate.position_level == 'deputy_mayor_vice_chairperson' %}
+                        {% if 'Mayor' in candidate.get_position_level_display or 'mayor' in candidate.position_level %}
                             {% trans "Mayor" %}
                         {% else %}
                             {% trans "Chairperson" %}
                         {% endif %}
-                    {% elif candidate.position_level == 'ward' %}
+                    {% elif candidate.position_level == 'ward' or candidate.position_level == 'ward_chairperson' or candidate.position_level == 'ward_member' %}
                         {% trans "Ward Representative" %}
                     {% else %}
                         {{ candidate.get_position_level_display }}

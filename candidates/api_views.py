@@ -9,6 +9,8 @@ from rest_framework import status
 from django.db.models import Q, Case, When, Value, IntegerField, CharField
 from django.core.paginator import Paginator
 from django.utils.translation import get_language
+from django.views.decorators.vary import vary_on_headers
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter, OpenApiResponse
 from drf_spectacular.types import OpenApiTypes
 
@@ -97,6 +99,7 @@ def sanitize_search_input(query_string):
     tags=['Candidates']
 )
 @api_view(['GET'])
+@vary_on_headers('Accept-Language')
 def candidate_cards_api(request):
     """
     API endpoint for candidate cards with pagination.
@@ -119,13 +122,26 @@ def candidate_cards_api(request):
     # Build queryset - only show approved candidates
     qs = Candidate.objects.filter(status='approved').select_related('province', 'district', 'municipality')
 
-    # Apply search filter (using sanitized input)
+    # Apply search filter using PostgreSQL Full-Text Search (indexed, fast)
     if q:
-        qs = qs.filter(
-            Q(full_name__icontains=q) |
-            Q(bio_en__icontains=q) |
-            Q(bio_ne__icontains=q)
+        # Use the existing GIN index for full-text search
+        # This is MUCH faster than ILIKE on large datasets
+        search_vector = (
+            SearchVector('full_name', weight='A') +
+            SearchVector('bio_en', weight='B') +
+            SearchVector('bio_ne', weight='B') +
+            SearchVector('education_en', weight='C') +
+            SearchVector('education_ne', weight='C') +
+            SearchVector('experience_en', weight='C') +
+            SearchVector('experience_ne', weight='C') +
+            SearchVector('manifesto_en', weight='D') +
+            SearchVector('manifesto_ne', weight='D')
         )
+        search_query = SearchQuery(q)
+        qs = qs.annotate(
+            search=search_vector,
+            rank=SearchRank(search_vector, search_query)
+        ).filter(search=search_query).order_by('-rank')
 
     # Apply location filters
     if province_id:
@@ -139,6 +155,12 @@ def candidate_cards_api(request):
 
     # Order by creation date (newest first)
     qs = qs.order_by('-created_at')
+
+    # Limit total results to prevent memory issues (max 1000 results)
+    # Convert to list to enforce hard limit and avoid queryset issues with Paginator
+    total_count = qs.count()
+    if total_count > 1000:
+        qs = list(qs[:1000])
 
     # Paginate
     paginator = Paginator(qs, page_size)
@@ -202,6 +224,7 @@ def candidate_cards_api(request):
     tags=['Candidates']
 )
 @api_view(['GET'])
+@vary_on_headers('Accept-Language')
 def my_ballot(request):
     """
     Return candidates for the user's ballot based on their location.
@@ -315,18 +338,19 @@ def my_ballot(request):
 
     if province_id:
         relevance_conditions.append(
-            When(province_id=province_id, position_level='provincial', then=Value(2))
+            When(province_id=province_id, position_level__in=['provincial', 'provincial_assembly'], then=Value(2))
         )
         location_match_conditions.append(
-            When(province_id=province_id, position_level='provincial', then=Value('Provincial Match'))
+            When(province_id=province_id, position_level__in=['provincial', 'provincial_assembly'], then=Value('Provincial Match'))
         )
 
     # Federal level candidates
+    # Support both old ('federal') and new ('house_of_representatives', 'national_assembly') values
     relevance_conditions.append(
-        When(position_level='federal', then=Value(1))
+        When(position_level__in=['federal', 'house_of_representatives', 'national_assembly'], then=Value(1))
     )
     location_match_conditions.append(
-        When(position_level='federal', then=Value('Federal Level'))
+        When(position_level__in=['federal', 'house_of_representatives', 'national_assembly'], then=Value('Federal Level'))
     )
 
     # Default relevance
@@ -346,6 +370,12 @@ def my_ballot(request):
             output_field=CharField()
         )
     ).order_by('-relevance_score', '-created_at')
+
+    # Limit total results to prevent memory issues (max 1000 results)
+    # Convert to list to enforce hard limit and avoid queryset issues with Paginator
+    total_count = queryset.count()
+    if total_count > 1000:
+        queryset = list(queryset[:1000])
 
     # Paginate
     paginator = Paginator(queryset, page_size)

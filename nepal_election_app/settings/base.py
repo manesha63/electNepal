@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',  # Added for site framework
 
     # Third-party apps
+    'corsheaders',  # CORS headers for API access
     'rest_framework',
     'drf_spectacular',
 
@@ -35,6 +36,7 @@ SITE_ID = 1
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # CORS middleware (must be before CommonMiddleware)
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

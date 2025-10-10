@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.utils.translation import get_language, gettext as _
 from django.views.decorators.http import require_GET, require_POST
 from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_headers
 from django.core.paginator import Paginator, EmptyPage
 from django.core.cache import cache
 from django.contrib.auth.decorators import login_required
@@ -79,14 +80,25 @@ class CandidateListView(ListView):
         municipality_id = self.request.GET.get('municipality')
         position_level = self.request.GET.get('position')
 
-        # Apply filters (using sanitized input)
-
+        # Apply filters using PostgreSQL Full-Text Search (indexed, fast)
         if search:
-            queryset = queryset.filter(
-                Q(full_name__icontains=search) |
-                Q(bio_en__icontains=search) |
-                Q(bio_ne__icontains=search)
+            # Use the existing GIN index for full-text search
+            search_vector = (
+                SearchVector('full_name', weight='A') +
+                SearchVector('bio_en', weight='B') +
+                SearchVector('bio_ne', weight='B') +
+                SearchVector('education_en', weight='C') +
+                SearchVector('education_ne', weight='C') +
+                SearchVector('experience_en', weight='C') +
+                SearchVector('experience_ne', weight='C') +
+                SearchVector('manifesto_en', weight='D') +
+                SearchVector('manifesto_ne', weight='D')
             )
+            search_query = SearchQuery(search)
+            queryset = queryset.annotate(
+                search=search_vector,
+                rank=SearchRank(search_vector, search_query)
+            ).filter(search=search_query).order_by('-rank')
 
         if district_id:
             queryset = queryset.filter(district_id=district_id)
@@ -144,6 +156,7 @@ class CandidateDetailView(DetailView):
 
 # API endpoint for nearby candidates
 @ratelimit(key='ip', rate='60/m', method='GET', block=True)
+@vary_on_headers('Accept-Language')
 def nearby_candidates_api(request):
     """API endpoint to get candidates based on location - Instagram feed style"""
     lat = request.GET.get('lat')
@@ -239,6 +252,7 @@ def nearby_candidates_api(request):
 
 # API endpoint for searching candidates
 @ratelimit(key='ip', rate='60/m', method='GET', block=True)
+@vary_on_headers('Accept-Language')
 def search_candidates_api(request):
     """API endpoint for searching candidates"""
     search_term_raw = request.GET.get('q', '')
@@ -248,12 +262,24 @@ def search_candidates_api(request):
 
     queryset = Candidate.objects.filter(status='approved')  # Only show approved candidates
 
+    # Use PostgreSQL Full-Text Search (indexed, fast)
     if search_term:
-        queryset = queryset.filter(
-            Q(full_name__icontains=search_term) |
-            Q(bio_en__icontains=search_term) |
-            Q(bio_ne__icontains=search_term)
+        search_vector = (
+            SearchVector('full_name', weight='A') +
+            SearchVector('bio_en', weight='B') +
+            SearchVector('bio_ne', weight='B') +
+            SearchVector('education_en', weight='C') +
+            SearchVector('education_ne', weight='C') +
+            SearchVector('experience_en', weight='C') +
+            SearchVector('experience_ne', weight='C') +
+            SearchVector('manifesto_en', weight='D') +
+            SearchVector('manifesto_ne', weight='D')
         )
+        search_query = SearchQuery(search_term)
+        queryset = queryset.annotate(
+            search=search_vector,
+            rank=SearchRank(search_vector, search_query)
+        ).filter(search=search_query).order_by('-rank')
     
     if district_id:
         queryset = queryset.filter(district_id=district_id)
@@ -277,6 +303,7 @@ def search_candidates_api(request):
 
 @require_GET
 @ratelimit(key='ip', rate='30/m', method='GET', block=True)  # 30 requests per minute per IP
+@vary_on_headers('Accept-Language')
 def my_ballot(request):
     """
     Return candidates for the user's ballot based on their location.
@@ -409,21 +436,39 @@ def my_ballot(request):
     ranking_conditions = []
 
     # Exact ward match (highest priority - 0)
+    # Must verify complete location hierarchy for data integrity
     if municipality_id and ward_number:
         ranking_conditions.append(
-            When(municipality_id=municipality_id, ward_number=ward_number, then=Value(0))
+            When(
+                province_id=province_id,
+                district_id=district_id,
+                municipality_id=municipality_id,
+                ward_number=ward_number,
+                then=Value(0)
+            )
         )
 
     # Municipality match (priority - 1)
+    # Must verify complete location hierarchy for data integrity
     if municipality_id:
         ranking_conditions.append(
-            When(municipality_id=municipality_id, then=Value(1))
+            When(
+                province_id=province_id,
+                district_id=district_id,
+                municipality_id=municipality_id,
+                then=Value(1)
+            )
         )
 
     # District match (priority - 2)
+    # Must verify province matches for data integrity
     if district_id:
         ranking_conditions.append(
-            When(district_id=district_id, then=Value(2))
+            When(
+                province_id=province_id,
+                district_id=district_id,
+                then=Value(2)
+            )
         )
 
     # Province match (priority - 3)
@@ -432,8 +477,9 @@ def my_ballot(request):
     )
 
     # Federal level (priority - 4)
+    # Support both old ('federal') and new ('house_of_representatives', 'national_assembly') values
     ranking_conditions.append(
-        When(position_level='federal', then=Value(4))
+        When(position_level__in=['federal', 'house_of_representatives', 'national_assembly'], then=Value(4))
     )
 
     # Apply ranking
@@ -487,8 +533,9 @@ def my_ballot(request):
 
         location_display = ', '.join(location_parts) if location_parts else ''
 
-        # Preserve language prefix in detail URL
-        lang_prefix = '/ne' if is_nepali else ''
+        # Preserve language prefix in detail URL using i18n utilities
+        current_lang = get_language()
+        lang_prefix = f'/{current_lang}' if current_lang != 'en' else ''
 
         candidates_data.append({
             'id': candidate.id,
