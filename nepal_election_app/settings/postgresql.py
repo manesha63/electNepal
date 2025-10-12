@@ -43,5 +43,16 @@ DATABASES['default']['OPTIONS'] = {
     'options': '-c statement_timeout=30000'  # 30 seconds
 }
 
-# Connection pooling (if using pgbouncer)
-DATABASES['default']['CONN_MAX_AGE'] = 600  # 10 minutes
+# Connection Pooling Configuration for Production
+# Persistent connections reduce overhead of creating new connections for each request
+DATABASES['default']['CONN_MAX_AGE'] = 600  # Keep connections alive for 10 minutes
+
+# Additional connection settings for production
+DATABASES['default']['ATOMIC_REQUESTS'] = False  # Only use transactions when explicitly needed
+DATABASES['default']['AUTOCOMMIT'] = True  # PostgreSQL default
+
+# Connection Pool Size Management
+# Note: Adjust based on your application's needs and server resources
+# Formula: (2 × num_cores) + effective_spindle_count
+# For typical web apps with PostgreSQL: 10-20 connections per app instance
+# If using external pooler (pgbouncer), these limits are managed there

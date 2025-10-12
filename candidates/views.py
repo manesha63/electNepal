@@ -19,6 +19,7 @@ from django_ratelimit.decorators import ratelimit
 from .models import Candidate, CandidateEvent  # CandidatePost removed
 from .forms import CandidateRegistrationForm, CandidateUpdateForm, CandidateEventForm  # CandidatePostForm removed
 from locations.models import Province, District, Municipality
+from core.api_responses import error_response, success_response
 import json
 import hashlib
 import re
@@ -329,7 +330,7 @@ def my_ballot(request):
 
     # Province ID is required at minimum
     if not province_id:
-        return JsonResponse({'error': 'province_id is required'}, status=400)
+        return error_response('province_id is required', status=400)
 
     # ✅ FIX: Validate and convert parameters BEFORE generating cache key
     # This ensures cache key reflects actual query parameters, not raw string values
@@ -337,7 +338,7 @@ def my_ballot(request):
     try:
         province_id = int(province_id)
     except (TypeError, ValueError):
-        return JsonResponse({'error': 'Invalid province_id'}, status=400)
+        return error_response('Invalid province_id', status=400)
 
     # Convert IDs to integers if provided, set to None if invalid
     if district_id:
@@ -510,7 +511,7 @@ def my_ballot(request):
 
     # Build response data
     candidates_data = []
-    ward_label = _("Ward")  # Import moved outside loop
+    ward_label = _("Ward")  # Translation lookup moved outside loop for efficiency
 
     for candidate in page_obj.object_list:
         # Use language-aware fields
@@ -828,14 +829,14 @@ def delete_event(request, event_id):
 
         # Check if user owns this event
         if event.candidate.user != request.user:
-            return JsonResponse({'error': 'Unauthorized'}, status=403)
+            return error_response('Unauthorized', status=403)
 
         # Delete the event
         event.delete()
 
-        return JsonResponse({'success': True, 'message': 'Event deleted successfully'})
+        return success_response('Event deleted successfully')
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        return error_response(str(e), status=500)
 
 
 def registration_success(request):

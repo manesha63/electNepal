@@ -109,3 +109,47 @@ class PopularPage(models.Model):
 
     def __str__(self):
         return f"{self.path} ({self.view_count} views)"
+
+
+class GeolocationStats(models.Model):
+    """
+    Track geolocation API usage statistics per day.
+    Replaces cache-based analytics with persistent database storage.
+    """
+    date = models.DateField(unique=True, db_index=True)
+
+    # Request metrics
+    total_requests = models.IntegerField(default=0)
+    successful = models.IntegerField(default=0)
+    failed = models.IntegerField(default=0)
+
+    # Province breakdown (stored as JSON)
+    provinces = models.JSONField(default=dict, blank=True)
+
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-date']
+        verbose_name = 'Geolocation Statistics'
+        verbose_name_plural = 'Geolocation Statistics'
+        indexes = [
+            models.Index(fields=['date', 'total_requests']),
+        ]
+
+    def __str__(self):
+        return f"Geolocation stats for {self.date} ({self.total_requests} requests)"
+
+    @property
+    def success_rate(self):
+        """Calculate success rate percentage"""
+        if self.total_requests > 0:
+            return (self.successful / self.total_requests) * 100
+        return 0
+
+    @classmethod
+    def get_or_create_for_date(cls, date):
+        """Get or create stats for a specific date"""
+        stats, created = cls.objects.get_or_create(date=date)
+        return stats

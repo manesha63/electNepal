@@ -20,6 +20,7 @@ from .serializers import (
     GeoResolveResponseSerializer,
     LocationStatsSerializer
 )
+from core.api_responses import error_response
 
 
 def _validate_int_param(value, param_name='id'):
@@ -82,7 +83,7 @@ def districts_by_province(request):
         try:
             province_id = _validate_int_param(province_id_raw, 'province')
         except ValueError as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return error_response(str(e), status=status.HTTP_400_BAD_REQUEST, use_drf=True)
 
         districts = District.objects.filter(province_id=province_id).order_by('name_en')
     else:
@@ -125,7 +126,7 @@ def municipalities_by_district(request):
         try:
             district_id = _validate_int_param(district_id_raw, 'district')
         except ValueError as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return error_response(str(e), status=status.HTTP_400_BAD_REQUEST, use_drf=True)
 
         municipalities = Municipality.objects.filter(district_id=district_id).order_by('name_en')
     else:
@@ -186,7 +187,7 @@ def municipality_wards(request, municipality_id):
             'ward_numbers': ward_numbers
         })
     except Municipality.DoesNotExist:
-        return Response({'error': 'Municipality not found'}, status=status.HTTP_404_NOT_FOUND)
+        return error_response('Municipality not found', status=status.HTTP_404_NOT_FOUND, use_drf=True)
 
 
 @extend_schema(
@@ -242,7 +243,7 @@ def geo_resolve(request):
             lat = float(request.GET.get('lat'))
             lng = float(request.GET.get('lng'))
         except (TypeError, ValueError):
-            return Response({'error': 'Invalid or missing lat/lng parameters'}, status=status.HTTP_400_BAD_REQUEST)
+            return error_response('Invalid or missing lat/lng parameters', status=status.HTTP_400_BAD_REQUEST, use_drf=True)
     # Handle POST requests (JSON body)
     else:
         serializer = GeoResolveSerializer(data=request.data)
@@ -303,3 +304,106 @@ def location_statistics(request):
         'municipalities_by_type': municipalities_by_type,
         'last_updated': timezone.now()
     })
+
+
+@extend_schema(
+    summary="API Health Check",
+    description="""
+    Health check endpoint that returns API status, version information, and basic system health.
+
+    Use this endpoint to:
+    - Verify the API is up and running
+    - Check the API version
+    - Monitor database connectivity
+    - Get server timestamp
+
+    This is a public endpoint that does not require authentication.
+    """,
+    responses={
+        200: OpenApiResponse(
+            description="API is healthy",
+            response={
+                'type': 'object',
+                'properties': {
+                    'status': {'type': 'string', 'example': 'healthy'},
+                    'version': {'type': 'string', 'example': '1.0.0'},
+                    'timestamp': {'type': 'string', 'format': 'date-time'},
+                    'database': {'type': 'string', 'example': 'connected'},
+                    'api_endpoints': {
+                        'type': 'object',
+                        'properties': {
+                            'locations': {'type': 'integer'},
+                            'candidates': {'type': 'integer'}
+                        }
+                    }
+                }
+            }
+        ),
+        503: OpenApiResponse(description="Service unavailable")
+    },
+    tags=['System']
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def health_check(request):
+    """
+    Health check endpoint for monitoring API availability and status.
+
+    Returns:
+    - status: 'healthy' if all systems operational
+    - version: API version string
+    - timestamp: Current server time
+    - database: Database connection status
+    - api_endpoints: Count of available API endpoints
+    """
+    try:
+        # Check database connectivity
+        db_status = 'connected'
+        try:
+            # Simple query to verify database is accessible
+            Province.objects.count()
+        except Exception as e:
+            db_status = f'error: {str(e)}'
+
+        # Get API version from Django settings
+        from django.conf import settings
+        api_version = getattr(settings, 'API_VERSION', '1.0.0')
+
+        # Count available location data
+        locations_count = (
+            Province.objects.count() +
+            District.objects.count() +
+            Municipality.objects.count()
+        )
+
+        # Count candidates (if database is connected)
+        try:
+            from candidates.models import Candidate
+            candidates_count = Candidate.objects.filter(status='approved').count()
+        except:
+            candidates_count = 0
+
+        response_data = {
+            'status': 'healthy' if db_status == 'connected' else 'degraded',
+            'version': api_version,
+            'timestamp': timezone.now().isoformat(),
+            'database': db_status,
+            'api_endpoints': {
+                'locations': locations_count,
+                'candidates': candidates_count
+            }
+        }
+
+        # Return 503 if database is down, 200 otherwise
+        status_code = status.HTTP_503_SERVICE_UNAVAILABLE if db_status != 'connected' else status.HTTP_200_OK
+
+        return Response(response_data, status=status_code)
+
+    except Exception as e:
+        # Catch any unexpected errors
+        return Response({
+            'status': 'error',
+            'version': '1.0.0',
+            'timestamp': timezone.now().isoformat(),
+            'error': str(e)
+        }, status=status.HTTP_503_SERVICE_UNAVAILABLE)

@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
+from core.sanitize import sanitize_plain_text
 
 
 class CandidateSignupForm(UserCreationForm):
@@ -45,9 +46,24 @@ class CandidateSignupForm(UserCreationForm):
         self.fields['password2'].label = _("Confirm Password")
         self.fields['password2'].help_text = _("Enter the same password as before, for verification.")
 
+    # Input sanitization methods to prevent XSS attacks
+    def clean_username(self):
+        """Sanitize username - plain text only"""
+        username = self.cleaned_data.get('username', '')
+        # Sanitize to remove any HTML/scripts
+        sanitized = sanitize_plain_text(username)
+
+        # Django's username validation will handle allowed characters
+        # We just need to ensure no HTML/scripts pass through
+        return sanitized
+
     def clean_email(self):
-        """Validate email is not already in use"""
-        email = self.cleaned_data.get('email')
+        """Validate email is not already in use and sanitize"""
+        email = self.cleaned_data.get('email', '')
+
+        # Sanitize email field (though EmailField already validates format)
+        email = sanitize_plain_text(email)
+
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError(_("This email address is already registered."))
         return email

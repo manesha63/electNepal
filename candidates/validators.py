@@ -1,7 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 import os
-import imghdr
+from PIL import Image
+import io
 
 
 def validate_file_size(file):
@@ -67,30 +68,39 @@ def validate_file_content_type(file):
                   'Please upload a legitimate PDF file.'),
             )
 
-    # Image validation using imghdr (checks actual image format)
+    # Image validation using Pillow (checks actual image format)
+    # Pillow is the modern replacement for deprecated imghdr module
     elif ext in ['.jpg', '.jpeg', '.png']:
-        # Use imghdr to detect actual image type
-        detected_type = imghdr.what(None, h=file_start)
+        try:
+            # Use Pillow to detect and validate actual image type
+            img = Image.open(io.BytesIO(file_start))
+            detected_format = img.format.lower() if img.format else None
 
-        if detected_type is None:
+            if detected_format is None:
+                raise ValidationError(
+                    _('File appears to be corrupted or is not a valid image. '
+                      'Please upload a legitimate image file.'),
+                )
+
+            # Map extensions to expected Pillow formats
+            extension_format_map = {
+                '.jpg': 'jpeg',
+                '.jpeg': 'jpeg',
+                '.png': 'png',
+            }
+
+            expected_format = extension_format_map.get(ext)
+
+            # Check if detected format matches expected format
+            if detected_format != expected_format:
+                raise ValidationError(
+                    _('File content does not match extension. Expected %(expected)s but got %(actual)s. '
+                      'Please upload a valid file without changing its extension.'),
+                    params={'expected': expected_format.upper(), 'actual': detected_format.upper()}
+                )
+        except (IOError, OSError) as e:
+            # PIL raises IOError/OSError for invalid or corrupted images
             raise ValidationError(
                 _('File appears to be corrupted or is not a valid image. '
                   'Please upload a legitimate image file.'),
-            )
-
-        # Map extensions to expected imghdr types
-        extension_type_map = {
-            '.jpg': 'jpeg',
-            '.jpeg': 'jpeg',
-            '.png': 'png',
-        }
-
-        expected_type = extension_type_map.get(ext)
-
-        # Check if detected type matches expected type
-        if detected_type != expected_type:
-            raise ValidationError(
-                _('File content does not match extension. Expected %(expected)s but got %(actual)s. '
-                  'Please upload a valid file without changing its extension.'),
-                params={'expected': expected_type.upper(), 'actual': detected_type.upper()}
             )

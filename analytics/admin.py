@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.db.models import Count
 from django.utils import timezone
 from datetime import timedelta
-from .models import PageView, DailyStats, CandidateRegistrationEvent, PopularPage
+from .models import PageView, DailyStats, CandidateRegistrationEvent, PopularPage, GeolocationStats
 
 
 class AnalyticsAdminSite(admin.ModelAdmin):
@@ -131,3 +131,34 @@ class PopularPageAdmin(AnalyticsAdminSite):
     list_display = ['path', 'view_count', 'unique_visitor_count', 'last_viewed']
     ordering = ['-view_count']
     search_fields = ['path']
+
+
+@admin.register(GeolocationStats)
+class GeolocationStatsAdmin(AnalyticsAdminSite):
+    """Admin for geolocation statistics"""
+    list_display = [
+        'date',
+        'total_requests',
+        'successful',
+        'failed',
+        'success_rate_display',
+        'top_provinces_display'
+    ]
+    list_filter = ['date']
+    date_hierarchy = 'date'
+    ordering = ['-date']
+    readonly_fields = ['date', 'total_requests', 'successful', 'failed', 'provinces', 'created_at', 'updated_at']
+
+    def success_rate_display(self, obj):
+        """Display success rate as percentage"""
+        return f"{obj.success_rate:.1f}%"
+    success_rate_display.short_description = 'Success Rate'
+
+    def top_provinces_display(self, obj):
+        """Display top 3 provinces by request count"""
+        if not obj.provinces:
+            return '-'
+        # Sort provinces by count and get top 3
+        sorted_provinces = sorted(obj.provinces.items(), key=lambda x: x[1], reverse=True)[:3]
+        return ', '.join([f"{name} ({count})" for name, count in sorted_provinces])
+    top_provinces_display.short_description = 'Top Provinces'

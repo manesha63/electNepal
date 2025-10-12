@@ -100,16 +100,6 @@
             <h2 class="text-xl font-semibold mb-4">{% trans "Position & Location" %}</h2>
 
             <div>
-                <label for="id_office" class="block text-sm font-medium text-gray-700 mb-2">
-                    {% trans "Office" %} *
-                </label>
-                {{ form.office }}
-                {% if form.office.errors %}
-                <p class="mt-1 text-sm text-red-600">{{ form.office.errors.0 }}</p>
-                {% endif %}
-            </div>
-
-            <div>
                 <label for="id_position_level" class="block text-sm font-medium text-gray-700 mb-2">
                     {% trans "Seat" %} *
                 </label>
@@ -447,17 +437,12 @@ function registrationForm() {
                 }
             } else if (this.step === 2) {
                 // Step 2: Location validation
-                const office = document.getElementById('id_office');
                 const position = document.getElementById('id_position_level');
                 const province = document.getElementById('id_province');
                 const district = document.getElementById('id_district');
                 const municipality = document.getElementById('id_municipality');
                 const wardNumber = document.getElementById('id_ward_number');
 
-                if (!office || !office.value) {
-                    alert('Please select an office');
-                    return false;
-                }
                 if (!position || !position.value) {
                     alert('Please select a seat');
                     return false;

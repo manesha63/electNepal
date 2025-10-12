@@ -45,13 +45,6 @@ class Candidate(AutoTranslationMixin, models.Model):
         ('national_assembly', _('National Assembly Member')),
     ]
 
-    OFFICE_CHOICES = [
-        ('federal', _('Federal')),
-        ('provincial', _('Provincial')),
-        ('municipal', _('Municipal')),
-        ('ward', _('Ward')),
-    ]
-
     STATUS_CHOICES = [
         ('pending', _('Pending Review')),
         ('approved', _('Approved')),
@@ -98,7 +91,6 @@ class Candidate(AutoTranslationMixin, models.Model):
     manifesto_ne = models.TextField(blank=True)
     is_mt_manifesto_ne = models.BooleanField(default=False, help_text="True if manifesto_ne is machine translated")
 
-    office = models.CharField(max_length=20, choices=OFFICE_CHOICES, default='municipal', help_text="Office level (Federal/Provincial/Municipal/Ward)")
     position_level = models.CharField(max_length=35, choices=POSITION_LEVELS, verbose_name="Seat", help_text="Specific seat/position being contested")
     province = models.ForeignKey(Province, on_delete=models.CASCADE)
     district = models.ForeignKey(District, on_delete=models.CASCADE)

@@ -21,7 +21,7 @@ class AutoTranslationMixin:
 
     def auto_translate_fields(self):
         """
-        Automatically translate English fields to Nepali
+        Automatically translate English fields to Nepali with specific exception handling
         """
         translator = Translator()
 
@@ -46,8 +46,27 @@ class AutoTranslationMixin:
 
                     logger.info(f"Auto-translated {en_field} to Nepali for {self.__class__.__name__} {self.pk}")
 
-                except Exception as e:
-                    logger.error(f"Translation failed for {en_field}: {str(e)}")
+                except (ConnectionError, TimeoutError) as e:
+                    # Network-related errors - translation service unavailable
+                    logger.warning(f"Translation service unavailable for {en_field}: {str(e)}")
+                    # Copy English content as fallback
+                    setattr(self, ne_field, en_content)
+                    if hasattr(self, mt_flag):
+                        setattr(self, mt_flag, False)
+
+                except ValueError as e:
+                    # Invalid input or response from translation service
+                    logger.error(f"Invalid translation input/response for {en_field}: {str(e)}")
+                    setattr(self, ne_field, en_content)
+                    if hasattr(self, mt_flag):
+                        setattr(self, mt_flag, False)
+
+                except (OSError, IOError) as e:
+                    # File/network I/O errors
+                    logger.error(f"I/O error during translation of {en_field}: {str(e)}")
+                    setattr(self, ne_field, en_content)
+                    if hasattr(self, mt_flag):
+                        setattr(self, mt_flag, False)
 
     def save(self, *args, **kwargs):
         """
@@ -146,7 +165,7 @@ class TranslationService:
     @classmethod
     def translate_text(cls, text, target_lang='ne'):
         """
-        Translate text to target language
+        Translate text to target language with specific exception handling
         """
         if not text:
             return text
@@ -160,8 +179,20 @@ class TranslationService:
             translator = Translator()
             result = translator.translate(text, dest=target_lang)
             return result.text
-        except Exception as e:
-            logger.error(f"Translation failed: {str(e)}")
+
+        except (ConnectionError, TimeoutError) as e:
+            # Network errors - translation service unavailable
+            logger.warning(f"Translation service unavailable: {str(e)}")
+            return text  # Return original text as fallback
+
+        except ValueError as e:
+            # Invalid input or unsupported language
+            logger.error(f"Invalid translation request: {str(e)}")
+            return text
+
+        except (OSError, IOError) as e:
+            # I/O errors during translation
+            logger.error(f"I/O error during translation: {str(e)}")
             return text
 
     @classmethod
@@ -193,7 +224,7 @@ class TranslationService:
     @classmethod
     def bulk_translate_candidates(cls):
         """
-        Bulk translate all candidate data
+        Bulk translate all candidate data with specific exception handling
         """
         from .models import Candidate
 
@@ -202,31 +233,55 @@ class TranslationService:
 
         for candidate in candidates:
             try:
+                fields_translated = []
+
                 # Translate bio
                 if candidate.bio_en and not candidate.bio_ne:
                     candidate.bio_ne = translator.translate(candidate.bio_en, dest='ne').text
                     candidate.is_mt_bio_ne = True
+                    fields_translated.append('bio')
 
                 # Translate education
                 if candidate.education_en and not candidate.education_ne:
                     candidate.education_ne = translator.translate(candidate.education_en, dest='ne').text
                     candidate.is_mt_education_ne = True
+                    fields_translated.append('education')
 
                 # Translate experience
                 if candidate.experience_en and not candidate.experience_ne:
                     candidate.experience_ne = translator.translate(candidate.experience_en, dest='ne').text
                     candidate.is_mt_experience_ne = True
+                    fields_translated.append('experience')
 
                 # Translate manifesto
                 if candidate.manifesto_en and not candidate.manifesto_ne:
                     candidate.manifesto_ne = translator.translate(candidate.manifesto_en, dest='ne').text
                     candidate.is_mt_manifesto_ne = True
+                    fields_translated.append('manifesto')
 
-                candidate.save()
-                logger.info(f"Translated candidate {candidate.full_name}")
+                if fields_translated:
+                    candidate.save()
+                    logger.info(f"Translated candidate {candidate.full_name}: {', '.join(fields_translated)}")
 
-            except Exception as e:
-                logger.error(f"Failed to translate candidate {candidate.id}: {str(e)}")
+            except (ConnectionError, TimeoutError) as e:
+                # Network errors - skip this candidate and continue
+                logger.warning(f"Translation service unavailable for candidate {candidate.id}: {str(e)}")
+                continue
+
+            except ValueError as e:
+                # Invalid translation input/response
+                logger.error(f"Invalid translation data for candidate {candidate.id}: {str(e)}")
+                continue
+
+            except (OSError, IOError) as e:
+                # I/O errors
+                logger.error(f"I/O error translating candidate {candidate.id}: {str(e)}")
+                continue
+
+            except AttributeError as e:
+                # Missing expected field - this is a programming error that should be fixed
+                logger.critical(f"Programming error - missing field for candidate {candidate.id}: {str(e)}")
+                raise  # Re-raise to alert developers
 
 
 def get_bilingual_field(obj, field_base):

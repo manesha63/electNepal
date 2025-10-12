@@ -253,13 +253,6 @@
         transition: color 0.2s;
     }
 
-    .candidate-office {
-        font-size: 1rem;
-        color: #1F2937;
-        margin-bottom: 3px;  /* Reduced from 4px */
-        font-weight: 500;
-    }
-
     .candidate-seat {
         font-size: 0.875rem;
         color: #374151;
@@ -498,9 +491,6 @@
                             <a :href="candidate.detail_url" class="candidate-name-link">
                                 <h3 class="candidate-name" x-text="candidate.name"></h3>
                             </a>
-                            <div class="candidate-office">
-                                <span>{% trans "Office:" %} </span><span x-text="getOfficeDisplay(candidate.office)"></span>
-                            </div>
                             <div class="candidate-seat">
                                 <span>{% trans "Seat:" %} </span><span x-text="getSeatDescription(candidate.position_level)"></span>
                             </div>
@@ -592,7 +582,6 @@ window.ELECTNEPAL_FALLBACK_CANDIDATES = [
         name: "{{ candidate.full_name }}",
         photo: {% if candidate.photo %}"{{ candidate.photo.url }}"{% else %}null{% endif %},
         position_level: "{{ candidate.position_level }}",
-        office: "{{ candidate.office }}",
         province: "{% if candidate.province %}{% if LANGUAGE_CODE == 'ne' and candidate.province.name_ne %}{{ candidate.province.name_ne }}{% else %}{{ candidate.province.name_en }}{% endif %}{% endif %}",
         district: "{% if candidate.district %}{% if LANGUAGE_CODE == 'ne' and candidate.district.name_ne %}{{ candidate.district.name_ne }}{% else %}{{ candidate.district.name_en }}{% endif %}{% endif %}",
         municipality: "{% if candidate.municipality %}{% if LANGUAGE_CODE == 'ne' and candidate.municipality.name_ne %}{{ candidate.municipality.name_ne }}{% else %}{{ candidate.municipality.name_en %}{% endif %}{% endif %}",

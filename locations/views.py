@@ -8,6 +8,7 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
 from .models import Province, District, Municipality
 from .analytics import GeolocationAnalytics
+from core.api_responses import error_response
 
 
 def _validate_int_param(value, param_name='id'):
@@ -47,7 +48,7 @@ class DistrictsByProvinceView(View):
         try:
             pid = _validate_int_param(pid_raw, 'province')
         except ValueError as e:
-            return JsonResponse({'error': str(e)}, status=400)
+            return error_response(str(e), status=400)
 
         if not pid:
             return JsonResponse([], safe=False)
@@ -68,7 +69,7 @@ class MunicipalitiesByDistrictView(View):
             try:
                 mid = _validate_int_param(mid_raw, 'municipality id')
             except ValueError as e:
-                return JsonResponse({'error': str(e)}, status=400)
+                return error_response(str(e), status=400)
 
             # Get specific municipality by ID
             qs = Municipality.objects.filter(id=mid).values(
@@ -80,7 +81,7 @@ class MunicipalitiesByDistrictView(View):
         try:
             did = _validate_int_param(did_raw, 'district')
         except ValueError as e:
-            return JsonResponse({'error': str(e)}, status=400)
+            return error_response(str(e), status=400)
 
         if not did:
             return JsonResponse([], safe=False)
@@ -103,7 +104,7 @@ def geo_resolve(request):
         lat = float(request.GET.get('lat'))
         lng = float(request.GET.get('lng'))
     except (TypeError, ValueError):
-        return JsonResponse({'error': 'Invalid or missing lat/lng'}, status=400)
+        return error_response('Invalid or missing lat/lng', status=400)
 
     # ✅ Use shared geolocation logic
     from .geolocation import resolve_coordinates_to_location

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from .models import Candidate, CandidateEvent  # CandidatePost removed
+from core.sanitize import sanitize_plain_text, sanitize_rich_text, sanitize_url
 
 
 class CandidateRegistrationForm(forms.ModelForm):
@@ -25,13 +26,12 @@ class CandidateRegistrationForm(forms.ModelForm):
             'bio_en', 'bio_ne', 'education_en', 'education_ne',
             'experience_en', 'experience_ne', 'achievements_en', 'achievements_ne',
             'manifesto_en', 'manifesto_ne',
-            'office', 'position_level', 'province', 'district', 'municipality',
+            'position_level', 'province', 'district', 'municipality',
             'ward_number', 'constituency_code', 'website', 'facebook_url',
             'identity_document', 'candidacy_document', 'terms_accepted'
         ]
         labels = {
             'position_level': _('Seat'),  # Rename Position Level to Seat
-            'office': _('Office'),
         }
         widgets = {
             'age': forms.NumberInput(attrs={'min': 18, 'max': 120, 'placeholder': _('Age'), 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
@@ -92,7 +92,64 @@ class CandidateRegistrationForm(forms.ModelForm):
             # Return in standard format with country code
             return f"+977{phone}"
         return phone
-    
+
+    # Input sanitization methods to prevent XSS attacks
+    def clean_full_name(self):
+        """Sanitize full name - plain text only"""
+        return sanitize_plain_text(self.cleaned_data.get('full_name', ''))
+
+    def clean_bio_en(self):
+        """Sanitize English biography - allows basic formatting"""
+        return sanitize_rich_text(self.cleaned_data.get('bio_en', ''))
+
+    def clean_bio_ne(self):
+        """Sanitize Nepali biography - allows basic formatting"""
+        return sanitize_rich_text(self.cleaned_data.get('bio_ne', ''))
+
+    def clean_education_en(self):
+        """Sanitize English education - allows basic formatting"""
+        return sanitize_rich_text(self.cleaned_data.get('education_en', ''))
+
+    def clean_education_ne(self):
+        """Sanitize Nepali education - allows basic formatting"""
+        return sanitize_rich_text(self.cleaned_data.get('education_ne', ''))
+
+    def clean_experience_en(self):
+        """Sanitize English experience - allows basic formatting"""
+        return sanitize_rich_text(self.cleaned_data.get('experience_en', ''))
+
+    def clean_experience_ne(self):
+        """Sanitize Nepali experience - allows basic formatting"""
+        return sanitize_rich_text(self.cleaned_data.get('experience_ne', ''))
+
+    def clean_achievements_en(self):
+        """Sanitize English achievements - allows basic formatting"""
+        return sanitize_rich_text(self.cleaned_data.get('achievements_en', ''))
+
+    def clean_achievements_ne(self):
+        """Sanitize Nepali achievements - allows basic formatting"""
+        return sanitize_rich_text(self.cleaned_data.get('achievements_ne', ''))
+
+    def clean_manifesto_en(self):
+        """Sanitize English manifesto - allows basic formatting"""
+        return sanitize_rich_text(self.cleaned_data.get('manifesto_en', ''))
+
+    def clean_manifesto_ne(self):
+        """Sanitize Nepali manifesto - allows basic formatting"""
+        return sanitize_rich_text(self.cleaned_data.get('manifesto_ne', ''))
+
+    def clean_website(self):
+        """Sanitize website URL"""
+        return sanitize_url(self.cleaned_data.get('website', ''))
+
+    def clean_facebook_url(self):
+        """Sanitize Facebook URL"""
+        return sanitize_url(self.cleaned_data.get('facebook_url', ''))
+
+    def clean_constituency_code(self):
+        """Sanitize constituency code - plain text only"""
+        return sanitize_plain_text(self.cleaned_data.get('constituency_code', ''))
+
     def clean(self):
         cleaned_data = super().clean()
 
@@ -160,6 +217,55 @@ class CandidateUpdateForm(forms.ModelForm):
             'manifesto_ne': forms.Textarea(attrs={'rows': 5}),
         }
 
+    # Input sanitization methods
+    def clean_full_name(self):
+        """Sanitize full name - plain text only"""
+        return sanitize_plain_text(self.cleaned_data.get('full_name', ''))
+
+    def clean_bio_en(self):
+        """Sanitize English biography"""
+        return sanitize_rich_text(self.cleaned_data.get('bio_en', ''))
+
+    def clean_bio_ne(self):
+        """Sanitize Nepali biography"""
+        return sanitize_rich_text(self.cleaned_data.get('bio_ne', ''))
+
+    def clean_education_en(self):
+        """Sanitize English education"""
+        return sanitize_rich_text(self.cleaned_data.get('education_en', ''))
+
+    def clean_education_ne(self):
+        """Sanitize Nepali education"""
+        return sanitize_rich_text(self.cleaned_data.get('education_ne', ''))
+
+    def clean_experience_en(self):
+        """Sanitize English experience"""
+        return sanitize_rich_text(self.cleaned_data.get('experience_en', ''))
+
+    def clean_experience_ne(self):
+        """Sanitize Nepali experience"""
+        return sanitize_rich_text(self.cleaned_data.get('experience_ne', ''))
+
+    def clean_manifesto_en(self):
+        """Sanitize English manifesto"""
+        return sanitize_rich_text(self.cleaned_data.get('manifesto_en', ''))
+
+    def clean_manifesto_ne(self):
+        """Sanitize Nepali manifesto"""
+        return sanitize_rich_text(self.cleaned_data.get('manifesto_ne', ''))
+
+    def clean_website(self):
+        """Sanitize website URL"""
+        return sanitize_url(self.cleaned_data.get('website', ''))
+
+    def clean_facebook_url(self):
+        """Sanitize Facebook URL"""
+        return sanitize_url(self.cleaned_data.get('facebook_url', ''))
+
+    def clean_donation_link(self):
+        """Sanitize donation link URL"""
+        return sanitize_url(self.cleaned_data.get('donation_link', ''))
+
     def clean(self):
         """
         Clear machine translation flags when user manually edits Nepali fields
@@ -223,9 +329,34 @@ class CandidateEventForm(forms.ModelForm):
             'location_en': _('Location (English)'),
         }
     
+    # Input sanitization methods to prevent XSS attacks
+    def clean_title_en(self):
+        """Sanitize event title - plain text only"""
+        from core.sanitize import sanitize_event_title
+        return sanitize_event_title(self.cleaned_data.get('title_en', ''))
+
+    def clean_description_en(self):
+        """Sanitize event description - allows basic formatting"""
+        from core.sanitize import sanitize_event_description
+        return sanitize_event_description(self.cleaned_data.get('description_en', ''))
+
+    def clean_location_en(self):
+        """Sanitize event location - plain text only"""
+        from core.sanitize import sanitize_event_location
+        return sanitize_event_location(self.cleaned_data.get('location_en', ''))
+
     def clean_event_date(self):
         from django.utils import timezone
         event_date = self.cleaned_data.get('event_date')
-        if event_date and event_date < timezone.now():
-            raise ValidationError(_("Event date cannot be in the past."))
+
+        if event_date:
+            # Make datetime timezone-aware if it's naive
+            # HTML5 datetime-local input returns naive datetimes
+            if timezone.is_naive(event_date):
+                event_date = timezone.make_aware(event_date)
+
+            # Compare with current time
+            if event_date < timezone.now():
+                raise ValidationError(_("Event date cannot be in the past."))
+
         return event_date

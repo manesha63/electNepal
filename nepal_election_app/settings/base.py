@@ -129,6 +129,9 @@ SESSION_COOKIE_SAMESITE = 'Lax'  # CSRF protection
 # Default avatar for candidates without photos
 DEFAULT_CANDIDATE_AVATAR = '/static/images/default-avatar.png'
 
+# API Version
+API_VERSION = '1.0.0'
+
 # Import logging configuration
 from .logging import LOGGING
 

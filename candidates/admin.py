@@ -11,9 +11,9 @@ logger = logging.getLogger(__name__)
 
 @admin.register(Candidate)
 class CandidateAdmin(admin.ModelAdmin):
-    list_display = ['full_name', 'office', 'position_level', 'get_status_badge', 'province', 'district',
+    list_display = ['full_name', 'position_level', 'get_status_badge', 'province', 'district',
                     'municipality', 'created_at']
-    list_filter = ['status', 'office', 'position_level', 'province',
+    list_filter = ['status', 'position_level', 'province',
                    'district', 'created_at']
     search_fields = ['full_name', 'user__username', 'user__email',
                      'phone_number', 'constituency_code']
@@ -42,7 +42,7 @@ class CandidateAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
         (_('Position & Location'), {
-            'fields': ('office', 'position_level', 'province', 'district', 'municipality',
+            'fields': ('position_level', 'province', 'district', 'municipality',
                       'ward_number', 'constituency_code')
         }),
         (_('Online Presence'), {

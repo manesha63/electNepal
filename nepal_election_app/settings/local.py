@@ -3,11 +3,11 @@ from .cors import *
 from decouple import config
 import dj_database_url
 
-DEBUG = True 
+DEBUG = True
 # Use PostgreSQL
 DATABASES = {
     'default': dj_database_url.parse(
-        config('DATABASE_URL', 
+        config('DATABASE_URL',
                default='postgresql://electnepal_user:electnepal123@localhost:5432/electnepal')
     )
 }
@@ -23,3 +23,17 @@ DATABASES = {
 #         'PORT': config('DB_PORT', default='5432'),
 #     }
 # }
+
+# Connection Pooling Configuration
+# Reuse database connections to improve performance and reduce overhead
+DATABASES['default']['CONN_MAX_AGE'] = 600  # Keep connections alive for 10 minutes
+
+# Connection timeout and options
+DATABASES['default'].setdefault('OPTIONS', {})
+DATABASES['default']['OPTIONS']['connect_timeout'] = 10  # Connection timeout in seconds
+DATABASES['default']['OPTIONS']['options'] = '-c statement_timeout=30000'  # 30 seconds for queries
+
+# Connection pool settings (for development)
+# These help manage connection lifecycle efficiently
+DATABASES['default']['ATOMIC_REQUESTS'] = False  # Only use transactions when explicitly needed
+DATABASES['default']['AUTOCOMMIT'] = True  # PostgreSQL default, ensures connections are returned to pool
