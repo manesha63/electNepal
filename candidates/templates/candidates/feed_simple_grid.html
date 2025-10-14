@@ -384,7 +384,7 @@
                  role="region"
                  aria-labelledby="filterToggleBtn"
                  x-data="filterComponent()"
-                 x-init="init()">
+                 x-init="currentLanguage = '{{ LANGUAGE_CODE }}'; init()">
                 <h3 class="text-lg font-semibold mb-4">{% trans "Filter Candidates" %}</h3>
 
                 <div class="space-y-4">

@@ -312,6 +312,9 @@
 </div>
 
 <script>
+// Detect current language from Django template
+const currentLanguage = '{{ LANGUAGE_CODE }}';
+
 // Translated messages for JavaScript
 const translations = {
     enterFullName: "{% trans 'Please enter your full name' %}",
@@ -334,7 +337,10 @@ const translations = {
     documentTypeError: "{% trans 'Please upload only JPG, PNG or PDF documents' %}",
     documentSizeError: "{% trans 'Document size must be less than 10MB' %}",
     wardLoadError: "{% trans 'Error loading ward information. Please try again.' %}",
-    ward: "{% trans 'Ward' %}"
+    ward: "{% trans 'Ward' %}",
+    selectDistrictPlaceholder: "{% trans 'Select District' %}",
+    selectMunicipalityPlaceholder: "{% trans 'Select Municipality' %}",
+    selectWardPlaceholder: "{% trans 'Select Ward' %}"
 };
 
 function registrationForm() {
@@ -554,16 +560,17 @@ function registrationForm() {
                         const districts = await response.json();
 
                         // Update district dropdown
-                        districtSelect.innerHTML = '<option value="">Select District</option>';
+                        districtSelect.innerHTML = `<option value="">${translations.selectDistrictPlaceholder}</option>`;
                         districts.forEach(district => {
-                            const option = new Option(district.name_en, district.id);
+                            const displayName = currentLanguage === 'ne' ? district.name_ne : district.name_en;
+                            const option = new Option(displayName, district.id);
                             districtSelect.add(option);
                         });
 
                         // Clear municipality and ward dropdowns
-                        municipalitySelect.innerHTML = '<option value="">Select Municipality</option>';
+                        municipalitySelect.innerHTML = `<option value="">${translations.selectMunicipalityPlaceholder}</option>`;
                         if (wardSelect) {
-                            wardSelect.innerHTML = '<option value="">Select Ward</option>';
+                            wardSelect.innerHTML = `<option value="">${translations.selectWardPlaceholder}</option>`;
                         }
                     }
                 });
@@ -578,15 +585,16 @@ function registrationForm() {
                         const municipalities = await response.json();
 
                         // Update municipality dropdown
-                        municipalitySelect.innerHTML = '<option value="">Select Municipality</option>';
+                        municipalitySelect.innerHTML = `<option value="">${translations.selectMunicipalityPlaceholder}</option>`;
                         municipalities.forEach(municipality => {
-                            const option = new Option(municipality.name_en, municipality.id);
+                            const displayName = currentLanguage === 'ne' ? municipality.name_ne : municipality.name_en;
+                            const option = new Option(displayName, municipality.id);
                             municipalitySelect.add(option);
                         });
 
                         // Clear ward dropdown when district changes
                         if (wardSelect) {
-                            wardSelect.innerHTML = '<option value="">Select Ward</option>';
+                            wardSelect.innerHTML = `<option value="">${translations.selectWardPlaceholder}</option>`;
                         }
                     }
                 });
@@ -607,7 +615,7 @@ function registrationForm() {
 
                             // Update ward dropdown
                             // First, clear all options except the first one
-                            wardSelect.innerHTML = '<option value="">--- Select Ward ---</option>';
+                            wardSelect.innerHTML = `<option value="">${translations.selectWardPlaceholder}</option>`;
 
                             // Add ward options
                             for (let i = 1; i <= data.total_wards; i++) {
@@ -623,7 +631,7 @@ function registrationForm() {
                         }
                     } else if (wardSelect) {
                         // Clear ward dropdown if no municipality selected
-                        wardSelect.innerHTML = '<option value="">--- Select Ward ---</option>';
+                        wardSelect.innerHTML = `<option value="">${translations.selectWardPlaceholder}</option>`;
                     }
                 });
             }
@@ -655,9 +663,10 @@ function registrationForm() {
                     // Preserve the current selection if it exists
                     const currentSelection = selectedDistrictId || districtSelect.value;
 
-                    districtSelect.innerHTML = '<option value="">Select District</option>';
+                    districtSelect.innerHTML = `<option value="">${translations.selectDistrictPlaceholder}</option>`;
                     districts.forEach(district => {
-                        const option = new Option(district.name_en, district.id);
+                        const displayName = currentLanguage === 'ne' ? district.name_ne : district.name_en;
+                        const option = new Option(displayName, district.id);
                         if (district.id == currentSelection) {
                             option.selected = true;
                         }
@@ -679,9 +688,10 @@ function registrationForm() {
                     // Preserve the current selection if it exists
                     const currentSelection = selectedMunicipalityId || municipalitySelect.value;
 
-                    municipalitySelect.innerHTML = '<option value="">Select Municipality</option>';
+                    municipalitySelect.innerHTML = `<option value="">${translations.selectMunicipalityPlaceholder}</option>`;
                     municipalities.forEach(municipality => {
-                        const option = new Option(municipality.name_en, municipality.id);
+                        const displayName = currentLanguage === 'ne' ? municipality.name_ne : municipality.name_en;
+                        const option = new Option(displayName, municipality.id);
                         if (municipality.id == currentSelection) {
                             option.selected = true;
                         }
@@ -703,7 +713,7 @@ function registrationForm() {
                     // Preserve the current selection if it exists
                     const currentSelection = selectedWardNumber || wardSelect.value;
 
-                    wardSelect.innerHTML = '<option value="">--- Select Ward ---</option>';
+                    wardSelect.innerHTML = `<option value="">${translations.selectWardPlaceholder}</option>`;
                     for (let i = 1; i <= data.total_wards; i++) {
                         const option = document.createElement('option');
                         option.value = i;

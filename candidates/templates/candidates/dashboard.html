@@ -115,9 +115,9 @@
                                     {% trans "Ward" %} {{ candidate.ward_number }},
                                 {% endif %}
                                 {% if candidate.municipality %}
-                                    {{ candidate.municipality.name_en }}<br>
+                                    {{ candidate.municipality }}<br>
                                 {% endif %}
-                                {{ candidate.district.name_en }}, {{ candidate.province.name_en }}
+                                {{ candidate.district }}, {{ candidate.province }}
                             </dd>
                         </div>
 

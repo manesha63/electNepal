@@ -1,17 +1,19 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, get_language
 
 class Province(models.Model):
     name_en = models.CharField(max_length=100, unique=True)
     name_ne = models.CharField(max_length=100, unique=True)
     code = models.CharField(max_length=10, unique=True)
-    
+
     class Meta:
         ordering = ['code']
         indexes = [models.Index(fields=['code'])]
-    
+
     def __str__(self):
-        return self.name_en
+        """Return province name in current language (auto-detected from request)"""
+        current_lang = get_language()
+        return self.name_ne if current_lang == 'ne' else self.name_en
 
 
 class District(models.Model):
@@ -19,7 +21,7 @@ class District(models.Model):
     name_en = models.CharField(max_length=100)
     name_ne = models.CharField(max_length=100)
     code = models.CharField(max_length=10, unique=True)
-    
+
     class Meta:
         ordering = ['name_en']
         unique_together = [['province', 'name_en']]
@@ -27,9 +29,13 @@ class District(models.Model):
             models.Index(fields=['province', 'name_en']),
             models.Index(fields=['code'])
         ]
-    
+
     def __str__(self):
-        return f"{self.name_en}, {self.province.name_en}"
+        """Return district name in current language (auto-detected from request)"""
+        current_lang = get_language()
+        district_name = self.name_ne if current_lang == 'ne' else self.name_en
+        province_name = self.province.name_ne if current_lang == 'ne' else self.province.name_en
+        return f"{district_name}, {province_name}"
 
 
 class Municipality(models.Model):
@@ -55,6 +61,9 @@ class Municipality(models.Model):
             models.Index(fields=['code'])
         ]
         verbose_name_plural = 'Municipalities'
-    
+
     def __str__(self):
-        return f"{self.name_en} {self.get_municipality_type_display()}"
+        """Return municipality name in current language (auto-detected from request)"""
+        current_lang = get_language()
+        municipality_name = self.name_ne if current_lang == 'ne' else self.name_en
+        return f"{municipality_name} {self.get_municipality_type_display()}"

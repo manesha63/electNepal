@@ -13,16 +13,17 @@ class CandidateCardSerializer(serializers.ModelSerializer):
     Serializer for candidate cards displayed in the feed.
     Returns minimal information needed for card display.
     Optimized to reduce payload size by removing unused fields.
+    Language-aware: Returns location names in the current request language.
     """
     # Template-compatible aliases
     name = serializers.CharField(source='full_name', read_only=True)
     photo = serializers.SerializerMethodField()
     detail_url = serializers.SerializerMethodField()
 
-    # Location fields for template (using name_en from related objects)
-    province = serializers.CharField(source='province.name_en', read_only=True)
-    district = serializers.CharField(source='district.name_en', read_only=True)
-    municipality = serializers.CharField(source='municipality.name_en', read_only=True, allow_null=True)
+    # Location fields for template (language-aware, no hardcoding)
+    province = serializers.SerializerMethodField()
+    district = serializers.SerializerMethodField()
+    municipality = serializers.SerializerMethodField()
     ward = serializers.IntegerField(source='ward_number', read_only=True)
 
     class Meta:
@@ -56,6 +57,30 @@ class CandidateCardSerializer(serializers.ModelSerializer):
         """Get the candidate detail page URL"""
         from django.urls import reverse
         return reverse('candidates:detail', kwargs={'pk': obj.id})
+
+    def get_province(self, obj):
+        """Get province name in current language (auto-detected from request)"""
+        if not obj.province:
+            return None
+        from django.utils.translation import get_language
+        current_lang = get_language()
+        return obj.province.name_ne if current_lang == 'ne' else obj.province.name_en
+
+    def get_district(self, obj):
+        """Get district name in current language (auto-detected from request)"""
+        if not obj.district:
+            return None
+        from django.utils.translation import get_language
+        current_lang = get_language()
+        return obj.district.name_ne if current_lang == 'ne' else obj.district.name_en
+
+    def get_municipality(self, obj):
+        """Get municipality name in current language (auto-detected from request)"""
+        if not obj.municipality:
+            return None
+        from django.utils.translation import get_language
+        current_lang = get_language()
+        return obj.municipality.name_ne if current_lang == 'ne' else obj.municipality.name_en
 
 
 class CandidateBallotSerializer(serializers.ModelSerializer):
@@ -63,16 +88,17 @@ class CandidateBallotSerializer(serializers.ModelSerializer):
     Serializer for ballot view.
     Returns candidates with relevance scoring based on location.
     Optimized to reduce payload size by removing unused fields.
+    Language-aware: Returns location names in the current request language.
     """
     # Template-compatible aliases
     name = serializers.CharField(source='full_name', read_only=True)
     photo = serializers.SerializerMethodField()
     detail_url = serializers.SerializerMethodField()
 
-    # Location fields for template (using name_en from related objects)
-    province = serializers.CharField(source='province.name_en', read_only=True)
-    district = serializers.CharField(source='district.name_en', read_only=True)
-    municipality = serializers.CharField(source='municipality.name_en', read_only=True, allow_null=True)
+    # Location fields for template (language-aware, no hardcoding)
+    province = serializers.SerializerMethodField()
+    district = serializers.SerializerMethodField()
+    municipality = serializers.SerializerMethodField()
     ward = serializers.IntegerField(source='ward_number', read_only=True)
 
     class Meta:
@@ -106,6 +132,30 @@ class CandidateBallotSerializer(serializers.ModelSerializer):
         """Get the candidate detail page URL"""
         from django.urls import reverse
         return reverse('candidates:detail', kwargs={'pk': obj.id})
+
+    def get_province(self, obj):
+        """Get province name in current language (auto-detected from request)"""
+        if not obj.province:
+            return None
+        from django.utils.translation import get_language
+        current_lang = get_language()
+        return obj.province.name_ne if current_lang == 'ne' else obj.province.name_en
+
+    def get_district(self, obj):
+        """Get district name in current language (auto-detected from request)"""
+        if not obj.district:
+            return None
+        from django.utils.translation import get_language
+        current_lang = get_language()
+        return obj.district.name_ne if current_lang == 'ne' else obj.district.name_en
+
+    def get_municipality(self, obj):
+        """Get municipality name in current language (auto-detected from request)"""
+        if not obj.municipality:
+            return None
+        from django.utils.translation import get_language
+        current_lang = get_language()
+        return obj.municipality.name_ne if current_lang == 'ne' else obj.municipality.name_en
 
 
 class LocationFilterSerializer(serializers.Serializer):
