@@ -19,20 +19,20 @@
     <div class="mb-6 sm:mb-8">
         <!-- Mobile: Show only current step -->
         <div class="sm:hidden text-center">
-            <span class="font-semibold text-blue-600 text-base">Step 1 of 5: Basic Info</span>
+            <span class="font-semibold text-blue-600 text-base">{% trans "Step" %} 1 {% trans "of" %} 5: {% trans "Basic Info" %}</span>
         </div>
 
         <!-- Desktop: Show all steps -->
         <div class="hidden sm:flex justify-between items-center text-xs sm:text-sm overflow-x-auto">
-            <span class="font-semibold text-blue-600 whitespace-nowrap">1. Basic Info</span>
+            <span class="font-semibold text-blue-600 whitespace-nowrap">1. {% trans "Basic Info" %}</span>
             <span class="text-gray-400 px-1">→</span>
-            <span class="text-gray-600 whitespace-nowrap">2. Location</span>
+            <span class="text-gray-600 whitespace-nowrap">2. {% trans "Location" %}</span>
             <span class="text-gray-400 px-1">→</span>
-            <span class="text-gray-600 whitespace-nowrap">3. Content</span>
+            <span class="text-gray-600 whitespace-nowrap">3. {% trans "Content" %}</span>
             <span class="text-gray-400 px-1">→</span>
-            <span class="text-gray-600 whitespace-nowrap">4. Documents</span>
+            <span class="text-gray-600 whitespace-nowrap">4. {% trans "Documents" %}</span>
             <span class="text-gray-400 px-1">→</span>
-            <span class="text-gray-600 whitespace-nowrap">5. Review</span>
+            <span class="text-gray-600 whitespace-nowrap">5. {% trans "Review" %}</span>
         </div>
         <div class="mt-2 h-2 bg-gray-200 rounded-full">
             <div class="h-full bg-blue-600 rounded-full transition-all duration-300" style="width: 25%;"></div>
@@ -312,6 +312,31 @@
 </div>
 
 <script>
+// Translated messages for JavaScript
+const translations = {
+    enterFullName: "{% trans 'Please enter your full name' %}",
+    validAge: "{% trans 'Please enter a valid age (must be 18 or older)' %}",
+    uploadPhoto: "{% trans 'Please upload your profile photo (required)' %}",
+    selectSeat: "{% trans 'Please select a seat' %}",
+    selectProvince: "{% trans 'Please select a province' %}",
+    selectDistrict: "{% trans 'Please select a district' %}",
+    municipalityRequired: "{% trans 'Municipality is required for all positions' %}",
+    wardRequired: "{% trans 'Ward number is required for all positions' %}",
+    enterBiography: "{% trans 'Please enter your biography' %}",
+    enterEducation: "{% trans 'Please enter your education details' %}",
+    enterExperience: "{% trans 'Please enter your experience' %}",
+    enterAchievements: "{% trans 'Please enter your key achievements' %}",
+    enterManifesto: "{% trans 'Please enter your manifesto' %}",
+    uploadIdentityDoc: "{% trans 'Please upload your identity document (National ID/Citizenship/Driver\'s License)' %}",
+    uploadElectionDoc: "{% trans 'Please upload your election declaration document' %}",
+    imageTypeError: "{% trans 'Please upload only JPG or PNG images' %}",
+    imageSizeError: "{% trans 'Image size must be less than 5MB' %}",
+    documentTypeError: "{% trans 'Please upload only JPG, PNG or PDF documents' %}",
+    documentSizeError: "{% trans 'Document size must be less than 10MB' %}",
+    wardLoadError: "{% trans 'Error loading ward information. Please try again.' %}",
+    ward: "{% trans 'Ward' %}"
+};
+
 function registrationForm() {
     return {
         step: 1,
@@ -336,14 +361,14 @@ function registrationForm() {
                         // Check file type
                         const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
                         if (!validTypes.includes(file.type)) {
-                            alert('Please upload only JPG or PNG images');
+                            alert(translations.imageTypeError);
                             e.target.value = '';
                             return;
                         }
                         // Check file size (5MB max)
                         const maxSize = 5 * 1024 * 1024; // 5MB in bytes
                         if (file.size > maxSize) {
-                            alert('Image size must be less than 5MB');
+                            alert(translations.imageSizeError);
                             e.target.value = '';
                             return;
                         }
@@ -361,14 +386,14 @@ function registrationForm() {
                     // Check file type
                     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
                     if (!validTypes.includes(file.type)) {
-                        alert('Please upload only JPG, PNG or PDF documents');
+                        alert(translations.documentTypeError);
                         inputElement.value = '';
                         return false;
                     }
                     // Check file size (10MB max for documents)
                     const maxSize = 10 * 1024 * 1024; // 10MB in bytes
                     if (file.size > maxSize) {
-                        alert('Document size must be less than 10MB');
+                        alert(translations.documentSizeError);
                         inputElement.value = '';
                         return false;
                     }
@@ -424,15 +449,15 @@ function registrationForm() {
                 const photo = document.getElementById('id_photo');
 
                 if (!fullName || !fullName.value.trim()) {
-                    alert('Please enter your full name');
+                    alert(translations.enterFullName);
                     return false;
                 }
                 if (!age || !age.value || age.value < 18) {
-                    alert('Please enter a valid age (must be 18 or older)');
+                    alert(translations.validAge);
                     return false;
                 }
                 if (!photo || !photo.files || photo.files.length === 0) {
-                    alert('Please upload your profile photo (required)');
+                    alert(translations.uploadPhoto);
                     return false;
                 }
             } else if (this.step === 2) {
@@ -444,23 +469,23 @@ function registrationForm() {
                 const wardNumber = document.getElementById('id_ward_number');
 
                 if (!position || !position.value) {
-                    alert('Please select a seat');
+                    alert(translations.selectSeat);
                     return false;
                 }
                 if (!province || !province.value) {
-                    alert('Please select a province');
+                    alert(translations.selectProvince);
                     return false;
                 }
                 if (!district || !district.value) {
-                    alert('Please select a district');
+                    alert(translations.selectDistrict);
                     return false;
                 }
                 if (!municipality || !municipality.value) {
-                    alert('Municipality is required for all positions');
+                    alert(translations.municipalityRequired);
                     return false;
                 }
                 if (!wardNumber || !wardNumber.value) {
-                    alert('Ward number is required for all positions');
+                    alert(translations.wardRequired);
                     return false;
                 }
             } else if (this.step === 3) {
@@ -472,23 +497,23 @@ function registrationForm() {
                 const manifestoEn = document.getElementById('id_manifesto_en');
 
                 if (!bioEn || !bioEn.value.trim()) {
-                    alert('Please enter your biography');
+                    alert(translations.enterBiography);
                     return false;
                 }
                 if (!educationEn || !educationEn.value.trim()) {
-                    alert('Please enter your education details');
+                    alert(translations.enterEducation);
                     return false;
                 }
                 if (!experienceEn || !experienceEn.value.trim()) {
-                    alert('Please enter your experience');
+                    alert(translations.enterExperience);
                     return false;
                 }
                 if (!achievementsEn || !achievementsEn.value.trim()) {
-                    alert('Please enter your key achievements');
+                    alert(translations.enterAchievements);
                     return false;
                 }
                 if (!manifestoEn || !manifestoEn.value.trim()) {
-                    alert('Please enter your manifesto');
+                    alert(translations.enterManifesto);
                     return false;
                 }
             } else if (this.step === 4) {
@@ -497,11 +522,11 @@ function registrationForm() {
                 const candidacyDoc = document.getElementById('id_candidacy_document');
 
                 if (!identityDoc || !identityDoc.files || identityDoc.files.length === 0) {
-                    alert('Please upload your identity document (National ID/Citizenship/Driver\'s License)');
+                    alert(translations.uploadIdentityDoc);
                     return false;
                 }
                 if (!candidacyDoc || !candidacyDoc.files || candidacyDoc.files.length === 0) {
-                    alert('Please upload your election declaration document');
+                    alert(translations.uploadElectionDoc);
                     return false;
                 }
             }
@@ -588,13 +613,13 @@ function registrationForm() {
                             for (let i = 1; i <= data.total_wards; i++) {
                                 const option = document.createElement('option');
                                 option.value = i;
-                                option.textContent = `Ward ${i}`;
+                                option.textContent = `${translations.ward} ${i}`;
                                 wardSelect.appendChild(option);
                             }
                             console.log(`Added ${data.total_wards} wards to dropdown`); // Debug log
                         } catch (error) {
                             console.error('Error fetching wards:', error);
-                            alert('Error loading ward information. Please try again.');
+                            alert(translations.wardLoadError);
                         }
                     } else if (wardSelect) {
                         // Clear ward dropdown if no municipality selected
@@ -682,7 +707,7 @@ function registrationForm() {
                     for (let i = 1; i <= data.total_wards; i++) {
                         const option = document.createElement('option');
                         option.value = i;
-                        option.textContent = `Ward ${i}`;
+                        option.textContent = `${translations.ward} ${i}`;
                         if (i == currentSelection) {
                             option.selected = true;
                         }

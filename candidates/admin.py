@@ -135,11 +135,11 @@ class CandidateAdmin(admin.ModelAdmin):
                 # Send approval email
                 try:
                     if obj.send_approval_email():
-                        messages.success(request, f'Approval email sent to {obj.user.email}')
+                        messages.success(request, _('Approval email sent to %(email)s') % {'email': obj.user.email})
                     else:
-                        messages.warning(request, 'Candidate approved but email notification failed')
+                        messages.warning(request, _('Candidate approved but email notification failed'))
                 except Exception as e:
-                    messages.warning(request, f'Candidate approved but email failed: {e}')
+                    messages.warning(request, _('Candidate approved but email failed: %(error)s') % {'error': str(e)})
 
             # Handle rejection
             elif old_status != 'rejected' and new_status == 'rejected':
@@ -149,11 +149,11 @@ class CandidateAdmin(admin.ModelAdmin):
                 # Send rejection email
                 try:
                     if obj.send_rejection_email():
-                        messages.success(request, f'Rejection email sent to {obj.user.email}')
+                        messages.success(request, _('Rejection email sent to %(email)s') % {'email': obj.user.email})
                     else:
-                        messages.warning(request, 'Candidate rejected but email notification failed')
+                        messages.warning(request, _('Candidate rejected but email notification failed'))
                 except Exception as e:
-                    messages.warning(request, f'Candidate rejected but email failed: {e}')
+                    messages.warning(request, _('Candidate rejected but email failed: %(error)s') % {'error': str(e)})
 
         super().save_model(request, obj, form, change)
 

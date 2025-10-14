@@ -605,7 +605,7 @@ def candidate_register(request):
     """
     # Check if user already has a candidate profile
     if hasattr(request.user, 'candidate'):
-        messages.info(request, 'You already have a candidate profile.')
+        messages.info(request, _('You already have a candidate profile.'))
         return redirect('candidates:dashboard')
 
     if request.method == 'POST':
@@ -641,11 +641,11 @@ def candidate_register(request):
                     # Schedule emails to run after transaction commits
                     transaction.on_commit(send_registration_emails)
 
-                messages.success(request, 'Your candidate profile has been submitted for review! You will be notified once approved.')
+                messages.success(request, _('Your candidate profile has been submitted for review! You will be notified once approved.'))
                 return redirect('candidates:registration_success')
             except Exception as e:
                 # If any error occurs during save (including translation), show error
-                messages.error(request, f'Registration failed: {str(e)}. Please try again.')
+                messages.error(request, _('Registration failed: %(error)s. Please try again.') % {'error': str(e)})
                 # Form will be re-displayed with the entered data
     else:
         form = CandidateRegistrationForm()
@@ -666,7 +666,7 @@ class CandidateDashboardView(LoginRequiredMixin, TemplateView):
     def dispatch(self, request, *args, **kwargs):
         # Check if user has a candidate profile
         if not hasattr(request.user, 'candidate'):
-            messages.warning(request, 'You need to create a candidate profile first.')
+            messages.warning(request, _('You need to create a candidate profile first.'))
             return redirect('candidates:register')
         return super().dispatch(request, *args, **kwargs)
 
@@ -704,7 +704,7 @@ def edit_profile(request):
 
     # Only approved candidates can edit their profile
     if candidate.status != 'approved':
-        messages.error(request, 'Your profile must be approved before you can edit it.')
+        messages.error(request, _('Your profile must be approved before you can edit it.'))
         return redirect('candidates:dashboard')
 
     if request.method == 'POST':
@@ -725,10 +725,10 @@ def edit_profile(request):
                 # This eliminates 10-30 second blocking delay during profile updates
                 candidate.save()
 
-            messages.success(request, 'Your profile has been updated successfully!')
+            messages.success(request, _('Your profile has been updated successfully!'))
             return redirect('candidates:dashboard')
         except Exception as e:
-            messages.error(request, f'Profile update failed: {str(e)}. Please try again.')
+            messages.error(request, _('Profile update failed: %(error)s. Please try again.') % {'error': str(e)})
             return redirect('candidates:dashboard')
 
     # If someone directly accesses /candidates/edit/ via GET, redirect to dashboard
@@ -774,7 +774,7 @@ def add_event(request):
     candidate = request.user.candidate
 
     if candidate.status != 'approved':
-        messages.error(request, 'Your profile must be approved before you can add events.')
+        messages.error(request, _('Your profile must be approved before you can add events.'))
         return redirect('candidates:dashboard')
 
     if request.method == 'POST':
@@ -785,10 +785,10 @@ def add_event(request):
                     event = form.save(commit=False)
                     event.candidate = candidate
                     event.save()
-                messages.success(request, 'Event created successfully!')
+                messages.success(request, _('Event created successfully!'))
                 return redirect('candidates:dashboard')
             except Exception as e:
-                messages.error(request, f'Event creation failed: {str(e)}. Please try again.')
+                messages.error(request, _('Event creation failed: %(error)s. Please try again.') % {'error': str(e)})
                 # Form will be re-displayed with the entered data
     else:
         form = CandidateEventForm()

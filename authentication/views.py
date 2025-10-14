@@ -12,6 +12,7 @@ from django.conf import settings
 from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
 from django.http import Http404
+from django.utils.translation import gettext as _
 import logging
 import uuid
 
@@ -159,7 +160,7 @@ class CustomLoginView(LoginView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        messages.success(self.request, f'Welcome back, {self.request.user.username}!')
+        messages.success(self.request, _('Welcome back, %(username)s!') % {'username': self.request.user.username})
         return response
 
     def get_context_data(self, **kwargs):
@@ -173,7 +174,7 @@ class CustomLogoutView(LogoutView):
     next_page = 'home'
 
     def dispatch(self, request, *args, **kwargs):
-        messages.success(request, 'You have been logged out successfully.')
+        messages.success(request, _('You have been logged out successfully.'))
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -187,7 +188,7 @@ class EmailVerificationView(View):
 
             # Check if already verified
             if verification.is_verified:
-                messages.info(request, 'Your email has already been verified. You can log in.')
+                messages.info(request, _('Your email has already been verified. You can log in.'))
                 return redirect('authentication:login')
 
             # Check if expired
@@ -202,15 +203,15 @@ class EmailVerificationView(View):
             if verification.verify():
                 messages.success(
                     request,
-                    'Your email has been verified successfully! You can now log in.'
+                    _('Your email has been verified successfully! You can now log in.')
                 )
                 return redirect('authentication:login')
             else:
-                messages.error(request, 'Verification failed. Please try again or contact support.')
+                messages.error(request, _('Verification failed. Please try again or contact support.'))
                 return redirect('authentication:login')
 
         except EmailVerification.DoesNotExist:
-            messages.error(request, 'Invalid verification link.')
+            messages.error(request, _('Invalid verification link.'))
             return redirect('authentication:login')
 
 
@@ -227,7 +228,7 @@ class ResendVerificationView(TemplateView):
             # Check if already verified
             if hasattr(user, 'email_verification'):
                 if user.email_verification.is_verified:
-                    messages.info(request, 'Your email is already verified. You can log in.')
+                    messages.info(request, _('Your email is already verified. You can log in.'))
                 else:
                     # Regenerate token and send new email
                     new_token = user.email_verification.regenerate_token()
@@ -379,7 +380,7 @@ class ResetPasswordView(TemplateView):
             reset_token = PasswordResetToken.objects.get(token=token, is_used=False)
 
             if reset_token.is_expired():
-                messages.error(request, 'This password reset link has expired.')
+                messages.error(request, _('This password reset link has expired.'))
                 return redirect('authentication:forgot_password')
 
             # Get new password
@@ -387,7 +388,7 @@ class ResetPasswordView(TemplateView):
             password_confirm = request.POST.get('password_confirm')
 
             if password != password_confirm:
-                messages.error(request, 'Passwords do not match.')
+                messages.error(request, _('Passwords do not match.'))
                 return redirect('authentication:reset_password', token=token)
 
             # Update password
@@ -398,9 +399,9 @@ class ResetPasswordView(TemplateView):
             # Mark token as used
             reset_token.mark_as_used()
 
-            messages.success(request, 'Your password has been reset successfully! You can now log in.')
+            messages.success(request, _('Your password has been reset successfully! You can now log in.'))
             return redirect('authentication:login')
 
         except PasswordResetToken.DoesNotExist:
-            messages.error(request, 'Invalid password reset link.')
+            messages.error(request, _('Invalid password reset link.'))
             return redirect('authentication:forgot_password')
