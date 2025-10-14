@@ -52,16 +52,16 @@ def validate_file_content_type(file):
     This prevents malicious files disguised with fake extensions.
     Checks actual file content, not just the filename extension.
     """
-    # Read first few bytes to check file signature
-    file.seek(0)  # Reset file pointer to beginning
-    file_start = file.read(512)  # Read first 512 bytes
-    file.seek(0)  # Reset again for further processing
+    # Reset file pointer to beginning
+    file.seek(0)
 
     # Get file extension from filename
     ext = os.path.splitext(file.name)[1].lower()
 
     # PDF magic bytes: %PDF
     if ext == '.pdf':
+        file_start = file.read(512)
+        file.seek(0)  # Reset for further processing
         if not file_start.startswith(b'%PDF'):
             raise ValidationError(
                 _('File appears to be corrupted or is not a valid PDF document. '
@@ -73,8 +73,10 @@ def validate_file_content_type(file):
     elif ext in ['.jpg', '.jpeg', '.png']:
         try:
             # Use Pillow to detect and validate actual image type
-            img = Image.open(io.BytesIO(file_start))
+            # Note: We need to read the entire file for proper validation, not just 512 bytes
+            img = Image.open(file)
             detected_format = img.format.lower() if img.format else None
+            file.seek(0)  # Reset file pointer after validation
 
             if detected_format is None:
                 raise ValidationError(

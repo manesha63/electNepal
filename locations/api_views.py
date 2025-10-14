@@ -20,7 +20,7 @@ from .serializers import (
     GeoResolveResponseSerializer,
     LocationStatsSerializer
 )
-from core.api_responses import error_response
+from core.api_responses import error_response, validation_error_response
 
 
 def _validate_int_param(value, param_name='id'):
@@ -248,7 +248,7 @@ def geo_resolve(request):
     else:
         serializer = GeoResolveSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return validation_error_response(serializer.errors, status=status.HTTP_400_BAD_REQUEST, use_drf=True)
         lat = serializer.validated_data['lat']
         lng = serializer.validated_data['lng']
 

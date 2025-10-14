@@ -720,8 +720,9 @@ def edit_profile(request):
                 candidate.donation_link = request.POST.get('donation_link', candidate.donation_link)
                 candidate.donation_description = request.POST.get('donation_description', candidate.donation_description)
 
-                # Auto-translate if needed
-                candidate.autotranslate_missing()
+                # ✅ FIX: Remove synchronous autotranslate_missing() call
+                # Translation now happens automatically in background via model's save() method
+                # This eliminates 10-30 second blocking delay during profile updates
                 candidate.save()
 
             messages.success(request, 'Your profile has been updated successfully!')
