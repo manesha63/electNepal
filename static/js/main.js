@@ -138,20 +138,8 @@ window.addEventListener('resize', function() {
     }, 250);
 });
 
-// Language Switcher Enhancement
-function switchLanguage(lang) {
-    // This will be handled by Django's i18n, but we can add UI feedback
-    const switcher = document.querySelector('.language-switcher select');
-    if (switcher) {
-        switcher.value = lang;
-        // Add loading state
-        switcher.disabled = true;
-        switcher.style.opacity = '0.5';
-        
-        // Submit the form
-        switcher.form.submit();
-    }
-}
+// Language Switcher Enhancement - removed duplicate function
+// The correct switchLanguage() function is defined below (around line 497)
 
 // Add ripple effect to buttons
 document.querySelectorAll('.btn').forEach(button => {
@@ -503,13 +491,30 @@ function switchLanguage() {
     // Remove existing language prefix if present
     currentPath = currentPath.replace(/^\/ne\//, '/').replace(/^\/en\//, '/');
 
+    // Preserve URL query parameters (especially for multi-step forms)
+    const currentParams = new URLSearchParams(window.location.search);
+    const queryString = currentParams.toString();
+    const fullPath = queryString ? `${currentPath}?${queryString}` : currentPath;
+
+    // Save registration form data before switching (if on registration page)
+    if (currentPath.includes('/candidates/register')) {
+        // Call the global saveRegistrationFormData function if it exists
+        if (typeof window.saveRegistrationFormData === 'function') {
+            try {
+                window.saveRegistrationFormData();
+            } catch (e) {
+                console.error('Failed to save form data:', e);
+            }
+        }
+    }
+
     // Switch to the opposite language
     if (isNepali) {
         // Currently in Nepali, switch to English
-        window.location.href = currentPath;
+        window.location.href = fullPath;
     } else {
         // Currently in English, switch to Nepali
-        window.location.href = '/ne' + currentPath;
+        window.location.href = '/ne' + fullPath;
     }
 }
 

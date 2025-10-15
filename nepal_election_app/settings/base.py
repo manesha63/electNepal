@@ -126,6 +126,11 @@ SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
 SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to session cookie
 SESSION_COOKIE_SAMESITE = 'Lax'  # CSRF protection
 
+# Authentication URLs
+LOGIN_URL = '/auth/login/'
+LOGIN_REDIRECT_URL = '/candidates/dashboard/'
+LOGOUT_REDIRECT_URL = '/'
+
 # Default avatar for candidates without photos
 DEFAULT_CANDIDATE_AVATAR = '/static/images/default-avatar.png'
 

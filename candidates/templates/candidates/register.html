@@ -286,7 +286,7 @@
             </div>
 
             <button type="submit"
-                    @click="submitting = true"
+                    @click="handleSubmit($event)"
                     :disabled="submitting"
                     class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
                 <span x-show="!submitting">{% trans "Submit for Review" %}</span>
@@ -343,6 +343,33 @@ const translations = {
     selectWardPlaceholder: "{% trans 'Select Ward' %}"
 };
 
+// Global function to save form data (called by switchLanguage in main.js)
+window.saveRegistrationFormData = function() {
+    try {
+        const formData = {};
+        const form = document.querySelector('form');
+        if (!form) return;
+
+        const elements = form.querySelectorAll('input:not([type="file"]):not([type="checkbox"]), select, textarea');
+
+        elements.forEach(element => {
+            if (element.id && element.value) {
+                formData[element.id] = element.value;
+            }
+        });
+
+        const termsCheckbox = document.getElementById('id_terms_accepted');
+        if (termsCheckbox) {
+            formData['id_terms_accepted'] = termsCheckbox.checked;
+        }
+
+        localStorage.setItem('electnepal_registration_form', JSON.stringify(formData));
+        localStorage.setItem('electnepal_registration_timestamp', new Date().getTime());
+    } catch (e) {
+        console.error('Error saving form data:', e);
+    }
+};
+
 function registrationForm() {
     return {
         step: 1,
@@ -350,6 +377,23 @@ function registrationForm() {
         submitting: false,
 
         init() {
+            // Restore step from URL if present (for language switching)
+            const urlParams = new URLSearchParams(window.location.search);
+            const savedStep = urlParams.get('step');
+            if (savedStep) {
+                const stepNum = parseInt(savedStep, 10);
+                if (stepNum >= 1 && stepNum <= 5) {
+                    this.step = stepNum;
+                    this.updateProgress();
+                }
+            } else {
+                // If no step in URL, set it to step 1
+                this.updateURL();
+            }
+
+            // Restore form data from localStorage (for language switching)
+            this.restoreFormData();
+
             // Watch position level changes
             const positionSelect = document.getElementById('id_position_level');
             if (positionSelect) {
@@ -429,6 +473,7 @@ function registrationForm() {
             if (this.validateStep()) {
                 this.step++;
                 this.updateProgress();
+                this.updateURL();
                 window.scrollTo(0, 0);
             }
         },
@@ -436,7 +481,15 @@ function registrationForm() {
         previousStep() {
             this.step--;
             this.updateProgress();
+            this.updateURL();
             window.scrollTo(0, 0);
+        },
+
+        updateURL() {
+            // Update URL with current step (for language switching preservation)
+            const url = new URL(window.location);
+            url.searchParams.set('step', this.step);
+            window.history.replaceState({}, '', url);
         },
 
         updateProgress() {
@@ -727,6 +780,93 @@ function registrationForm() {
                     console.error('Error loading wards:', error);
                 }
             }
+        },
+
+        saveFormData() {
+            // Save all form field values to localStorage (for language switching)
+            const formData = {};
+
+            // Get all input, select, and textarea elements
+            const form = document.querySelector('form');
+            if (!form) return;
+
+            const elements = form.querySelectorAll('input:not([type="file"]):not([type="checkbox"]), select, textarea');
+            elements.forEach(element => {
+                if (element.id && element.value) {
+                    formData[element.id] = element.value;
+                }
+            });
+
+            // Save checkbox state
+            const termsCheckbox = document.getElementById('id_terms_accepted');
+            if (termsCheckbox) {
+                formData['id_terms_accepted'] = termsCheckbox.checked;
+            }
+
+            // Store in localStorage with timestamp
+            localStorage.setItem('electnepal_registration_form', JSON.stringify(formData));
+            localStorage.setItem('electnepal_registration_timestamp', new Date().getTime());
+        },
+
+        restoreFormData() {
+            // Restore form data from localStorage (for language switching)
+            const savedData = localStorage.getItem('electnepal_registration_form');
+            const timestamp = localStorage.getItem('electnepal_registration_timestamp');
+
+            if (!savedData) return;
+
+            // Check if data is not too old (expires after 1 hour)
+            const now = new Date().getTime();
+            const oneHour = 60 * 60 * 1000;
+            if (timestamp && (now - parseInt(timestamp)) > oneHour) {
+                // Data expired, clear it
+                localStorage.removeItem('electnepal_registration_form');
+                localStorage.removeItem('electnepal_registration_timestamp');
+                return;
+            }
+
+            try {
+                const formData = JSON.parse(savedData);
+
+                // Restore each field value
+                Object.keys(formData).forEach(fieldId => {
+                    const element = document.getElementById(fieldId);
+                    if (element) {
+                        if (fieldId === 'id_terms_accepted') {
+                            element.checked = formData[fieldId];
+                        } else {
+                            element.value = formData[fieldId];
+
+                            // Trigger change event for dropdowns (to load dependent dropdowns)
+                            if (element.tagName === 'SELECT') {
+                                element.dispatchEvent(new Event('change'));
+                            }
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error('Error restoring form data:', e);
+            }
+        },
+
+        handleSubmit(event) {
+            // Clear saved form data on successful submission
+            localStorage.removeItem('electnepal_registration_form');
+            localStorage.removeItem('electnepal_registration_timestamp');
+
+            // Check terms checkbox before allowing submit
+            const termsCheckbox = document.getElementById('id_terms_accepted');
+            if (!termsCheckbox || !termsCheckbox.checked) {
+                event.preventDefault();
+                alert("{% trans 'Please accept the terms and conditions before submitting' %}");
+                return false;
+            }
+
+            // Set submitting state to show loading spinner
+            this.submitting = true;
+
+            // Let the form submit naturally (don't prevent default)
+            return true;
         }
     }
 }

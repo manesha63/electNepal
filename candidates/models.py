@@ -429,6 +429,7 @@ class Candidate(AutoTranslationMixin, models.Model):
         self._fill_missing_pair("bio_en", "bio_ne", "is_mt_bio_ne")
         self._fill_missing_pair("education_en", "education_ne", "is_mt_education_ne")
         self._fill_missing_pair("experience_en", "experience_ne", "is_mt_experience_ne")
+        self._fill_missing_pair("achievements_en", "achievements_ne", "is_mt_achievements_ne")
         self._fill_missing_pair("manifesto_en", "manifesto_ne", "is_mt_manifesto_ne")
 
     def save(self, *args, **kwargs):
@@ -479,11 +480,12 @@ class Candidate(AutoTranslationMixin, models.Model):
         needs_translation = False
 
         # Check if any Nepali fields are missing while English fields exist
-        if is_new or not self.bio_ne or not self.education_ne or not self.experience_ne or not self.manifesto_ne:
+        if is_new or not self.bio_ne or not self.education_ne or not self.experience_ne or not self.achievements_ne or not self.manifesto_ne:
             fields_to_check = [
                 ('bio_en', 'bio_ne'),
                 ('education_en', 'education_ne'),
                 ('experience_en', 'experience_ne'),
+                ('achievements_en', 'achievements_ne'),
                 ('manifesto_en', 'manifesto_ne')
             ]
             for en_field, ne_field in fields_to_check:
@@ -508,6 +510,7 @@ class Candidate(AutoTranslationMixin, models.Model):
                 ('bio_en', 'bio_ne', 'is_mt_bio_ne'),
                 ('education_en', 'education_ne', 'is_mt_education_ne'),
                 ('experience_en', 'experience_ne', 'is_mt_experience_ne'),
+                ('achievements_en', 'achievements_ne', 'is_mt_achievements_ne'),
                 ('manifesto_en', 'manifesto_ne', 'is_mt_manifesto_ne')
             ]
 

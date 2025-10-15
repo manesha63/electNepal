@@ -35,6 +35,7 @@ WRONG_TRANSLATIONS = {
     "Edit Profile": "प्रोफाइल हेर्नुहोस्",  # Says "View Profile" - WRONG
     "Age": "उमेर:",  # Has unnecessary colon - WRONG
     "बूढो हनु": "WRONG",  # Wrong auto-translation for "Age"
+    "Content": "सम्पर्क",  # Currently says "Contact" instead of "Content" - WRONG
 }
 
 # Dictionary of accurate translations for common terms
@@ -58,6 +59,8 @@ ACCURATE_TRANSLATIONS = {
     "Phone Number": "फोन नम्बर",
     "Basic Information": "आधारभूत जानकारी",
     "Ward Member": "वार्ड सदस्य",
+    "Content": "सामग्री",  # Progress bar step 3 - NOT "सम्पर्क" (contact)
+    "Profile Content": "प्रोफाइल सामग्री",
 }
 
 def auto_translate_po_file(force=False, verify_only=False, translate_fuzzy=False):
