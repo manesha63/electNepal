@@ -128,7 +128,7 @@
             <p class="footer-text">{% trans "Empowering Democracy in Nepal" %}</p>
             <div class="footer-links">
                 <a href="{% url 'about' %}" class="footer-link">{% trans "About Us" %}</a>
-                <a href="mailto:chandmanisha002@gmail.com" class="footer-link">{% trans "Contact" %}</a>
+                <a href="mailto:electnepal5@gmail.com" class="footer-link">{% trans "Contact" %}</a>
                 <a href="#" class="footer-link">{% trans "Privacy" %}</a>
             </div>
         </div>
@@ -161,8 +161,10 @@
     <script src="{% url 'javascript-catalog' %}"></script>
     <script src="{% static 'js/main.js' %}?v=3"></script>
     <script src="{% static 'js/secure-handlers.js' %}"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     {% block extra_js %}{% endblock %}
+
+    <!-- Alpine.js - Load AFTER all component definitions -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>

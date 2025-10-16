@@ -146,14 +146,14 @@ class CustomLoginView(LoginView):
         if next_url:
             return next_url
 
-        # Check if user has a candidate profile first (prioritize candidate dashboard)
+        # Check if user is admin (staff or superuser) FIRST - prioritize admin dashboard
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            # Admin users always go to admin dashboard, even if they have a candidate profile
+            return '/admin/'
+
+        # Check if user has a candidate profile (non-admin users only)
         if hasattr(self.request.user, 'candidate'):
             return reverse_lazy('candidates:dashboard')  # Redirect to candidate dashboard
-
-        # Check if user is admin (staff or superuser) - only if they don't have a candidate profile
-        if self.request.user.is_staff or self.request.user.is_superuser:
-            # Admin users without candidate profile go to admin dashboard
-            return '/admin/'
 
         # If user has no candidate profile yet, redirect to registration
         return reverse_lazy('candidates:register')

@@ -364,7 +364,7 @@ EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
    EMAIL_HOST=smtp.gmail.com
    EMAIL_PORT=587
    EMAIL_USE_TLS=True
-   EMAIL_HOST_USER=chandmanisha002@gmail.com
+   EMAIL_HOST_USER=electnepal5@gmail.com
    EMAIL_HOST_PASSWORD=<app-password-from-step-2>
    DEFAULT_FROM_EMAIL=ElectNepal <noreply@electnepal.com>
    ```

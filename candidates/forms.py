@@ -16,7 +16,7 @@ class CandidateRegistrationForm(forms.ModelForm):
     bio_en = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}), required=True)
     education_en = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=True)
     experience_en = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=True)
-    achievements_en = forms.CharField(widget=forms.Textarea(attrs={'rows': 3, 'placeholder': _('List your key achievements')}), required=True)
+    achievements_en = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=True)
     manifesto_en = forms.CharField(widget=forms.Textarea(attrs={'rows': 5}), required=True)
 
     class Meta:
@@ -42,7 +42,7 @@ class CandidateRegistrationForm(forms.ModelForm):
             'education_ne': forms.Textarea(attrs={'rows': 3, 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
             'experience_en': forms.Textarea(attrs={'rows': 3, 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
             'experience_ne': forms.Textarea(attrs={'rows': 3, 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
-            'achievements_en': forms.Textarea(attrs={'rows': 3, 'placeholder': _('List your key achievements'), 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
+            'achievements_en': forms.Textarea(attrs={'rows': 3, 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
             'achievements_ne': forms.Textarea(attrs={'rows': 3, 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
             'manifesto_en': forms.Textarea(attrs={'rows': 5, 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
             'manifesto_ne': forms.Textarea(attrs={'rows': 5, 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'}),
@@ -58,6 +58,34 @@ class CandidateRegistrationForm(forms.ModelForm):
             if field_name not in ['terms_accepted']:  # Skip checkbox
                 if 'class' not in field.widget.attrs:
                     field.widget.attrs['class'] = 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+
+        # Fix the empty label for position_level (it's a CharField with choices, not ModelChoiceField)
+        if 'position_level' in self.fields:
+            # For CharField with choices, we need to modify the choices directly
+            current_choices = list(self.fields['position_level'].choices)
+            # Replace the first empty choice tuple with a better placeholder
+            if current_choices and current_choices[0][0] == '':
+                current_choices[0] = ('', _('Select Seat'))
+            else:
+                # Add a placeholder as the first choice
+                current_choices.insert(0, ('', _('Select Seat')))
+            self.fields['position_level'].choices = current_choices
+
+        # Fix empty labels for ModelChoiceFields (province, district, municipality)
+        if 'province' in self.fields:
+            self.fields['province'].empty_label = _('Select Province')
+
+        if 'district' in self.fields:
+            self.fields['district'].empty_label = _('Select District')
+
+        if 'municipality' in self.fields:
+            self.fields['municipality'].empty_label = _('Select Municipality')
+
+        if 'ward_number' in self.fields:
+            # Ward number is also a regular field, not ModelChoiceField
+            # We need to set up choices dynamically
+            self.fields['ward_number'].widget = forms.Select(attrs={'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'})
+            self.fields['ward_number'].choices = [('', _('Select Ward'))]
 
     def clean_phone_number(self):
         phone = self.cleaned_data.get('phone_number')

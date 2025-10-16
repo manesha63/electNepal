@@ -42,7 +42,7 @@ A Django-based web application for tracking and displaying independent candidate
      - Cookie consent system with localStorage
      - ElectNepal branding
      - Two main CTAs: "Explore Independent Candidates" and "How to Vote"
-     - Contact email: chandmanisha002@gmail.com
+     - Contact email: electnepal5@gmail.com
      - Fully responsive design
    
    - **UI/UX Components**:
@@ -655,7 +655,24 @@ python manage.py shell
 True
 ```
 
-## Known Issues & Technical Debt (Updated Oct 2, 2025)
+## Recent Fixes (October 17, 2025)
+
+### 🔧 Critical Fixes Applied
+1. **Admin Login Redirect** - Admin users now correctly redirect to `/admin/` panel instead of candidate dashboard
+2. **Candidate Feed Display** - Fixed Alpine.js loading order, candidates now display on homepage
+3. **Login UI Glitch** - Fixed "Logging in..." text appearing before form submission
+4. **Email Address Update** - Changed all instances from chandmanisha002@gmail.com to electnepal5@gmail.com
+5. **Admin Profile Cleanup** - Removed conflicting candidate profile from admin user
+
+### 🎯 What's Working Now
+- ✅ Admin login redirects properly to Django admin
+- ✅ 19 approved candidates display on homepage
+- ✅ Pagination works (9 candidates per page, 3x3 grid)
+- ✅ Search and filter functionality operational
+- ✅ Login form displays correctly without glitches
+- ✅ All contact emails updated to electnepal5@gmail.com
+
+## Known Issues & Technical Debt (Updated Oct 17, 2025)
 
 ### 🔴 Critical Issues Remaining (4)
 1. **Email Verification Not Implemented** - Users can register with invalid emails
@@ -887,19 +904,28 @@ This project aims to:
 
 ## Contact & Support
 
-- **Developer Contact**: chandmanisha002@gmail.com
+- **Support Email**: electnepal5@gmail.com
+- **Previous Contact (Deprecated)**: chandmanisha002@gmail.com
 - **Project Repository**: [To be added]
 - **Documentation**: This file (CLAUDE.md)
 - **Admin Access**: http://127.0.0.1:8000/admin/ (admin/adminpass)
+- **Backup Location**: ~/electNepal/backups/2025-10-17_backup/
+
+## Critical Information
+- **Admin Username**: admin
+- **Admin Password**: adminpass (reset on Oct 17, 2025)
+- **Admin has NO candidate profile** (removed to fix redirect issue)
+- **Total Candidates**: 22 (19 approved, 2 pending, 1 rejected)
 
 ---
 
-**Last Updated**: 2025-10-02
+**Last Updated**: 2025-10-17 (05:00 AM)
+**Previous Update**: 2025-10-02
 **Current Working Directory**: ~/electNepal
 **Python Version**: 3.12.3
 **Django Version**: 4.2.7
 **Database**: PostgreSQL 16
-**Status**: Development Phase - 95% Complete (Authentication & Registration 100% Operational)
+**Status**: Development Phase - 95% Complete (Core functionality 100% operational, Email verification needs AWS SES setup)
 
 ## How Each Feature Works - Technical Deep Dive
 

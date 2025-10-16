@@ -222,7 +222,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **GitHub**: [To be added]
 - **Documentation**: See CLAUDE.md, README.md
 - **API Docs**: http://localhost:8000/api/docs/
-- **Contact**: chandmanisha002@gmail.com
+- **Contact**: electnepal5@gmail.com
 
 ---
 

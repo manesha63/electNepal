@@ -16,7 +16,7 @@
             {% endfor %}
         {% endif %}
 
-        <form method="post" x-data="{ submitting: false }" @submit="submitting = true">
+        <form method="post" x-data="{ submitting: false }" @submit="submitting = true" x-cloak>
             {% csrf_token %}
 
             {% if form.non_field_errors %}
@@ -31,7 +31,8 @@
                 </label>
                 <input type="text" name="username" id="id_username" required
                        class="w-full px-4 py-3 min-h-[44px] border rounded-lg focus:outline-none focus:border-blue-400"
-                       placeholder="{% trans 'Enter your username' %}">
+                       placeholder="{% trans 'Enter your username' %}"
+                       value="{{ form.username.value|default:'' }}">
                 {% if form.username.errors %}
                 <p class="mt-1 text-sm text-red-600">{{ form.username.errors.0 }}</p>
                 {% endif %}
@@ -51,9 +52,9 @@
 
             <button type="submit"
                     :disabled="submitting"
-                    class="w-full bg-blue-500 text-white py-3 px-4 min-h-[44px] rounded-lg hover:bg-blue-600 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
-                <span x-show="!submitting">{% trans "Login" %}</span>
-                <span x-show="submitting" class="flex items-center">
+                    class="w-full bg-blue-500 text-white py-3 px-4 min-h-[44px] rounded-lg hover:bg-blue-600 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span x-show="!submitting" style="display: inline;">{% trans "Login" %}</span>
+                <span x-show="submitting" style="display: none;" class="flex items-center justify-center">
                     <span class="loading-spinner mr-2"></span>
                     {% trans "Logging in..." %}
                 </span>
@@ -72,16 +73,14 @@
                     {% trans "Forgot your password?" %}
                 </a>
             </p>
-            <p class="mt-2">
-                <a href="{% url 'authentication:resend_verification' %}" class="text-gray-500 hover:text-gray-700 text-xs">
-                    {% trans "Resend verification email" %}
-                </a>
-            </p>
         </div>
     </div>
 </div>
 
 <style>
+/* Hide Alpine.js elements before Alpine loads */
+[x-cloak] { display: none !important; }
+
 /* Loading spinner styles */
 .loading-spinner {
     display: inline-block;

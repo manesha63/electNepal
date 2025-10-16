@@ -15,18 +15,18 @@ if EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend':
     EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
     EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
     DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@electnepal.com')
-    CONTACT_EMAIL = 'chandmanisha002@gmail.com'
+    CONTACT_EMAIL = 'electnepal5@gmail.com'
 else:
     # Development settings
     DEFAULT_FROM_EMAIL = 'dev@electnepal.local'
-    CONTACT_EMAIL = 'chandmanisha002@gmail.com'
+    CONTACT_EMAIL = 'electnepal5@gmail.com'
 
 # Email subjects prefix
 EMAIL_SUBJECT_PREFIX = '[ElectNepal] '
 
 # Admin emails
 ADMINS = [
-    ('Manisha Chand', 'chandmanisha002@gmail.com'),
+    ('ElectNepal Admin', 'electnepal5@gmail.com'),
 ]
 
 MANAGERS = ADMINS

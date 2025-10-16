@@ -49,7 +49,7 @@
         {% endif %}
 
         <!-- Step 1: Basic Information -->
-        <div x-show="step === 1" class="space-y-4">
+        <div :style="step === 1 ? '' : 'position: absolute; left: -9999px;'" class="space-y-4">
             <h2 class="text-xl font-semibold mb-4">{% trans "Basic Information" %}</h2>
 
             <div>
@@ -96,7 +96,7 @@
         </div>
 
         <!-- Step 2: Location Selection -->
-        <div x-show="step === 2" class="space-y-4">
+        <div :style="step === 2 ? '' : 'position: absolute; left: -9999px;'" class="space-y-4">
             <h2 class="text-xl font-semibold mb-4">{% trans "Position & Location" %}</h2>
 
             <div>
@@ -147,12 +147,11 @@
                 {% if form.ward_number.errors %}
                 <p class="mt-1 text-sm text-red-600">{{ form.ward_number.errors.0 }}</p>
                 {% endif %}
-                <p class="mt-1 text-xs text-gray-500">{% trans "Select municipality first to load ward options" %}</p>
             </div>
         </div>
 
         <!-- Step 3: Profile Content -->
-        <div x-show="step === 3" class="space-y-4">
+        <div :style="step === 3 ? '' : 'position: absolute; left: -9999px;'" class="space-y-4">
             <h2 class="text-xl font-semibold mb-4">{% trans "Profile Content" %}</h2>
             <p class="text-sm text-gray-600 mb-4">
                 {% trans "Enter content in English. It will be automatically translated to Nepali." %}
@@ -210,7 +209,7 @@
         </div>
 
         <!-- Step 4: Document Verification -->
-        <div x-show="step === 4" class="space-y-4">
+        <div :style="step === 4 ? '' : 'position: absolute; left: -9999px;'" class="space-y-4">
             <h2 class="text-xl font-semibold mb-4">{% trans "Identity Verification" %}</h2>
             <p class="text-sm text-gray-600 mb-4">
                 {% trans "Upload documents to verify your identity and candidacy. These documents will remain confidential and will only be reviewed by our admin team." %}
@@ -244,7 +243,7 @@
         </div>
 
         <!-- Step 5: Social Links & Review -->
-        <div x-show="step === 5" class="space-y-4">
+        <div :style="step === 5 ? '' : 'position: absolute; left: -9999px;'" class="space-y-4">
             <h2 class="text-xl font-semibold mb-4">{% trans "Social Links & Review" %}</h2>
 
             <div>
@@ -377,6 +376,9 @@ function registrationForm() {
         submitting: false,
 
         init() {
+            // Check if files need re-upload after language switch
+            this.checkForFileReupload();
+
             // Restore step from URL if present (for language switching)
             const urlParams = new URLSearchParams(window.location.search);
             const savedStep = urlParams.get('step');
@@ -782,6 +784,99 @@ function registrationForm() {
             }
         },
 
+        checkForFileReupload() {
+            // Check if files need re-upload after language switch
+            const urlParams = new URLSearchParams(window.location.search);
+            const needsReupload = urlParams.get('file_reupload') === '1';
+
+            if (needsReupload) {
+                // Get file info from sessionStorage
+                const filesInfo = sessionStorage.getItem('electnepal_pending_files');
+                const warningShown = sessionStorage.getItem('electnepal_files_warning_shown');
+
+                if (filesInfo && warningShown !== 'true') {
+                    const files = JSON.parse(filesInfo);
+
+                    // Show file re-upload indicators for each file that was previously selected
+                    files.forEach(fileInfo => {
+                        const input = document.getElementById(fileInfo.fieldId);
+                        if (input && input.parentElement) {
+                            // Add visual indicator that file needs re-upload
+                            const indicator = document.createElement('div');
+                            indicator.className = 'text-sm text-orange-600 mt-1 file-reupload-notice';
+                            indicator.innerHTML = `
+                                <i class="fas fa-exclamation-triangle mr-1"></i>
+                                ${currentLanguage === 'ne'
+                                    ? `कृपया फाइल पुन: अपलोड गर्नुहोस्: ${fileInfo.fileName}`
+                                    : `Please re-upload file: ${fileInfo.fileName}`}
+                            `;
+
+                            // Remove any existing indicator
+                            const existing = input.parentElement.querySelector('.file-reupload-notice');
+                            if (existing) existing.remove();
+
+                            // Add the new indicator
+                            input.parentElement.appendChild(indicator);
+
+                            // Add event listener to remove indicator when file is selected
+                            input.addEventListener('change', function() {
+                                if (this.files && this.files.length > 0) {
+                                    // Remove the individual file notice
+                                    const notice = this.parentElement.querySelector('.file-reupload-notice');
+                                    if (notice) notice.remove();
+
+                                    // Check if all file notices are gone
+                                    setTimeout(() => {
+                                        const remainingNotices = document.querySelectorAll('.file-reupload-notice');
+                                        if (remainingNotices.length === 0) {
+                                            // All files have been re-uploaded, remove the banner
+                                            const banner = document.getElementById('file-reupload-banner');
+                                            if (banner) banner.remove();
+
+                                            // Clear sessionStorage
+                                            sessionStorage.removeItem('electnepal_pending_files');
+                                            sessionStorage.removeItem('electnepal_files_warning_shown');
+                                        }
+                                    }, 100);
+                                }
+                            }, { once: true });
+                        }
+                    });
+
+                    // Show a general notification
+                    const message = currentLanguage === 'ne'
+                        ? 'भाषा परिवर्तन पछि फाइलहरू पुन: अपलोड गर्नुपर्छ। कृपया आफ्ना फाइलहरू फेरि चयन गर्नुहोस्।'
+                        : 'Files need to be re-uploaded after language switch. Please select your files again.';
+
+                    // Create notification banner with ID for tracking
+                    const notification = document.createElement('div');
+                    notification.id = 'file-reupload-banner';
+                    notification.className = 'mb-4 p-3 bg-orange-100 border border-orange-400 text-orange-700 rounded-lg flex items-center';
+                    notification.innerHTML = `
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <span>${message}</span>
+                        <button onclick="this.parentElement.remove(); sessionStorage.removeItem('electnepal_pending_files');" class="ml-auto text-orange-500 hover:text-orange-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+
+                    // Add notification at the top of the form
+                    const form = document.querySelector('form[x-data]');
+                    if (form) {
+                        form.insertBefore(notification, form.firstChild);
+                    }
+
+                    // Mark warning as shown
+                    sessionStorage.setItem('electnepal_files_warning_shown', 'true');
+                }
+
+                // Remove the file_reupload parameter from URL
+                urlParams.delete('file_reupload');
+                const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+                window.history.replaceState({}, '', newUrl);
+            }
+        },
+
         saveFormData() {
             // Save all form field values to localStorage (for language switching)
             const formData = {};
@@ -808,7 +903,7 @@ function registrationForm() {
             localStorage.setItem('electnepal_registration_timestamp', new Date().getTime());
         },
 
-        restoreFormData() {
+        async restoreFormData() {
             // Restore form data from localStorage (for language switching)
             const savedData = localStorage.getItem('electnepal_registration_form');
             const timestamp = localStorage.getItem('electnepal_registration_timestamp');
@@ -828,45 +923,72 @@ function registrationForm() {
             try {
                 const formData = JSON.parse(savedData);
 
-                // Restore each field value
-                Object.keys(formData).forEach(fieldId => {
+                // Restore each field value, but handle location dropdowns specially
+                for (const fieldId of Object.keys(formData)) {
                     const element = document.getElementById(fieldId);
                     if (element) {
                         if (fieldId === 'id_terms_accepted') {
                             element.checked = formData[fieldId];
+                        } else if (fieldId === 'id_ward_number') {
+                            // Skip ward for now, will handle after municipality loads
+                            continue;
                         } else {
                             element.value = formData[fieldId];
 
-                            // Trigger change event for dropdowns (to load dependent dropdowns)
-                            if (element.tagName === 'SELECT') {
+                            // Trigger change event for location dropdowns and wait for them to load
+                            if (element.tagName === 'SELECT' && ['id_province', 'id_district', 'id_municipality'].includes(fieldId)) {
                                 element.dispatchEvent(new Event('change'));
+
+                                // Wait a bit for the async load to complete
+                                if (fieldId === 'id_municipality' && formData['id_ward_number']) {
+                                    // After municipality loads, wait for wards to load then set ward value
+                                    setTimeout(() => {
+                                        const wardSelect = document.getElementById('id_ward_number');
+                                        if (wardSelect && formData['id_ward_number']) {
+                                            wardSelect.value = formData['id_ward_number'];
+                                        }
+                                    }, 500); // Give time for ward API to respond
+                                }
                             }
                         }
                     }
-                });
+                }
             } catch (e) {
                 console.error('Error restoring form data:', e);
             }
         },
 
         handleSubmit(event) {
-            // Clear saved form data on successful submission
-            localStorage.removeItem('electnepal_registration_form');
-            localStorage.removeItem('electnepal_registration_timestamp');
-
             // Check terms checkbox before allowing submit
             const termsCheckbox = document.getElementById('id_terms_accepted');
             if (!termsCheckbox || !termsCheckbox.checked) {
                 event.preventDefault();
-                alert("{% trans 'Please accept the terms and conditions before submitting' %}");
+                // Use a simple fallback message to avoid translation issues in JavaScript
+                alert("Please accept the terms and conditions before submitting.");
+                this.submitting = false; // Reset submitting state
                 return false;
             }
+
+            // Only clear saved form data after validation passes
+            localStorage.removeItem('electnepal_registration_form');
+            localStorage.removeItem('electnepal_registration_timestamp');
 
             // Set submitting state to show loading spinner
             this.submitting = true;
 
-            // Let the form submit naturally (don't prevent default)
-            return true;
+            // Explicitly submit the form since @click intercepts the normal submission
+            // We need to get the form element and call submit() on it
+            const form = event.target.closest('form');
+            if (form) {
+                // Use setTimeout to ensure the UI updates before submission
+                setTimeout(() => {
+                    form.submit();
+                }, 100);
+            }
+
+            // Prevent the default to avoid double submission
+            event.preventDefault();
+            return false;
         }
     }
 }

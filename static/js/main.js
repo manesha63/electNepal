@@ -493,12 +493,10 @@ function switchLanguage() {
 
     // Preserve URL query parameters (especially for multi-step forms)
     const currentParams = new URLSearchParams(window.location.search);
-    const queryString = currentParams.toString();
-    const fullPath = queryString ? `${currentPath}?${queryString}` : currentPath;
 
-    // Save registration form data before switching (if on registration page)
+    // Check if we're on the registration page
     if (currentPath.includes('/candidates/register')) {
-        // Call the global saveRegistrationFormData function if it exists
+        // Save form data first
         if (typeof window.saveRegistrationFormData === 'function') {
             try {
                 window.saveRegistrationFormData();
@@ -506,7 +504,36 @@ function switchLanguage() {
                 console.error('Failed to save form data:', e);
             }
         }
+
+        // Check if there are file inputs with files selected
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        let hasFiles = false;
+        const filesInfo = [];
+
+        fileInputs.forEach(input => {
+            if (input.files && input.files.length > 0) {
+                hasFiles = true;
+                // Store file info for display after reload
+                filesInfo.push({
+                    fieldId: input.id,
+                    fileName: input.files[0].name,
+                    fileSize: input.files[0].size
+                });
+            }
+        });
+
+        // If files are selected, store their info in sessionStorage (survives page reload but not tab close)
+        if (hasFiles) {
+            // Store file info to show user after language switch
+            sessionStorage.setItem('electnepal_pending_files', JSON.stringify(filesInfo));
+            sessionStorage.setItem('electnepal_files_warning_shown', 'false');
+
+            // Add a flag to the URL to indicate files need re-upload
+            currentParams.set('file_reupload', '1');
+        }
     }
+    const queryString = currentParams.toString();
+    const fullPath = queryString ? `${currentPath}?${queryString}` : currentPath;
 
     // Switch to the opposite language
     if (isNepali) {

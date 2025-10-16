@@ -252,6 +252,14 @@ electNepal/
 
 ## 🚀 Recent Updates (October 2025)
 
+### Latest Fixes (October 17, 2025)
+1. **Admin Login Redirect** - Fixed admin users being redirected to candidate dashboard instead of Django admin panel
+2. **Candidate Display** - Fixed Alpine.js loading order to properly show candidates on homepage
+3. **Login UI** - Fixed "Logging in..." text showing before form submission
+4. **Email Updates** - Changed all contact emails from chandmanisha002@gmail.com to electnepal5@gmail.com
+5. **Database Cleanup** - Removed admin's candidate profile to prevent conflicts
+6. **Backup System** - Created comprehensive backup in `backups/2025-10-17_backup/`
+
 ### Issue Fixes (Issues #41-#48)
 - **#41**: ✅ Replaced broad exception catching with specific handlers
 - **#42**: ✅ Added comprehensive input sanitization with bleach
@@ -531,9 +539,9 @@ We welcome contributions! Please follow these guidelines:
 
 ## 👥 Team
 
-- **Developer Contact**: chandmanisha002@gmail.com
-- **Project Status**: Production Ready
-- **Last Updated**: October 13, 2025
+- **Support Email**: electnepal5@gmail.com
+- **Project Status**: Development Phase (95% Complete)
+- **Last Updated**: October 17, 2025
 
 ## 📄 License
 

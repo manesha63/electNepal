@@ -188,7 +188,7 @@ CREATE INDEX idx_candidate_status ON candidates_candidate(verification_status);
 
 ## Support & Maintenance
 
-- **Contact**: chandmanisha002@gmail.com
+- **Contact**: electnepal5@gmail.com
 - **Dependencies**: Alpine.js 3.x, Django 4.2.7
 - **Browser Support**: Modern browsers with Geolocation API
 

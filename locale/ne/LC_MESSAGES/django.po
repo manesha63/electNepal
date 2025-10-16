@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-15 03:03+0545\n"
+"POT-Creation-Date: 2025-10-17 03:37+0545\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,8 +53,7 @@ msgstr "पासवर्ड पुष्टि गर्नुहोस्"
 
 #: authentication/forms.py:43
 msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
-msgstr ""
-"आवश्यक छ।1 characters0 वर्ण वा कम।पत्रहरू, अंकहरू र @ / / / / _ मात्र।"
+msgstr "आवश्यक छ।1 characters0 वर्ण वा कम।पत्रहरू, अंकहरू र @ / / / / _ मात्र।"
 
 #: authentication/forms.py:45
 #: authentication/templates/authentication/signup.html:56
@@ -80,11 +79,8 @@ msgstr "तपाईंको पासवर्ड रिसेट गर्न
 
 #: authentication/templates/authentication/forgot_password.html:12
 #: authentication/templates/authentication/password_reset.html:12
-msgid ""
-"Enter your email address and we'll send you instructions to reset your "
-"password."
-msgstr ""
-"तपाईंको ईमेल ठेगाना प्रविष्ट गर्नुहोस् र हामी तपाईंलाई पासवर्ड रिसेट गर्न "
+msgid "Enter your email address and we'll send you instructions to reset your password."
+msgstr "तपाईंको ईमेल ठेगाना प्रविष्ट गर्नुहोस् र हामी तपाईंलाई पासवर्ड रिसेट गर्न "
 
 #: authentication/templates/authentication/forgot_password.html:28
 #: authentication/templates/authentication/password_reset.html:45
@@ -103,22 +99,14 @@ msgid "Note"
 msgstr "स्वर"
 
 #: authentication/templates/authentication/forgot_password.html:40
-msgid ""
-"If an account exists with the email you provide, you will receive password "
-"reset instructions. Check your spam folder if you don't see it in your "
-"inbox."
-msgstr ""
-"यदि खाता तपाईंले प्रदान गर्नुभएको ईमेलसँग अवस्थित छ भने, तपाईंले पासवर्ड "
-"रिसेट निर्देशनहरू प्राप्त गर्नुहुनेछ।तपाईंको स्पाम फोल्डर जाँच गर्नुहोस् यदि"
-" तपाईं यसलाई आफ्नो इनबक्समा देख्नुहुन्न भने।"
+msgid "If an account exists with the email you provide, you will receive password reset instructions. Check your spam folder if you don't see it in your inbox."
+msgstr "यदि खाता तपाईंले प्रदान गर्नुभएको ईमेलसँग अवस्थित छ भने, तपाईंले पासवर्ड रिसेट निर्देशनहरू प्राप्त गर्नुहुनेछ।तपाईंको स्पाम फोल्डर जाँच गर्नुहोस् यदि तपाईं यसलाई आफ्नो इनबक्समा देख्नुहुन्न भने।"
 
 #: authentication/templates/authentication/login.html:4
 #: authentication/templates/authentication/login.html:9
 msgid "Candidate Login"
 msgstr "उम्मेदवार लगइन"
 
-#. Auto-translated by auto_translate_po_file.py
-#. 
 #: authentication/templates/authentication/login.html:34
 msgid "Enter your username"
 msgstr "आफ्नो प्रयोगकर्ता नाम प्रविष्ट गर्नुहोस्"
@@ -147,10 +135,6 @@ msgstr "यहाँ दर्ता गर"
 #: authentication/templates/authentication/login.html:72
 msgid "Forgot your password?"
 msgstr "तपाईको पासवर्ड बिर्सनुभयो?"
-
-#: authentication/templates/authentication/login.html:77
-msgid "Resend verification email"
-msgstr "प्रमाणिकरण ईमेल पुनःर्जन गर्नुहोस्"
 
 #: authentication/templates/authentication/password_reset.html:4
 msgid "Password Reset"
@@ -192,9 +176,7 @@ msgstr "आफ्नो प्रोफाइल पूरा गर्नुह
 
 #: authentication/templates/authentication/registration_info.html:29
 msgid "Fill in the required details so voters can know more about you:"
-msgstr ""
-"आवश्यक विवरणहरू भर्नुहोस् त्यसैले मतदाताहरू तपाईंको बारेमा अधिक जान्न "
-"सक्छन्:"
+msgstr "आवश्यक विवरणहरू भर्नुहोस् त्यसैले मतदाताहरू तपाईंको बारेमा अधिक जान्न सक्छन्:"
 
 #: authentication/templates/authentication/registration_info.html:31
 msgid "Personal Information (Name, Age, Photo)"
@@ -202,8 +184,7 @@ msgstr "व्यक्तिगत जानकारी (नाम, उमे�
 
 #: authentication/templates/authentication/registration_info.html:32
 msgid "Position you're running for (Ward / Local / Provincial / Federal)"
-msgstr ""
-"स्थिति तपाई दौडिरहनु भएको छ (वार्ड / स्थानीय / प्रान्तीय / संघीय / संघीय)"
+msgstr "स्थिति तपाई दौडिरहनु भएको छ (वार्ड / स्थानीय / प्रान्तीय / संघीय / संघीय)"
 
 #: authentication/templates/authentication/registration_info.html:33
 msgid "Location (Province, District, Municipality)"
@@ -222,8 +203,6 @@ msgstr "विगत अनुभव"
 msgid "Political Manifesto"
 msgstr "राजनीतिक घोषणापत्र"
 
-#. Auto-translated by auto_translate_po_file.py
-#. 
 #: authentication/templates/authentication/registration_info.html:37
 msgid "Contact Information"
 msgstr "सम्पर्क जानकारी"
@@ -233,12 +212,8 @@ msgid "Admin Review & Verification"
 msgstr "प्रशासन समीक्षा र प्रमाणिकरण"
 
 #: authentication/templates/authentication/registration_info.html:47
-msgid ""
-"Our team will review your profile to ensure all information is complete and "
-"appropriate."
-msgstr ""
-"हाम्रो टोलीले तपाईंको प्रोफाइल समीक्षा गर्नेछ सबै जानकारी पूर्ण र उपयुक्त छ "
-"भनेर सुनिश्चित गर्न।"
+msgid "Our team will review your profile to ensure all information is complete and appropriate."
+msgstr "हाम्रो टोलीले तपाईंको प्रोफाइल समीक्षा गर्नेछ सबै जानकारी पूर्ण र उपयुक्त छ भनेर सुनिश्चित गर्न।"
 
 #: authentication/templates/authentication/registration_info.html:48
 msgid "This usually takes 24–48 hours."
@@ -254,8 +229,7 @@ msgstr "नेपालभरका मतदाताहरूसँग जो�
 
 #: authentication/templates/authentication/registration_info.html:58
 msgid "You'll receive an email notification when your profile is approved."
-msgstr ""
-"तपाईंले एक ईमेल सूचना प्राप्त गर्नुहुनेछ जब तपाईंको प्रोफाइल स्वीकृत हुन्छ।"
+msgstr "तपाईंले एक ईमेल सूचना प्राप्त गर्नुहुनेछ जब तपाईंको प्रोफाइल स्वीकृत हुन्छ।"
 
 #: authentication/templates/authentication/registration_info.html:66
 msgid "Manage Your Content"
@@ -321,16 +295,11 @@ msgstr "प्रमाणिकरण ईमेल पुनःर्जन ग
 
 #: authentication/templates/authentication/resend_verification.html:12
 msgid "Enter your email address to receive a new verification link."
-msgstr ""
-"नयाँ प्रमाणिकरण लिंक प्राप्त गर्न तपाईंको ईमेल ठेगाना प्रविष्ट गर्नुहोस्।"
+msgstr "नयाँ प्रमाणिकरण लिंक प्राप्त गर्न तपाईंको ईमेल ठेगाना प्रविष्ट गर्नुहोस्।"
 
 #: authentication/templates/authentication/resend_verification.html:40
-msgid ""
-"Verification links expire after 72 hours. Check your spam folder if you "
-"don't see the email in your inbox."
-msgstr ""
-"प्रमाणिकरण लिंकहरू 722 घण्टा पछि समाप्त हुन्छ।तपाईंको स्पाम फोल्डर जाँच "
-"गर्नुहोस् यदि तपाईं आफ्नो इनबक्समा ईमेल देख्नुहुन्न भने।"
+msgid "Verification links expire after 72 hours. Check your spam folder if you don't see the email in your inbox."
+msgstr "प्रमाणिकरण लिंकहरू 722 घण्टा पछि समाप्त हुन्छ।तपाईंको स्पाम फोल्डर जाँच गर्नुहोस् यदि तपाईं आफ्नो इनबक्समा ईमेल देख्नुहुन्न भने।"
 
 #: authentication/templates/authentication/reset_password.html:4
 #: authentication/templates/authentication/reset_password.html:44
@@ -409,13 +378,11 @@ msgstr "तपाईंको ईमेल पहिले नै प्रम�
 
 #: authentication/views.py:206
 msgid "Your email has been verified successfully! You can now log in."
-msgstr ""
-"तपाईंको ईमेल सफलतापूर्वक प्रमाणित गरिएको छ!तपाईं अब लगइन गर्न सक्नुहुन्छ।"
+msgstr "तपाईंको ईमेल सफलतापूर्वक प्रमाणित गरिएको छ!तपाईं अब लगइन गर्न सक्नुहुन्छ।"
 
 #: authentication/views.py:210
 msgid "Verification failed. Please try again or contact support."
-msgstr ""
-"प्रमाणीकरण असफल भयो।कृपया फेरि प्रयास गर्नुहोस् वा सम्पर्क समर्थन गर्नुहोस्।"
+msgstr "प्रमाणीकरण असफल भयो।कृपया फेरि प्रयास गर्नुहोस् वा सम्पर्क समर्थन गर्नुहोस्।"
 
 #: authentication/views.py:214
 #, fuzzy
@@ -439,8 +406,7 @@ msgstr "पासवर्डहरू मेल खाँदैनन्।"
 
 #: authentication/views.py:402
 msgid "Your password has been reset successfully! You can now log in."
-msgstr ""
-"तपाईंको पासवर्ड सफलतापूर्वक रिसेट गरिएको छ!तपाईं अब लगइन गर्न सक्नुहुन्छ।"
+msgstr "तपाईंको पासवर्ड सफलतापूर्वक रिसेट गरिएको छ!तपाईं अब लगइन गर्न सक्नुहुन्छ।"
 
 #: authentication/views.py:406
 #, fuzzy
@@ -462,7 +428,7 @@ msgstr "प्रयोगकर्ता जानकारी"
 
 #: candidates/admin.py:31 candidates/templates/candidates/dashboard.html:315
 #: candidates/templates/candidates/edit_profile.html:83
-#: candidates/templates/candidates/register.html:163
+#: candidates/templates/candidates/register.html:162
 msgid "Biography"
 msgstr "जीवनी"
 
@@ -472,7 +438,7 @@ msgstr "शिक्षा र अनुभव"
 
 #: candidates/admin.py:40 candidates/templates/candidates/dashboard.html:324
 #: candidates/templates/candidates/edit_profile.html:113
-#: candidates/templates/candidates/register.html:203
+#: candidates/templates/candidates/register.html:202
 msgid "Manifesto"
 msgstr "घोषणापत्र"
 
@@ -480,8 +446,7 @@ msgstr "घोषणापत्र"
 msgid "Position & Location"
 msgstr "पद स्तर"
 
-#: candidates/admin.py:48
-#: candidates/templates/candidates/edit_profile.html:125
+#: candidates/admin.py:48 candidates/templates/candidates/edit_profile.html:125
 msgid "Online Presence"
 msgstr "अनलाइन उपस्थिति"
 
@@ -491,8 +456,7 @@ msgstr "प्रमाणिकरण कागजातहरू (गोप्
 
 #: candidates/admin.py:54
 msgid "Confidential documents for admin review only - not displayed publicly"
-msgstr ""
-"प्रशासक समीक्षाको लागि गोप्य कागजातहरू मात्र - सार्वजनिक रूपमा प्रदर्शित छैन"
+msgstr "प्रशासक समीक्षाको लागि गोप्य कागजातहरू मात्र - सार्वजनिक रूपमा प्रदर्शित छैन"
 
 #: candidates/admin.py:56
 msgid "Timestamps"
@@ -556,57 +520,74 @@ msgstr "तपाईंको कुञ्जी उपलब्धिहरू 
 msgid "Seat"
 msgstr "सिट"
 
-#. Auto-translated by auto_translate_po_file.py
-#. 
 #: candidates/forms.py:37 candidates/templates/candidates/dashboard.html:126
 #: candidates/templates/candidates/edit_profile.html:39
 #: candidates/templates/candidates/register.html:67
 msgid "Age"
 msgstr "उमेर"
 
-#: candidates/forms.py:89
-msgid ""
-"Please enter a valid Nepal phone number. Mobile: 10 digits starting with "
-"80-98 (e.g., 9812345678). Landline: area code + number (e.g., 014123456)"
-msgstr ""
-"कृपया एक मान्य नेपाल फोन नम्बर प्रविष्ट गर्नुहोस्।मोबाइल: 10 अंकहरू 800-98 "
-"(e.g., "
-"981234535685887878786878787878787878778778778778777877787777.ल्यान्डलाइन: "
-"क्षेत्र कोड + नम्बर (E.g., 01412343456)"
+#: candidates/forms.py:64
+msgid "Select Seat"
+msgstr "सिट छान्नुहोस्"
 
-#: candidates/forms.py:171
+#: candidates/forms.py:67 old_templates_backup/ballot_original.html:330
+#: old_templates_backup/feed.html:747 templates/candidates/ballot.html:615
+msgid "Select Province"
+msgstr "प्रदेश छान्नुहोस्"
+
+#: candidates/forms.py:70 candidates/templates/candidates/register.html:340
+#: old_templates_backup/ballot_original.html:347
+#: old_templates_backup/feed.html:748 templates/candidates/ballot.html:632
+msgid "Select District"
+msgstr "जिल्ला छान्नुहोस्"
+
+#: candidates/forms.py:73 candidates/templates/candidates/register.html:341
+#: old_templates_backup/ballot_original.html:361
+#: old_templates_backup/feed.html:749 templates/candidates/ballot.html:647
+msgid "Select Municipality"
+msgstr "नगरपालिका छान्नुहोस्"
+
+#: candidates/forms.py:77 candidates/templates/candidates/register.html:342
+msgid "Select Ward"
+msgstr "वडा छान्नुहोस्"
+
+#: candidates/forms.py:106
+msgid "Please enter a valid Nepal phone number. Mobile: 10 digits starting with 80-98 (e.g., 9812345678). Landline: area code + number (e.g., 014123456)"
+msgstr "कृपया एक मान्य नेपाल फोन नम्बर प्रविष्ट गर्नुहोस्।मोबाइल: 10 अंकहरू 800-98 (e.g., 981234535685887878786878787878787878778778778778777877787777.ल्यान्डलाइन: क्षेत्र कोड + नम्बर (E.g., 01412343456)"
+
+#: candidates/forms.py:188
 msgid "Municipality is required for ward-level positions."
 msgstr "नगरपालिका वार्ड-स्तर स्थितिका लागि आवश्यक छ।"
 
-#: candidates/forms.py:173
+#: candidates/forms.py:190
 msgid "Ward number is required for ward-level positions."
 msgstr "वार्ड नम्बर वार्ड-स्तर स्थितिका लागि आवश्यक छ।"
 
-#: candidates/forms.py:178
+#: candidates/forms.py:195
 msgid "Municipality is required for local-level positions."
 msgstr "नगरपालिका स्थानीय-स्तर पदहरूको लागि आवश्यक छ।"
 
-#: candidates/forms.py:321
+#: candidates/forms.py:338
 msgid "Event Title"
 msgstr "घटना शीर्षक"
 
-#: candidates/forms.py:324
+#: candidates/forms.py:341
 msgid "Event Location"
 msgstr "घटना स्थान"
 
-#: candidates/forms.py:327 candidates/templates/candidates/add_event.html:29
+#: candidates/forms.py:344 candidates/templates/candidates/add_event.html:29
 msgid "Event Title (English)"
 msgstr "घटना शीर्षक (अंग्रेजी)"
 
-#: candidates/forms.py:328
+#: candidates/forms.py:345
 msgid "Description (English)"
 msgstr "वर्णन (अंग्रेजी)"
 
-#: candidates/forms.py:329 candidates/templates/candidates/add_event.html:65
+#: candidates/forms.py:346 candidates/templates/candidates/add_event.html:65
 msgid "Location (English)"
 msgstr "स्थान"
 
-#: candidates/forms.py:360
+#: candidates/forms.py:377
 msgid "Event date cannot be in the past."
 msgstr "घटना मिति विगतमा हुन सक्दैन।"
 
@@ -616,8 +597,6 @@ msgstr "घटना मिति विगतमा हुन सक्दै�
 msgid "Ward Chairperson"
 msgstr "वडा अध्यक्ष"
 
-#. Auto-translated by auto_translate_po_file.py
-#. 
 #: candidates/models.py:34
 #: candidates/templates/candidates/feed_simple_grid.html:442
 #: templates/candidates/ballot.html:1131
@@ -671,16 +650,11 @@ msgid "Profile photo (JPG/PNG, max 5MB)"
 msgstr "प्रोफाइल फोटो (JPG / PNG, अधिकतम ombmb)"
 
 #: candidates/models.py:117
-msgid ""
-"National ID/Citizenship/Driver's License (PDF/JPG/PNG, max 10MB, "
-"confidential)"
-msgstr ""
-"राष्ट्रीय आईडी / नागरिकता / ड्राइभर इजाजतपत्र (PDF / JPG / PNG, अधिकतम 10MB,"
-" गोप्य)"
+msgid "National ID/Citizenship/Driver's License (PDF/JPG/PNG, max 10MB, confidential)"
+msgstr "राष्ट्रीय आईडी / नागरिकता / ड्राइभर इजाजतपत्र (PDF / JPG / PNG, अधिकतम 10MB, गोप्य)"
 
 #: candidates/models.py:124
-msgid ""
-"Official election declaration paper (PDF/JPG/PNG, max 10MB, confidential)"
+msgid "Official election declaration paper (PDF/JPG/PNG, max 10MB, confidential)"
 msgstr "आधिकारिक निर्वाचन घोषणा पत्र (PDF / JPG / PNG, अधिकतम 10MB, गोप्य)"
 
 #: candidates/templates/candidates/add_event.html:4
@@ -690,15 +664,12 @@ msgstr "घटना थप्नुहोस्"
 
 #: candidates/templates/candidates/add_event.html:20
 msgid "Announce your campaign events, rallies, and meetings to inform voters."
-msgstr ""
-"तपाईंको अभियानका कार्यक्रमहरू, जनजता, र मतदाताहरुलाई सूचित गर्न घोषणा "
-"गर्नुहोस्।"
+msgstr "तपाईंको अभियानका कार्यक्रमहरू, जनजता, र मतदाताहरुलाई सूचित गर्न घोषणा गर्नुहोस्।"
 
 #: candidates/templates/candidates/add_event.html:35
 #: candidates/templates/candidates/add_post.html:34
 msgid "Will be automatically translated to Nepali"
-msgstr ""
-"अंग्रेजीमा सामग्री प्रविष्ट गर्नुहोस्।यो स्वतः नेपालीमा अनुवाद गरिएको छ।"
+msgstr "अंग्रेजीमा सामग्री प्रविष्ट गर्नुहोस्।यो स्वतः नेपालीमा अनुवाद गरिएको छ।"
 
 #: candidates/templates/candidates/add_event.html:41
 msgid "Event Description (English)"
@@ -754,12 +725,8 @@ msgid "Add Campaign Post"
 msgstr "अभियान पोष्टहरू"
 
 #: candidates/templates/candidates/add_post.html:20
-msgid ""
-"Share updates about your campaign with voters. Posts will be visible on your"
-" profile page."
-msgstr ""
-"मतदातासँग तपाईंको अभियानको बारेमा अद्यावधिकहरू साझेदारी गर्नुहोस्।पोष्टहरू "
-"तपाईंको "
+msgid "Share updates about your campaign with voters. Posts will be visible on your profile page."
+msgstr "मतदातासँग तपाईंको अभियानको बारेमा अद्यावधिकहरू साझेदारी गर्नुहोस्।पोष्टहरू तपाईंको "
 
 #: candidates/templates/candidates/add_post.html:28
 msgid "Post Title (English)"
@@ -802,12 +769,8 @@ msgid "Profile Under Review"
 msgstr "समीक्षा अन्तर्गत प्रोफाइल"
 
 #: candidates/templates/candidates/dashboard.html:29
-msgid ""
-"Your profile is being reviewed by our admin team. This usually takes 24-48 "
-"hours."
-msgstr ""
-"तपाईंको प्रोफाइल हाम्रो व्यवस्थापक टीम द्वारा समीक्षा भइरहेको छ।यसले "
-"सामान्यतया 2 "
+msgid "Your profile is being reviewed by our admin team. This usually takes 24-48 hours."
+msgstr "तपाईंको प्रोफाइल हाम्रो व्यवस्थापक टीम द्वारा समीक्षा भइरहेको छ।यसले सामान्यतया 2 "
 
 #: candidates/templates/candidates/dashboard.html:42
 msgid "Profile Not Approved"
@@ -852,7 +815,7 @@ msgstr "स्थान"
 
 #: candidates/templates/candidates/dashboard.html:115
 #: candidates/templates/candidates/detail.html:74
-#: candidates/templates/candidates/register.html:337 candidates/views.py:514
+#: candidates/templates/candidates/register.html:339 candidates/views.py:514
 #: old_templates_backup/feed.html:637 old_templates_backup/feed.html:639
 #: old_templates_backup/feed.html:641 old_templates_backup/feed.html:746
 #: old_templates_backup/feed_paginated.html:533
@@ -953,7 +916,7 @@ msgstr "तपाईंको अभियान प्रतिज्ञा र
 
 #: candidates/templates/candidates/dashboard.html:333
 #: candidates/templates/candidates/edit_profile.html:103
-#: candidates/templates/candidates/register.html:183
+#: candidates/templates/candidates/register.html:182
 msgid "Experience"
 msgstr "अनुभव"
 
@@ -964,7 +927,7 @@ msgstr "तपाईंको सान्दर्भिक अनुभव र
 #: candidates/templates/candidates/dashboard.html:342
 #: candidates/templates/candidates/detail.html:92
 #: candidates/templates/candidates/edit_profile.html:93
-#: candidates/templates/candidates/register.html:173
+#: candidates/templates/candidates/register.html:172
 msgid "Education"
 msgstr "शिक्षा"
 
@@ -974,12 +937,12 @@ msgstr "तपाईंको शैक्षिक पृष्ठभूमि"
 
 #: candidates/templates/candidates/dashboard.html:353
 #: candidates/templates/candidates/edit_profile.html:130
-#: candidates/templates/candidates/register.html:252
+#: candidates/templates/candidates/register.html:251
 msgid "Website"
 msgstr "वेबसाइट"
 
 #: candidates/templates/candidates/dashboard.html:361
-#: candidates/templates/candidates/register.html:262
+#: candidates/templates/candidates/register.html:261
 msgid "Facebook Page"
 msgstr "फेसबुक"
 
@@ -1017,8 +980,6 @@ msgstr "के तपाईं यो कार्यक्रम मेटा�
 msgid "Independent Candidate"
 msgstr "स्वतन्त्र उम्मेदवार"
 
-#. Auto-translated by auto_translate_po_file.py
-#. 
 #: candidates/templates/candidates/detail.html:36
 msgid "Age:"
 msgstr "उमेर:"
@@ -1065,7 +1026,7 @@ msgid "Past Experience"
 msgstr "विगत अनुभव"
 
 #: candidates/templates/candidates/detail.html:162
-#: candidates/templates/candidates/register.html:193
+#: candidates/templates/candidates/register.html:192
 msgid "Key Achievements"
 msgstr "मुख्य उपलब्धि"
 
@@ -1085,8 +1046,6 @@ msgstr "समय:"
 msgid "Event Details:"
 msgstr "घटना विवरण:"
 
-#. Auto-translated by auto_translate_po_file.py
-#. 
 #: candidates/templates/candidates/detail.html:305 templates/base.html:131
 msgid "Contact"
 msgstr "सम्पर्क गर्नुहोस्"
@@ -1132,8 +1091,6 @@ msgstr "अहिले दान गर्नुहोस्"
 msgid "Back"
 msgstr "फिर्ता"
 
-#. Auto-translated by auto_translate_po_file.py
-#. 
 #: candidates/templates/candidates/edit_profile.html:4
 msgid "Edit Profile"
 msgstr "प्रोफाइल सम्पादन गर्नुहोस्"
@@ -1142,15 +1099,11 @@ msgstr "प्रोफाइल सम्पादन गर्नुहोस�
 msgid "Edit Your Profile"
 msgstr "आफ्नो प्रोफाइल सम्पादन गर्नुहोस्"
 
-#. Auto-translated by auto_translate_po_file.py
-#. 
 #: candidates/templates/candidates/edit_profile.html:24
 #: candidates/templates/candidates/register.html:53
 msgid "Basic Information"
 msgstr "आधारभूत जानकारी"
 
-#. Auto-translated by auto_translate_po_file.py
-#. 
 #: candidates/templates/candidates/edit_profile.html:49
 #: candidates/templates/candidates/register.html:77
 msgid "Phone Number"
@@ -1165,8 +1118,6 @@ msgstr "प्रोफाइल तस्बिर"
 msgid "Current photo"
 msgstr "वर्तमान फोटो"
 
-#. Auto-translated by auto_translate_po_file.py
-#. 
 #: candidates/templates/candidates/edit_profile.html:77
 #: candidates/templates/candidates/register.html:31
 msgid "Content"
@@ -1174,8 +1125,7 @@ msgstr "सामग्री"
 
 #: candidates/templates/candidates/edit_profile.html:78
 msgid "Content will be automatically translated to Nepali"
-msgstr ""
-"अंग्रेजीमा सामग्री प्रविष्ट गर्नुहोस्।यो स्वतः नेपालीमा अनुवाद गरिएको छ।"
+msgstr "अंग्रेजीमा सामग्री प्रविष्ट गर्नुहोस्।यो स्वतः नेपालीमा अनुवाद गरिएको छ।"
 
 #: candidates/templates/candidates/edit_profile.html:140
 msgid "Facebook URL"
@@ -1236,7 +1186,7 @@ msgid "All Districts"
 msgstr "सबै जिल्लाहरू"
 
 #: candidates/templates/candidates/feed_simple_grid.html:422
-#: candidates/templates/candidates/register.html:134 locations/models.py:39
+#: candidates/templates/candidates/register.html:134 locations/models.py:45
 #: old_templates_backup/ballot_original.html:355
 #: old_templates_backup/feed.html:621 old_templates_backup/feed.html:624
 #: old_templates_backup/feed_paginated.html:517
@@ -1315,231 +1265,195 @@ msgstr "व्यावसायिक तस्बिर अपलोड गर
 msgid "Ward Number"
 msgstr "वार्ड नम्बर"
 
-#: candidates/templates/candidates/register.html:150
-msgid "Select municipality first to load ward options"
-msgstr "वाक्य विकल्पहरू लोड गर्नको लागि नगरपालिका चयन गर्नुहोस्"
-
-#: candidates/templates/candidates/register.html:156
+#: candidates/templates/candidates/register.html:155
 msgid "Profile Content"
 msgstr "प्रोफाइल सामग्री"
 
-#: candidates/templates/candidates/register.html:158
-msgid ""
-"Enter content in English. It will be automatically translated to Nepali."
-msgstr ""
-"अंग्रेजीमा सामग्री प्रविष्ट गर्नुहोस्।यो स्वतः नेपालीमा अनुवाद गरिएको छ।"
+#: candidates/templates/candidates/register.html:157
+msgid "Enter content in English. It will be automatically translated to Nepali."
+msgstr "अंग्रेजीमा सामग्री प्रविष्ट गर्नुहोस्।यो स्वतः नेपालीमा अनुवाद गरिएको छ।"
 
-#: candidates/templates/candidates/register.html:214
+#: candidates/templates/candidates/register.html:213
 msgid "Identity Verification"
 msgstr "पहिचान प्रमाणिकरण"
 
-#: candidates/templates/candidates/register.html:216
-msgid ""
-"Upload documents to verify your identity and candidacy. These documents will"
-" remain confidential and will only be reviewed by our admin team."
-msgstr ""
-"तपाईंको पहिचान र उम्मेद्वार प्रमाणित गर्न कागजातहरू अपलोड गर्नुहोस्।यी "
-"कागजातहरू गोप्य रहनेछन् र केवल हाम्रो प्रशासक टोलीले समीक्षा गरिनेछ।"
+#: candidates/templates/candidates/register.html:215
+msgid "Upload documents to verify your identity and candidacy. These documents will remain confidential and will only be reviewed by our admin team."
+msgstr "तपाईंको पहिचान र उम्मेद्वार प्रमाणित गर्न कागजातहरू अपलोड गर्नुहोस्।यी कागजातहरू गोप्य रहनेछन् र केवल हाम्रो प्रशासक टोलीले समीक्षा गरिनेछ।"
 
-#: candidates/templates/candidates/register.html:221
+#: candidates/templates/candidates/register.html:220
 msgid "Identity Document"
 msgstr "पहिचान कागजात"
 
-#: candidates/templates/candidates/register.html:224
-msgid ""
-"Upload your National ID, Citizenship Certificate, or Driver's License (PDF "
-"or Image)"
-msgstr ""
-"तपाईंको राष्ट्रिय आईडी, नागरिकता प्रमाणपत्र, वा ड्राइभरको इजाजतपत्र (PDF वा "
-"छवि) अपलोड गर्नुहोस्"
+#: candidates/templates/candidates/register.html:223
+msgid "Upload your National ID, Citizenship Certificate, or Driver's License (PDF or Image)"
+msgstr "तपाईंको राष्ट्रिय आईडी, नागरिकता प्रमाणपत्र, वा ड्राइभरको इजाजतपत्र (PDF वा छवि) अपलोड गर्नुहोस्"
 
-#: candidates/templates/candidates/register.html:234
+#: candidates/templates/candidates/register.html:233
 msgid "Election Declaration Document"
 msgstr "निर्वाचन घोषणा कागजात"
 
-#: candidates/templates/candidates/register.html:237
-msgid ""
-"Upload your official election declaration paper from the Election Commission"
-" (PDF or Image)"
-msgstr ""
-"निर्वाचन आयोग (PDF वा छवि) बाट तपाईंको आधिकारिक निर्वाचन घोषणा पत्र अपलोड "
-"गर्नुहोस्"
+#: candidates/templates/candidates/register.html:236
+msgid "Upload your official election declaration paper from the Election Commission (PDF or Image)"
+msgstr "निर्वाचन आयोग (PDF वा छवि) बाट तपाईंको आधिकारिक निर्वाचन घोषणा पत्र अपलोड गर्नुहोस्"
 
-#: candidates/templates/candidates/register.html:248
+#: candidates/templates/candidates/register.html:247
 msgid "Social Links & Review"
 msgstr "सामाजिक लिङ्कहरू र समीक्षा"
 
-#: candidates/templates/candidates/register.html:271
+#: candidates/templates/candidates/register.html:270
 msgid "Terms and Conditions"
 msgstr "नियम र सर्तहरू"
 
-#: candidates/templates/candidates/register.html:273
+#: candidates/templates/candidates/register.html:272
 msgid "All information provided must be accurate and truthful"
 msgstr "सबै जानकारी प्रदान गर्न सही र सत्य हुनु पर्छ"
 
-#: candidates/templates/candidates/register.html:274
+#: candidates/templates/candidates/register.html:273
 msgid "You must comply with all election laws and regulations"
 msgstr "तपाईंले सबै निर्वाचन कानून र नियमहरूको पालना गर्नुपर्दछ"
 
-#: candidates/templates/candidates/register.html:275
+#: candidates/templates/candidates/register.html:274
 msgid "False information may result in disqualification"
 msgstr "गलत जानकारी अयोग्यतामा परिणाम हुन सक्छ"
 
-#: candidates/templates/candidates/register.html:276
+#: candidates/templates/candidates/register.html:275
 msgid "Your profile will be publicly visible once approved"
 msgstr "तपाईंको प्रोफाइल सार्वजनिक रूपमा देखिने एक पटक अनुमोदित हुनेछ"
 
-#: candidates/templates/candidates/register.html:277
+#: candidates/templates/candidates/register.html:276
 msgid "You grant ElectNepal permission to display your information"
 msgstr "तपाईं ElectNepal लाई तपाईंको जानकारी प्रदर्शन गर्न अनुमति दिनुहुन्छ"
 
-#: candidates/templates/candidates/register.html:284
-msgid ""
-"I accept the terms and conditions and confirm that all information provided "
-"is accurate"
-msgstr ""
-"म सर्तहरू र सर्तहरू स्वीकार गर्दछु र पुष्टि गर्छु कि प्रदान गरिएका सबै "
-"जानकारीहरू सही छन्"
+#: candidates/templates/candidates/register.html:283
+msgid "I accept the terms and conditions and confirm that all information provided is accurate"
+msgstr "म सर्तहरू र सर्तहरू स्वीकार गर्दछु र पुष्टि गर्छु कि प्रदान गरिएका सबै जानकारीहरू सही छन्"
 
-#: candidates/templates/candidates/register.html:292
+#: candidates/templates/candidates/register.html:291
 msgid "Submit for Review"
 msgstr "समीक्षाका लागि पेश गर्नुहोस्"
 
-#: candidates/templates/candidates/register.html:295
+#: candidates/templates/candidates/register.html:294
 msgid "Submitting..."
 msgstr "पेश गर्दै ..."
 
 # Additional UI strings from templates
-#: candidates/templates/candidates/register.html:304
+#: candidates/templates/candidates/register.html:303
 msgid "Previous"
 msgstr "अघिल्लो"
 
-#: candidates/templates/candidates/register.html:308
+#: candidates/templates/candidates/register.html:307
 msgid "Next"
 msgstr "अर्को"
 
-#: candidates/templates/candidates/register.html:317
+#: candidates/templates/candidates/register.html:319
 #, fuzzy
 #| msgid "Please enter a ward number"
 msgid "Please enter your full name"
 msgstr "कृपया वार्ड नम्बर प्रविष्ट गर्नुहोस्"
 
-#: candidates/templates/candidates/register.html:318
+#: candidates/templates/candidates/register.html:320
 #, fuzzy
 #| msgid "Please enter a valid Nepal phone number."
 msgid "Please enter a valid age (must be 18 or older)"
 msgstr "कृपया वैध नेपाल फोन नम्बर प्रविष्ट गर्नुहोस्।"
 
-#: candidates/templates/candidates/register.html:319
+#: candidates/templates/candidates/register.html:321
 msgid "Please upload your profile photo (required)"
 msgstr "कृपया तपाईंको प्रोफाइल फोटो अपलोड गर्नुहोस् (आवश्यक)"
 
-#: candidates/templates/candidates/register.html:320
+#: candidates/templates/candidates/register.html:322
 #, fuzzy
 #| msgid "Please select a province"
 msgid "Please select a seat"
 msgstr "कृपया एक प्रान्त चयन गर्नुहोस्"
 
-#: candidates/templates/candidates/register.html:321
+#: candidates/templates/candidates/register.html:323
 #: templates/candidates/ballot.html:952
 msgid "Please select a province"
 msgstr "कृपया एक प्रान्त चयन गर्नुहोस्"
 
-#: candidates/templates/candidates/register.html:322
+#: candidates/templates/candidates/register.html:324
 #, fuzzy
 #| msgid "Please select a province"
 msgid "Please select a district"
 msgstr "कृपया एक प्रान्त चयन गर्नुहोस्"
 
-#: candidates/templates/candidates/register.html:323
+#: candidates/templates/candidates/register.html:325
 #, fuzzy
 #| msgid "Municipality is required for ward-level positions."
 msgid "Municipality is required for all positions"
 msgstr "नगरपालिका वार्ड-स्तर स्थितिका लागि आवश्यक छ।"
 
-#: candidates/templates/candidates/register.html:324
+#: candidates/templates/candidates/register.html:326
 #, fuzzy
 #| msgid "Ward number is required for ward-level positions."
 msgid "Ward number is required for all positions"
 msgstr "वार्ड नम्बर वार्ड-स्तर स्थितिका लागि आवश्यक छ।"
 
-#: candidates/templates/candidates/register.html:325
+#: candidates/templates/candidates/register.html:327
 #, fuzzy
 #| msgid "Please enter a ward number"
 msgid "Please enter your biography"
 msgstr "कृपया वार्ड नम्बर प्रविष्ट गर्नुहोस्"
 
-#: candidates/templates/candidates/register.html:326
+#: candidates/templates/candidates/register.html:328
 msgid "Please enter your education details"
 msgstr "कृपया तपाईंको शिक्षा विवरणहरू प्रविष्ट गर्नुहोस्"
 
-#: candidates/templates/candidates/register.html:327
+#: candidates/templates/candidates/register.html:329
 #, fuzzy
 #| msgid "Please select a province"
 msgid "Please enter your experience"
 msgstr "कृपया एक प्रान्त चयन गर्नुहोस्"
 
-#: candidates/templates/candidates/register.html:328
+#: candidates/templates/candidates/register.html:330
 #, fuzzy
 #| msgid "List your key achievements"
 msgid "Please enter your key achievements"
 msgstr "तपाईंको कुञ्जी उपलब्धिहरू सूचीबद्ध गर्नुहोस्"
 
-#: candidates/templates/candidates/register.html:329
+#: candidates/templates/candidates/register.html:331
 #, fuzzy
 #| msgid "Update your manifesto"
 msgid "Please enter your manifesto"
 msgstr "तपाईंको घोषणापत्र अपडेट गर्नुहोस्"
 
-#: candidates/templates/candidates/register.html:330
+#: candidates/templates/candidates/register.html:332
 msgid "Please upload your identity document (National ID/Citizenship/Driver\\"
-msgstr ""
-"कृपया तपाईंको पहिचान कागजात (राष्ट्रिय ID / नागरिकता / ड्राइभर) अपलोड "
-"गर्नुहोस्"
+msgstr "कृपया तपाईंको पहिचान कागजात (राष्ट्रिय ID / नागरिकता / ड्राइभर) अपलोड गर्नुहोस्"
 
-#: candidates/templates/candidates/register.html:331
+#: candidates/templates/candidates/register.html:333
 #, fuzzy
 #| msgid "Election Declaration Document"
 msgid "Please upload your election declaration document"
 msgstr "निर्वाचन घोषणा कागजात"
 
-#: candidates/templates/candidates/register.html:332
+#: candidates/templates/candidates/register.html:334
 msgid "Please upload only JPG or PNG images"
 msgstr "कृपया केवल JPG वा PNG छविहरू अपलोड गर्नुहोस्"
 
-#: candidates/templates/candidates/register.html:333
+#: candidates/templates/candidates/register.html:335
 msgid "Image size must be less than 5MB"
 msgstr "छवि आकार 8MB भन्दा कम हुनु पर्छ"
 
-#: candidates/templates/candidates/register.html:334
+#: candidates/templates/candidates/register.html:336
 msgid "Please upload only JPG, PNG or PDF documents"
 msgstr "कृपया केवल JPG, PNG वा PDF कागजातहरू अपलोड गर्नुहोस्"
 
-#: candidates/templates/candidates/register.html:335
+#: candidates/templates/candidates/register.html:337
 msgid "Document size must be less than 10MB"
 msgstr "कागजात आकार 10MB भन्दा कम हुनुपर्दछ"
 
-#: candidates/templates/candidates/register.html:336
+#: candidates/templates/candidates/register.html:338
 #, fuzzy
 #| msgid "Location request timed out. Please try again."
 msgid "Error loading ward information. Please try again."
 msgstr "स्थान अनुरोधको समय समाप्त भयो। कृपया फेरि प्रयास गर्नुहोस्।"
 
-#: candidates/templates/candidates/register.html:338
-#: old_templates_backup/ballot_original.html:347
-#: old_templates_backup/feed.html:748 templates/candidates/ballot.html:632
-msgid "Select District"
-msgstr "जिल्ला छान्नुहोस्"
-
-#: candidates/templates/candidates/register.html:339
-#: old_templates_backup/ballot_original.html:361
-#: old_templates_backup/feed.html:749 templates/candidates/ballot.html:647
-msgid "Select Municipality"
-msgstr "नगरपालिका छान्नुहोस्"
-
-#: candidates/templates/candidates/register.html:340
-msgid "Select Ward"
-msgstr "वडा छान्नुहोस्"
+#: candidates/templates/candidates/register.html:860
+msgid "Please accept the terms and conditions before submitting"
+msgstr ""
 
 #: candidates/templates/candidates/registration_success.html:4
 msgid "Registration Submitted"
@@ -1550,14 +1464,8 @@ msgid "Profile Submitted Successfully!"
 msgstr "प्रोफाइल सफलतापूर्वक बुझाइयो!"
 
 #: candidates/templates/candidates/registration_success.html:12
-msgid ""
-"Your profile is now under review. Once the review is complete, you will "
-"receive an email with further information about your application status and "
-"further information."
-msgstr ""
-"तपाईंको प्रोफाइल अब समीक्षा अन्तर्गत छ।एकपटक समीक्षा पूर्ण भएपछि तपाईले "
-"आफ्नो आवेदन स्थिति र थप जानकारीको बारेमा थप जानकारीको साथ ईमेल प्राप्त "
-"गर्नुहुनेछ।"
+msgid "Your profile is now under review. Once the review is complete, you will receive an email with further information about your application status and further information."
+msgstr "तपाईंको प्रोफाइल अब समीक्षा अन्तर्गत छ।एकपटक समीक्षा पूर्ण भएपछि तपाईले आफ्नो आवेदन स्थिति र थप जानकारीको बारेमा थप जानकारीको साथ ईमेल प्राप्त गर्नुहुनेछ।"
 
 #: candidates/templates/candidates/registration_success.html:18
 msgid "Return to Homepage"
@@ -1590,29 +1498,17 @@ msgid "Invalid image type. Allowed types: JPG, JPEG, PNG"
 msgstr "अवैध छवि प्रकार।अनुमति दिइएका प्रकारहरू: JPG, JPEG, PNG"
 
 #: candidates/validators.py:67
-msgid ""
-"File appears to be corrupted or is not a valid PDF document. Please upload a"
-" legitimate PDF file."
-msgstr ""
-"फाइल बिग्रेको छ वा वैध PDF कागजात होईन।कृपया एक वैध PDF फाईल अपलोड "
-"गर्नुहोस्।"
+msgid "File appears to be corrupted or is not a valid PDF document. Please upload a legitimate PDF file."
+msgstr "फाइल बिग्रेको छ वा वैध PDF कागजात होईन।कृपया एक वैध PDF फाईल अपलोड गर्नुहोस्।"
 
 #: candidates/validators.py:83 candidates/validators.py:106
-msgid ""
-"File appears to be corrupted or is not a valid image. Please upload a "
-"legitimate image file."
-msgstr ""
-"फाइल बिग्रेको जस्तो देखिन्छ वा वैध छवि होईन।कृपया वैध छवि फाईल अपलोड "
-"गर्नुहोस्।"
+msgid "File appears to be corrupted or is not a valid image. Please upload a legitimate image file."
+msgstr "फाइल बिग्रेको जस्तो देखिन्छ वा वैध छवि होईन।कृपया वैध छवि फाईल अपलोड गर्नुहोस्।"
 
 #: candidates/validators.py:99
 #, python-format
-msgid ""
-"File content does not match extension. Expected %(expected)s but got "
-"%(actual)s. Please upload a valid file without changing its extension."
-msgstr ""
-"फाईल सामग्री विस्तारसँग मेल खाँदैन। अपेक्षित %(expected)s तर %(actual)s "
-"प्राप्त भयो। कृपया यसको विस्तार परिवर्तन नगरीकन वैध फाईल अपलोड गर्नुहोस्।"
+msgid "File content does not match extension. Expected %(expected)s but got %(actual)s. Please upload a valid file without changing its extension."
+msgstr "फाईल सामग्री विस्तारसँग मेल खाँदैन। अपेक्षित %(expected)s तर %(actual)s प्राप्त भयो। कृपया यसको विस्तार परिवर्तन नगरीकन वैध फाईल अपलोड गर्नुहोस्।"
 
 #: candidates/views.py:608
 #, fuzzy
@@ -1621,12 +1517,8 @@ msgid "You already have a candidate profile."
 msgstr "उम्मेदवार प्रोफाइल सिर्जना गर्नुहोस्"
 
 #: candidates/views.py:644
-msgid ""
-"Your candidate profile has been submitted for review! You will be notified "
-"once approved."
-msgstr ""
-"तपाईंको उम्मेद्वार प्रोफाइल समीक्षाको लागि पेश गरिएको छ!तपाईं एक पटक "
-"अनुमोदित हुनुहुनेछ।"
+msgid "Your candidate profile has been submitted for review! You will be notified once approved."
+msgstr "तपाईंको उम्मेद्वार प्रोफाइल समीक्षाको लागि पेश गरिएको छ!तपाईं एक पटक अनुमोदित हुनुहुनेछ।"
 
 #: candidates/views.py:648
 #, fuzzy, python-format
@@ -1642,9 +1534,7 @@ msgstr "उम्मेदवार प्रोफाइल सिर्जन�
 
 #: candidates/views.py:707
 msgid "Your profile must be approved before you can edit it."
-msgstr ""
-"तपाईंको प्रोफाइललाई अनुमोदन गर्न सक्नुपर्दछ तपाईंले यसलाई सम्पादन गर्न "
-"सक्नुहुनेछ।"
+msgstr "तपाईंको प्रोफाइललाई अनुमोदन गर्न सक्नुपर्दछ तपाईंले यसलाई सम्पादन गर्न सक्नुहुनेछ।"
 
 #: candidates/views.py:728
 #, fuzzy
@@ -1692,22 +1582,12 @@ msgid "About ElectNepal"
 msgstr "ElectNepal को बारेमा"
 
 #: core/templates/core/home.html:21
-msgid ""
-"ElectNepal is a comprehensive platform designed to strengthen democracy in "
-"Nepal by providing a space for candidates to connect with voters. We believe"
-" in transparent, accessible, and fair elections where every voice matters."
-msgstr ""
-"ElectNepal नेपालमा लोकतन्त्र सुदृढ गर्न डिजाइन गरिएको एक व्यापक प्लेटफर्म हो"
-" जसले निष्पक्ष निर्वाचनमा विश्वास गर्छौं जहाँ हरेक आवाज महत्त्वपूर्ण छ।"
+msgid "ElectNepal is a comprehensive platform designed to strengthen democracy in Nepal by providing a space for candidates to connect with voters. We believe in transparent, accessible, and fair elections where every voice matters."
+msgstr "ElectNepal नेपालमा लोकतन्त्र सुदृढ गर्न डिजाइन गरिएको एक व्यापक प्लेटफर्म हो जसले निष्पक्ष निर्वाचनमा विश्वास गर्छौं जहाँ हरेक आवाज महत्त्वपूर्ण छ।"
 
 #: core/templates/core/home.html:24
-msgid ""
-"Our platform allows candidates to create verified profiles, share their "
-"vision, and engage with constituents across all 7 provinces, 77 districts, "
-"and 753 municipalities of Nepal."
-msgstr ""
-"हाम्रो प्लेटफर्मले स्वतन्त्र उम्मेदवारहरूलाई प्रमाणित प्रोफाइलहरू सिर्जना "
-"गर्न, तिनीहरूको निर्वाचकहरूसँग संलग्न हुन अनुमति दिन्छ।"
+msgid "Our platform allows candidates to create verified profiles, share their vision, and engage with constituents across all 7 provinces, 77 districts, and 753 municipalities of Nepal."
+msgstr "हाम्रो प्लेटफर्मले स्वतन्त्र उम्मेदवारहरूलाई प्रमाणित प्रोफाइलहरू सिर्जना गर्न, तिनीहरूको निर्वाचकहरूसँग संलग्न हुन अनुमति दिन्छ।"
 
 #: core/templates/core/home.html:32
 msgid "Nepal Coverage"
@@ -1731,9 +1611,7 @@ msgstr "वडाहरू"
 
 #: core/templates/core/home.html:57
 msgid "If you have any questions about our platform, please reach out to us:"
-msgstr ""
-"यदि तपाइँसँग हाम्रो मञ्चको बारेमा कुनै प्रश्नहरू छन् भने कृपया हामीसँग "
-"जानुहोस्:"
+msgstr "यदि तपाइँसँग हाम्रो मञ्चको बारेमा कुनै प्रश्नहरू छन् भने कृपया हामीसँग जानुहोस्:"
 
 #: core/templates/core/how_to_vote.html:4 core/templatetags/breadcrumbs.py:102
 #: old_templates_backup/main.html:502 templates/base.html:89
@@ -1802,8 +1680,7 @@ msgstr "मतदान तपाईंको संवैधानिक अध
 
 #: core/templates/core/how_to_vote.html:34
 msgid "Your vote is secret - no one can force you to reveal your choice"
-msgstr ""
-"तपाईंको मत गोप्य छ - कसैले तपाईंलाई आफ्नो छनौट खुलाउन बाध्य पार्न सक्दैन"
+msgstr "तपाईंको मत गोप्य छ - कसैले तपाईंलाई आफ्नो छनौट खुलाउन बाध्य पार्न सक्दैन"
 
 #: core/templates/core/how_to_vote.html:35
 msgid "Report any irregularities to election officials immediately"
@@ -1814,21 +1691,12 @@ msgid "Need Help?"
 msgstr "मद्दत चाहिन्छ?"
 
 #: core/templates/core/how_to_vote.html:39
-msgid ""
-"For more information about voting procedures or to check your voter "
-"registration status, visit the Election Commission of Nepal website or "
-"contact your local election office."
-msgstr ""
-"मतदान प्रक्रियाको बारेमा थप जानकारी वा आफ्नो मतदाता दर्ता स्थिति जाँच गर्न, "
-"नेपाल गर्नुहोस्।"
+msgid "For more information about voting procedures or to check your voter registration status, visit the Election Commission of Nepal website or contact your local election office."
+msgstr "मतदान प्रक्रियाको बारेमा थप जानकारी वा आफ्नो मतदाता दर्ता स्थिति जाँच गर्न, नेपाल गर्नुहोस्।"
 
 #: core/templates/core/mt_badge.html:3
 msgid "This content was automatically translated. Please review for accuracy."
-msgstr ""
-"यो सामग्री स्वचालित रूपमा अनुवाद गरिएको थियो। सटीकताको लागि कृपया समीक्षा "
-"गर्नुहोस्।यो सामग्री स्वचालित रूपमा अनुवाद गरिएको छ। कृपया सटीकताका लागि "
-"समीक्षा गर्नुहोस्।यो सामग्री स्वचालित रूपमा अनुवाद गरिएको थियो। कृपया "
-"सटीकताको लागि समीक्षा गर्नुहोस्।"
+msgstr "यो सामग्री स्वचालित रूपमा अनुवाद गरिएको थियो। सटीकताको लागि कृपया समीक्षा गर्नुहोस्।यो सामग्री स्वचालित रूपमा अनुवाद गरिएको छ। कृपया सटीकताका लागि समीक्षा गर्नुहोस्।यो सामग्री स्वचालित रूपमा अनुवाद गरिएको थियो। कृपया सटीकताको लागि समीक्षा गर्नुहोस्।"
 
 #: core/templatetags/breadcrumbs.py:30
 msgid "Home"
@@ -1863,15 +1731,15 @@ msgstr "साइन अप"
 msgid "Location outside Nepal boundaries"
 msgstr "नेपालको सीमाना बाहिर स्थान"
 
-#: locations/models.py:37
+#: locations/models.py:43
 msgid "Metropolitan City"
 msgstr "महानगरपालिका"
 
-#: locations/models.py:38
+#: locations/models.py:44
 msgid "Sub-Metropolitan City"
 msgstr "उपमहानगरपालिका"
 
-#: locations/models.py:40
+#: locations/models.py:46
 msgid "Rural Municipality"
 msgstr "ग्रामीण नगरपालिका"
 
@@ -1900,13 +1768,6 @@ msgstr "म्यानुअल रूपमा स्थान चयन ग�
 msgid "Select Your Location"
 msgstr "आफ्नो स्थान चयन गर्नुहोस्"
 
-#: old_templates_backup/ballot_original.html:330
-#: old_templates_backup/feed.html:747 templates/candidates/ballot.html:615
-msgid "Select Province"
-msgstr "प्रदेश छान्नुहोस्"
-
-#. Auto-translated by auto_translate_po_file.py
-#. 
 #: old_templates_backup/ballot_original.html:376
 #: templates/candidates/ballot.html:664
 msgid "Enter ward number"
@@ -1968,9 +1829,7 @@ msgstr "तपाईंको ब्राउजरले भौगोलिक 
 #: old_templates_backup/ballot_original.html:489
 #: templates/candidates/ballot.html:846
 msgid "Location permission denied. Please select your location manually."
-msgstr ""
-"स्थान अनुमति अस्वीकार गरियो। कृपया आफ्नो स्थान म्यानुअल रूपमा छनौट "
-"गर्नुहोस्।"
+msgstr "स्थान अनुमति अस्वीकार गरियो। कृपया आफ्नो स्थान म्यानुअल रूपमा छनौट गर्नुहोस्।"
 
 #: old_templates_backup/ballot_original.html:492
 #: templates/candidates/ballot.html:849
@@ -1985,8 +1844,7 @@ msgstr "स्थान अनुरोधको समय समाप्त �
 #: old_templates_backup/ballot_original.html:498
 #: templates/candidates/ballot.html:855
 msgid "Unable to get your location. Please select manually."
-msgstr ""
-"तपाईंको स्थान प्राप्त गर्न असमर्थ। कृपया म्यानुअल रूपमा छनौट गर्नुहोस्।"
+msgstr "तपाईंको स्थान प्राप्त गर्न असमर्थ। कृपया म्यानुअल रूपमा छनौट गर्नुहोस्।"
 
 #: old_templates_backup/ballot_original.html:516
 #: templates/candidates/ballot.html:873
@@ -2111,12 +1969,8 @@ msgid "Enable Location Services"
 msgstr "स्थान सेवाहरू सक्षम पार्नुहोस्"
 
 #: old_templates_backup/main.html:425
-msgid ""
-"Allow ElectNepal to access your location to show independent candidates in "
-"your area."
-msgstr ""
-"तपाईंको क्षेत्रमा स्वतन्त्र उम्मेदवारहरू देखाउन तपाईंको स्थान पहुँच गर्न "
-"इलेनेफिपललाई अनुमति दिनुहोस्।"
+msgid "Allow ElectNepal to access your location to show independent candidates in your area."
+msgstr "तपाईंको क्षेत्रमा स्वतन्त्र उम्मेदवारहरू देखाउन तपाईंको स्थान पहुँच गर्न इलेनेफिपललाई अनुमति दिनुहोस्।"
 
 #: old_templates_backup/main.html:429
 msgid "Allow Location"
@@ -2159,8 +2013,7 @@ msgid "Bad Request"
 msgstr "खराब अनुरोध"
 
 #: templates/400.html:16
-msgid ""
-"The request could not be understood by the server due to malformed syntax."
+msgid "The request could not be understood by the server due to malformed syntax."
 msgstr "विकृत वाक्यविन्यासका कारण सर्भरले अनुरोधलाई बुझ्न सकेन।"
 
 #: templates/400.html:22 templates/403.html:22 templates/404.html:22
@@ -2209,13 +2062,8 @@ msgid "We use cookies"
 msgstr "हामी कुकीज प्रयोग गर्छौं"
 
 #: templates/base.html:55
-msgid ""
-"We use cookies to enhance your experience on ElectNepal. By continuing to "
-"use our platform, you agree to our use of cookies for analytics and "
-"functionality."
-msgstr ""
-"हामी ElectNepal मा तपाईंको अनुभव बढाउन कुकीजहरू प्रयोग गर्छौं। हाम्रो "
-"प्लेटफर्म प्रयोग "
+msgid "We use cookies to enhance your experience on ElectNepal. By continuing to use our platform, you agree to our use of cookies for analytics and functionality."
+msgstr "हामी ElectNepal मा तपाईंको अनुभव बढाउन कुकीजहरू प्रयोग गर्छौं। हाम्रो प्लेटफर्म प्रयोग "
 
 #: templates/base.html:59
 msgid "Accept All"
@@ -2262,9 +2110,7 @@ msgid "Coming Soon"
 msgstr "चाँडै आउँदैछ"
 
 #: templates/base.html:147
-msgid ""
-"The Ballot feature is currently under development and will be available "
-"soon."
+msgid "The Ballot feature is currently under development and will be available soon."
 msgstr "मतपत्र सुविधा हाल विकास अन्तर्गत छ र चाँडै उपलब्ध हुनेछ।"
 
 #: templates/base.html:150
@@ -2324,6 +2170,12 @@ msgstr "लिंक क्लिपबोर्डमा कपी गरिय
 msgid "Could not copy link"
 msgstr "लिंक कपी गर्न सकिएन"
 
+#~ msgid "Resend verification email"
+#~ msgstr "प्रमाणिकरण ईमेल पुनःर्जन गर्नुहोस्"
+
+#~ msgid "Select municipality first to load ward options"
+#~ msgstr "वाक्य विकल्पहरू लोड गर्नको लागि नगरपालिका चयन गर्नुहोस्"
+
 # Additional translations for candidate detail page
 #, fuzzy
 #~ msgid "Office"
@@ -2340,19 +2192,11 @@ msgstr "लिंक कपी गर्न सकिएन"
 #~ msgid "Add campaign posts & updates"
 #~ msgstr "अभियान पोष्टहरू र अपडेटहरू थप्नुहोस्"
 
-#~ msgid ""
-#~ "Create an account to register as an independent candidate and connect with "
-#~ "voters."
-#~ msgstr ""
-#~ "स्वतन्त्र उम्मेदवारको रूपमा दर्ता गर्न र मतदाताहरूसँग जडान गर्न खाता सिर्जना"
-#~ " गर्नुहोस्।"
+#~ msgid "Create an account to register as an independent candidate and connect with voters."
+#~ msgstr "स्वतन्त्र उम्मेदवारको रूपमा दर्ता गर्न र मतदाताहरूसँग जडान गर्न खाता सिर्जना गर्नुहोस्।"
 
-#~ msgid ""
-#~ "By registering, you agree to follow election laws and provide truthful "
-#~ "information."
-#~ msgstr ""
-#~ "दर्ता गरेर, तपाईं निर्वाचन कानून पछ्याउन र सत्य जानकारी प्रदान गर्न सहमत "
-#~ "हुनुहुन्छ।"
+#~ msgid "By registering, you agree to follow election laws and provide truthful information."
+#~ msgstr "दर्ता गरेर, तपाईं निर्वाचन कानून पछ्याउन र सत्य जानकारी प्रदान गर्न सहमत हुनुहुन्छ।"
 
 #, fuzzy
 #~ msgid "Post Title"
@@ -2377,12 +2221,8 @@ msgstr "लिंक कपी गर्न सकिएन"
 #~ msgid "Important"
 #~ msgstr "महत्त्वपूर्ण टिप्पणीहरू"
 
-#~ msgid ""
-#~ "Your profile will be reviewed by our admin team before being published. This"
-#~ " usually takes 24-48 hours."
-#~ msgstr ""
-#~ "तपाईंको प्रोफाइल हाम्रो प्रशासक टोली द्वारा समीक्षा गरिनेछ।यसले सामान्यतया 2"
-#~ " -4--48 "
+#~ msgid "Your profile will be reviewed by our admin team before being published. This usually takes 24-48 hours."
+#~ msgstr "तपाईंको प्रोफाइल हाम्रो प्रशासक टोली द्वारा समीक्षा गरिनेछ।यसले सामान्यतया 2 -4--48 "
 
 #~ msgid "Thank you for registering as a candidate on ElectNepal."
 #~ msgstr "कृषिमा उम्मेदवारको रूपमा दर्ता गरेकोमा धन्यवाद।"
@@ -2391,19 +2231,13 @@ msgstr "लिंक कपी गर्न सकिएन"
 #~ msgstr "अब के हुन्छ?"
 
 #~ msgid "Your profile will be reviewed by our admin team within 24-48 hours."
-#~ msgstr ""
-#~ "तपाईंको प्रोफाइल हाम्रो प्रशासक टोली 2 24--48 घण्टा भित्रमा समीक्षा गरिनेछ।"
+#~ msgstr "तपाईंको प्रोफाइल हाम्रो प्रशासक टोली 2 24--48 घण्टा भित्रमा समीक्षा गरिनेछ।"
 
 #~ msgid "You will receive an email notification once your profile is approved."
-#~ msgstr ""
-#~ "तपाईं एक पटक ईमेल सूचना प्राप्त गर्नुहुनेछ एक पटक तपाईंको प्रोफाइल स्वीकृत "
-#~ "भएपछि।"
+#~ msgstr "तपाईं एक पटक ईमेल सूचना प्राप्त गर्नुहुनेछ एक पटक तपाईंको प्रोफाइल स्वीकृत भएपछि।"
 
 #~ msgid "Once approved, you can access your dashboard to add posts and events."
-#~ msgstr ""
-#~ "एकपटक स्वीकृत भएपछि, तपाईं पोस्ट र कार्यक्रमहरू थप्न आफ्नो ड्यासबोर्ड पहुँच "
-#~ "गर्न सक्नुहुन्छ।एक पटक स्वीकृत भयो, तपाइँ तपाइँको ड्यासबोर्ड पहुँच गर्न "
-#~ "सक्नुहुनेछ पोष्टहरू र घटनाहरू थप्न।"
+#~ msgstr "एकपटक स्वीकृत भएपछि, तपाईं पोस्ट र कार्यक्रमहरू थप्न आफ्नो ड्यासबोर्ड पहुँच गर्न सक्नुहुन्छ।एक पटक स्वीकृत भयो, तपाइँ तपाइँको ड्यासबोर्ड पहुँच गर्न सक्नुहुनेछ पोष्टहरू र घटनाहरू थप्न।"
 
 #~ msgid "Your profile will be visible to voters on the platform."
 #~ msgstr "तपाईंको प्रोफाइल प्लेटफर्ममा मतदाताहरूमा देख्न सकिन्छ।"
@@ -2447,14 +2281,8 @@ msgstr "लिंक कपी गर्न सकिएन"
 #~ msgid "Position Level"
 #~ msgstr "पद स्तर"
 
-#~ msgid ""
-#~ "If you're an independent candidate looking to create your profile and "
-#~ "connect with voters, or if you have any questions about our platform, please"
-#~ " reach out to us:"
-#~ msgstr ""
-#~ "यदि तपाईं आफ्नो प्रोफाइल सिर्जना गर्न र मतदाताहरूसँग जोडिन खोज्ने स्वतन्त्र "
-#~ "उम्मेदवार हुनुहुन्छ भने, वा यदि तपाईंसँग हाम्रो प्लेटफर्मको बारेमा कुनै "
-#~ "प्रश्नहरू छन् भने, कृपया हामीलाई सम्पर्क गर्नुहोस्:"
+#~ msgid "If you're an independent candidate looking to create your profile and connect with voters, or if you have any questions about our platform, please reach out to us:"
+#~ msgstr "यदि तपाईं आफ्नो प्रोफाइल सिर्जना गर्न र मतदाताहरूसँग जोडिन खोज्ने स्वतन्त्र उम्मेदवार हुनुहुन्छ भने, वा यदि तपाईंसँग हाम्रो प्लेटफर्मको बारेमा कुनै प्रश्नहरू छन् भने, कृपया हामीलाई सम्पर्क गर्नुहोस्:"
 
 #~ msgid "Deputy Mayor"
 #~ msgstr "उपमेयर"

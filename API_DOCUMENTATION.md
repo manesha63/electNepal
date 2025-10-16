@@ -422,7 +422,7 @@ Use the OpenAPI schema to generate client libraries in various languages using t
 ## Support
 
 For API support and questions:
-- Email: chandmanisha002@gmail.com
+- Email: electnepal5@gmail.com
 - GitHub Issues: [Repository URL]
 
 ## Changelog
