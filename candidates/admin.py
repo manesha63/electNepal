@@ -3,6 +3,7 @@ from django.utils.html import format_html
 from django.utils import timezone
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+from django.urls import reverse
 import logging
 from .models import Candidate, CandidateEvent  # Removed CandidatePost
 
@@ -17,12 +18,12 @@ class CandidateAdmin(admin.ModelAdmin):
                    'district', 'created_at']
     search_fields = ['full_name', 'user__username', 'user__email',
                      'phone_number', 'constituency_code']
-    readonly_fields = ['created_at', 'updated_at', 'approved_at', 'approved_by']
+    readonly_fields = ['created_at', 'updated_at', 'approved_at', 'approved_by', 'email_preview_links']
     actions = ['approve_candidates', 'reject_candidates', 'mark_as_pending']
 
     fieldsets = (
         (_('Verification Status'), {
-            'fields': ('status', 'admin_notes', 'approved_at', 'approved_by'),
+            'fields': ('status', 'admin_notes', 'approved_at', 'approved_by', 'email_preview_links'),
             'description': _('Manage the candidate verification status')
         }),
         (_('User Information'), {
@@ -73,6 +74,29 @@ class CandidateAdmin(admin.ModelAdmin):
         )
     get_status_badge.short_description = _('Status')
 
+    def email_preview_links(self, obj):
+        """Display email template preview links"""
+        approval_url = reverse('candidates:email_preview', args=['approval'])
+        rejection_url = reverse('candidates:email_preview', args=['rejection'])
+        registration_url = reverse('candidates:email_preview', args=['registration'])
+        admin_notification_url = reverse('candidates:email_preview', args=['admin_notification'])
+
+        return format_html(
+            '<div style="margin: 10px 0;">'
+            '<p style="font-weight: bold; margin-bottom: 8px;">{}</p>'
+            '<a href="{}" target="_blank" style="display: inline-block; background-color: #28A745; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; margin: 2px;">{}</a>'
+            '<a href="{}" target="_blank" style="display: inline-block; background-color: #DC3545; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; margin: 2px;">{}</a>'
+            '<a href="{}" target="_blank" style="display: inline-block; background-color: #007BFF; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; margin: 2px;">{}</a>'
+            '<a href="{}" target="_blank" style="display: inline-block; background-color: #6C757D; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; margin: 2px;">{}</a>'
+            '</div>',
+            _('Preview Email Templates:'),
+            approval_url, _('Approval Email'),
+            rejection_url, _('Rejection Email'),
+            registration_url, _('Registration Email'),
+            admin_notification_url, _('Admin Notification')
+        )
+    email_preview_links.short_description = _('Email Previews')
+
     def approve_candidates(self, request, queryset):
         """Approve selected candidates"""
         count = 0
@@ -108,10 +132,37 @@ class CandidateAdmin(admin.ModelAdmin):
     approve_candidates.short_description = _('Approve selected candidates')
 
     def reject_candidates(self, request, queryset):
-        """Reject selected candidates"""
-        count = queryset.filter(status='pending').update(status='rejected')
+        """Reject selected candidates and send rejection emails"""
+        count = 0
+        email_sent = 0
+        email_failed = 0
+
+        # Process each candidate individually to trigger save signals
+        for candidate in queryset.filter(status='pending'):
+            candidate.status = 'rejected'
+            candidate.admin_notes = 'Bulk rejected by admin'
+            candidate.approved_at = None
+            candidate.approved_by = None
+            candidate.save()  # This triggers the save signal
+            count += 1
+
+            # Send rejection email
+            try:
+                if candidate.send_rejection_email():
+                    email_sent += 1
+                else:
+                    email_failed += 1
+            except Exception as e:
+                email_failed += 1
+                logger.error(f"Email error for {candidate.full_name}: {type(e).__name__}: {str(e)}", exc_info=True)
+
         if count:
-            self.message_user(request, f'{count} candidate(s) rejected.')
+            msg = f'{count} candidate(s) rejected.'
+            if email_sent:
+                msg += f' {email_sent} notification email(s) sent.'
+            if email_failed:
+                msg += f' {email_failed} email(s) failed.'
+            self.message_user(request, msg)
         else:
             self.message_user(request, 'No pending candidates to reject.')
     reject_candidates.short_description = _('Reject selected candidates')

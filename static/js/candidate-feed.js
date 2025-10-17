@@ -15,9 +15,13 @@ function candidateGrid() {
         hasPrevious: false,
         searchQuery: '',
         currentLanguage: 'en',
+        hasResults: true, // Track if results exist
+        isLoading: false, // Track loading state
 
         async fetchCandidates(page = 1) {
             try {
+                this.isLoading = true;
+
                 // Get all parameters from URL
                 const urlParams = new URLSearchParams(window.location.search);
                 this.searchQuery = urlParams.get('q') || document.getElementById('searchInput')?.value || '';
@@ -50,10 +54,15 @@ function candidateGrid() {
                 this.hasMore = data.has_next || false;
                 this.hasPrevious = data.has_previous || false;
 
+                // Check if there are any results
+                this.hasResults = this.candidates.length > 0;
+
             } catch (error) {
                 console.error('Error fetching candidates:', error);
                 // Fallback to template data if available
                 this.loadFallbackData();
+            } finally {
+                this.isLoading = false;
             }
         },
 

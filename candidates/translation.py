@@ -7,8 +7,73 @@ from django.db import models
 from django.utils.translation import get_language
 from googletrans import Translator
 import logging
+import time
+from functools import wraps
 
 logger = logging.getLogger(__name__)
+
+
+def retry_on_transient_errors(max_attempts=3, initial_delay=1.0, backoff_factor=2.0):
+    """
+    Decorator to retry translation operations with exponential backoff.
+
+    Retries only on transient network errors (ConnectionError, TimeoutError, OSError/IOError).
+    Does NOT retry on permanent errors like ValueError (invalid input).
+
+    Args:
+        max_attempts: Maximum number of attempts (default: 3)
+        initial_delay: Initial delay in seconds before first retry (default: 1.0s)
+        backoff_factor: Multiplier for delay between retries (default: 2.0 = exponential)
+
+    Returns:
+        Decorated function that retries on transient errors with exponential backoff
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            delay = initial_delay
+            last_exception = None
+
+            for attempt in range(1, max_attempts + 1):
+                try:
+                    # Attempt the translation
+                    return func(*args, **kwargs)
+
+                except (ConnectionError, TimeoutError, OSError, IOError) as e:
+                    # Transient errors - retry with exponential backoff
+                    last_exception = e
+
+                    if attempt < max_attempts:
+                        logger.warning(
+                            f"Translation attempt {attempt}/{max_attempts} failed with {type(e).__name__}: {str(e)}. "
+                            f"Retrying in {delay:.1f}s..."
+                        )
+                        time.sleep(delay)
+                        delay *= backoff_factor  # Exponential backoff
+                    else:
+                        # Final attempt failed
+                        logger.error(
+                            f"Translation failed after {max_attempts} attempts. "
+                            f"Final error: {type(e).__name__}: {str(e)}"
+                        )
+                        raise  # Re-raise the exception after all retries exhausted
+
+                except ValueError as e:
+                    # Permanent error (invalid input) - do NOT retry
+                    logger.error(f"Translation failed with ValueError (not retrying): {str(e)}")
+                    raise  # Re-raise immediately, no retry
+
+                except Exception as e:
+                    # Unexpected error - log and re-raise without retry
+                    logger.error(f"Unexpected translation error (not retrying): {type(e).__name__}: {str(e)}")
+                    raise
+
+            # This should never be reached, but just in case
+            if last_exception:
+                raise last_exception
+
+        return wrapper
+    return decorator
 
 
 class AutoTranslationMixin:
@@ -19,9 +84,18 @@ class AutoTranslationMixin:
     # Define which fields should be auto-translated
     TRANSLATABLE_FIELDS = []
 
+    @staticmethod
+    @retry_on_transient_errors(max_attempts=3, initial_delay=1.0, backoff_factor=2.0)
+    def _translate_with_retry(translator, text, src='en', dest='ne'):
+        """
+        Internal helper to perform translation with retry logic.
+        Wrapped with retry decorator for transient error handling.
+        """
+        return translator.translate(text, src=src, dest=dest)
+
     def auto_translate_fields(self):
         """
-        Automatically translate English fields to Nepali with specific exception handling
+        Automatically translate English fields to Nepali with retry logic and exception handling
         """
         translator = Translator()
 
@@ -36,8 +110,8 @@ class AutoTranslationMixin:
             # Only translate if English content exists and Nepali is empty
             if en_content and not getattr(self, ne_field, None):
                 try:
-                    # Translate to Nepali
-                    translation = translator.translate(en_content, src='en', dest='ne')
+                    # Translate to Nepali with automatic retry on transient errors
+                    translation = self._translate_with_retry(translator, en_content, src='en', dest='ne')
                     setattr(self, ne_field, translation.text)
 
                     # Mark as machine translated if flag field exists
@@ -46,25 +120,20 @@ class AutoTranslationMixin:
 
                     logger.info(f"Auto-translated {en_field} to Nepali for {self.__class__.__name__} {self.pk}")
 
-                except (ConnectionError, TimeoutError) as e:
-                    # Network-related errors - translation service unavailable
-                    logger.warning(f"Translation service unavailable for {en_field}: {str(e)}")
-                    # Copy English content as fallback
-                    setattr(self, ne_field, en_content)
+                except (ConnectionError, TimeoutError, OSError, IOError) as e:
+                    # Network-related errors - translation service unavailable after all retries
+                    logger.warning(f"Translation service unavailable for {en_field} after retries: {str(e)}")
+                    # Leave Nepali field empty - DO NOT copy English
+                    # This allows the bilingual system to retry translation later
+                    # and maintains data integrity (no English in Nepali fields)
                     if hasattr(self, mt_flag):
                         setattr(self, mt_flag, False)
 
                 except ValueError as e:
-                    # Invalid input or response from translation service
+                    # Invalid input or response from translation service (not retried)
                     logger.error(f"Invalid translation input/response for {en_field}: {str(e)}")
-                    setattr(self, ne_field, en_content)
-                    if hasattr(self, mt_flag):
-                        setattr(self, mt_flag, False)
-
-                except (OSError, IOError) as e:
-                    # File/network I/O errors
-                    logger.error(f"I/O error during translation of {en_field}: {str(e)}")
-                    setattr(self, ne_field, en_content)
+                    # Leave Nepali field empty - DO NOT copy English
+                    # This allows the bilingual system to retry translation later
                     if hasattr(self, mt_flag):
                         setattr(self, mt_flag, False)
 
@@ -162,10 +231,19 @@ class TranslationService:
         'contact us': 'हामीलाई सम्पर्क गर्नुहोस्',
     }
 
+    @staticmethod
+    @retry_on_transient_errors(max_attempts=3, initial_delay=1.0, backoff_factor=2.0)
+    def _perform_translation(translator, text, dest):
+        """
+        Internal helper to perform translation with retry logic.
+        Wrapped with retry decorator for transient error handling.
+        """
+        return translator.translate(text, dest=dest)
+
     @classmethod
     def translate_text(cls, text, target_lang='ne'):
         """
-        Translate text to target language with specific exception handling
+        Translate text to target language with retry logic and exception handling
         """
         if not text:
             return text
@@ -177,22 +255,18 @@ class TranslationService:
 
         try:
             translator = Translator()
-            result = translator.translate(text, dest=target_lang)
+            # Use retry-wrapped translation method
+            result = cls._perform_translation(translator, text, dest=target_lang)
             return result.text
 
-        except (ConnectionError, TimeoutError) as e:
-            # Network errors - translation service unavailable
-            logger.warning(f"Translation service unavailable: {str(e)}")
+        except (ConnectionError, TimeoutError, OSError, IOError) as e:
+            # Network errors - translation service unavailable after all retries
+            logger.warning(f"Translation service unavailable after retries: {str(e)}")
             return text  # Return original text as fallback
 
         except ValueError as e:
-            # Invalid input or unsupported language
+            # Invalid input or unsupported language (not retried)
             logger.error(f"Invalid translation request: {str(e)}")
-            return text
-
-        except (OSError, IOError) as e:
-            # I/O errors during translation
-            logger.error(f"I/O error during translation: {str(e)}")
             return text
 
     @classmethod
@@ -224,38 +298,42 @@ class TranslationService:
     @classmethod
     def bulk_translate_candidates(cls):
         """
-        Bulk translate all candidate data with specific exception handling
+        Bulk translate all candidate data with retry logic and exception handling
         """
         from .models import Candidate
 
-        candidates = Candidate.objects.all()
+        candidates = Candidate.objects.all().select_related('province', 'district', 'municipality')
         translator = Translator()
 
         for candidate in candidates:
             try:
                 fields_translated = []
 
-                # Translate bio
+                # Translate bio with retry
                 if candidate.bio_en and not candidate.bio_ne:
-                    candidate.bio_ne = translator.translate(candidate.bio_en, dest='ne').text
+                    result = cls._perform_translation(translator, candidate.bio_en, dest='ne')
+                    candidate.bio_ne = result.text
                     candidate.is_mt_bio_ne = True
                     fields_translated.append('bio')
 
-                # Translate education
+                # Translate education with retry
                 if candidate.education_en and not candidate.education_ne:
-                    candidate.education_ne = translator.translate(candidate.education_en, dest='ne').text
+                    result = cls._perform_translation(translator, candidate.education_en, dest='ne')
+                    candidate.education_ne = result.text
                     candidate.is_mt_education_ne = True
                     fields_translated.append('education')
 
-                # Translate experience
+                # Translate experience with retry
                 if candidate.experience_en and not candidate.experience_ne:
-                    candidate.experience_ne = translator.translate(candidate.experience_en, dest='ne').text
+                    result = cls._perform_translation(translator, candidate.experience_en, dest='ne')
+                    candidate.experience_ne = result.text
                     candidate.is_mt_experience_ne = True
                     fields_translated.append('experience')
 
-                # Translate manifesto
+                # Translate manifesto with retry
                 if candidate.manifesto_en and not candidate.manifesto_ne:
-                    candidate.manifesto_ne = translator.translate(candidate.manifesto_en, dest='ne').text
+                    result = cls._perform_translation(translator, candidate.manifesto_en, dest='ne')
+                    candidate.manifesto_ne = result.text
                     candidate.is_mt_manifesto_ne = True
                     fields_translated.append('manifesto')
 
@@ -263,19 +341,14 @@ class TranslationService:
                     candidate.save()
                     logger.info(f"Translated candidate {candidate.full_name}: {', '.join(fields_translated)}")
 
-            except (ConnectionError, TimeoutError) as e:
-                # Network errors - skip this candidate and continue
-                logger.warning(f"Translation service unavailable for candidate {candidate.id}: {str(e)}")
+            except (ConnectionError, TimeoutError, OSError, IOError) as e:
+                # Network errors after all retries - skip this candidate and continue
+                logger.warning(f"Translation service unavailable for candidate {candidate.id} after retries: {str(e)}")
                 continue
 
             except ValueError as e:
-                # Invalid translation input/response
+                # Invalid translation input/response (not retried) - skip and continue
                 logger.error(f"Invalid translation data for candidate {candidate.id}: {str(e)}")
-                continue
-
-            except (OSError, IOError) as e:
-                # I/O errors
-                logger.error(f"I/O error translating candidate {candidate.id}: {str(e)}")
                 continue
 
             except AttributeError as e:

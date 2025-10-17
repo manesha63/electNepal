@@ -6,11 +6,12 @@ import re
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from django.db.models import Q, Case, When, Value, IntegerField, CharField
+from django.db.models import Q, Case, When, Value, IntegerField, CharField, Func
 from django.core.paginator import Paginator
 from django.utils.translation import get_language
 from django.views.decorators.vary import vary_on_headers
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django_ratelimit.decorators import ratelimit
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter, OpenApiResponse
 from drf_spectacular.types import OpenApiTypes
 
@@ -100,6 +101,7 @@ def sanitize_search_input(query_string):
 )
 @api_view(['GET'])
 @vary_on_headers('Accept-Language')
+@ratelimit(key='ip', rate='60/m', method='GET', block=True)  # 60 requests per minute per IP
 def candidate_cards_api(request):
     """
     API endpoint for candidate cards with pagination.
@@ -122,26 +124,87 @@ def candidate_cards_api(request):
     # Build queryset - only show approved candidates
     qs = Candidate.objects.filter(status='approved').select_related('province', 'district', 'municipality')
 
+    # Track if we're using search ranking (to preserve sort order)
+    using_search_rank = False
+
     # Apply search filter using PostgreSQL Full-Text Search (indexed, fast)
-    if q:
-        # Use the existing GIN index for full-text search
-        # This is MUCH faster than ILIKE on large datasets
-        search_vector = (
-            SearchVector('full_name', weight='A') +
-            SearchVector('bio_en', weight='B') +
-            SearchVector('bio_ne', weight='B') +
-            SearchVector('education_en', weight='C') +
-            SearchVector('education_ne', weight='C') +
-            SearchVector('experience_en', weight='C') +
-            SearchVector('experience_ne', weight='C') +
-            SearchVector('manifesto_en', weight='D') +
-            SearchVector('manifesto_ne', weight='D')
-        )
-        search_query = SearchQuery(q)
-        qs = qs.annotate(
-            search=search_vector,
-            rank=SearchRank(search_vector, search_query)
-        ).filter(search=search_query).order_by('-rank')
+    # Skip FTS for single character queries (PostgreSQL limitation)
+    # Also escape boolean operators to treat them literally
+    if q and len(q) >= 2:  # Minimum 2 characters for FTS
+        # Escape boolean operators (AND, OR, NOT) by replacing them with spaces
+        # This prevents PostgreSQL from interpreting them as search operators
+        escaped_query = q
+        # Replace boolean operators with quoted versions to treat them literally
+        for operator in ['AND', 'OR', 'NOT']:
+            escaped_query = re.sub(r'\b' + operator + r'\b', ' ', escaped_query, flags=re.IGNORECASE)
+
+        # Normalize multiple spaces that may result from replacements
+        escaped_query = re.sub(r'\s+', ' ', escaped_query).strip()
+
+        # Only proceed if we still have a query after escaping
+        if escaped_query:
+            # Use the existing GIN index for full-text search
+            # This is MUCH faster than ILIKE on large datasets
+            search_vector = (
+                SearchVector('full_name', weight='A') +
+                SearchVector('bio_en', weight='B') +
+                SearchVector('bio_ne', weight='B') +
+                SearchVector('education_en', weight='C') +
+                SearchVector('education_ne', weight='C') +
+                SearchVector('experience_en', weight='C') +
+                SearchVector('experience_ne', weight='C') +
+                SearchVector('manifesto_en', weight='D') +
+                SearchVector('manifesto_ne', weight='D')
+            )
+            search_query = SearchQuery(escaped_query)
+
+            # Add ts_headline for search result highlighting
+            # This highlights matched terms in the search results with <mark> tags
+            qs = qs.annotate(
+                search=search_vector,
+                rank=SearchRank(search_vector, search_query),
+                # Highlight matches in bio_en
+                bio_en_highlighted=Func(
+                    Value('english'),
+                    'bio_en',
+                    search_query,
+                    Value('StartSel=<mark>, StopSel=</mark>, MaxWords=50, MinWords=25'),
+                    function='ts_headline',
+                    output_field=CharField()
+                ),
+                # Highlight matches in bio_ne (Nepali uses simple dictionary)
+                bio_ne_highlighted=Func(
+                    Value('simple'),
+                    'bio_ne',
+                    search_query,
+                    Value('StartSel=<mark>, StopSel=</mark>, MaxWords=50, MinWords=25'),
+                    function='ts_headline',
+                    output_field=CharField()
+                ),
+                # Highlight matches in education_en
+                education_en_highlighted=Func(
+                    Value('english'),
+                    'education_en',
+                    search_query,
+                    Value('StartSel=<mark>, StopSel=</mark>, MaxWords=30, MinWords=15'),
+                    function='ts_headline',
+                    output_field=CharField()
+                ),
+                # Highlight matches in education_ne
+                education_ne_highlighted=Func(
+                    Value('simple'),
+                    'education_ne',
+                    search_query,
+                    Value('StartSel=<mark>, StopSel=</mark>, MaxWords=30, MinWords=15'),
+                    function='ts_headline',
+                    output_field=CharField()
+                )
+            ).filter(search=search_query).order_by('-rank')
+            using_search_rank = True  # Mark that we're using search ranking
+    elif q and len(q) == 1:
+        # For single character searches, use simple ILIKE on name only
+        # This is less efficient but works for single characters
+        qs = qs.filter(full_name__icontains=q)
 
     # Apply location filters
     if province_id:
@@ -153,8 +216,10 @@ def candidate_cards_api(request):
     if position_level:
         qs = qs.filter(position_level=position_level)
 
-    # Order by creation date (newest first)
-    qs = qs.order_by('-created_at')
+    # Order by creation date (newest first) - ONLY if not using search ranking
+    # This preserves the search relevance order when user is searching
+    if not using_search_rank:
+        qs = qs.order_by('-created_at')
 
     # Limit total results to prevent memory issues (max 1000 results)
     # Convert to list to enforce hard limit and avoid queryset issues with Paginator
@@ -225,6 +290,7 @@ def candidate_cards_api(request):
 )
 @api_view(['GET'])
 @vary_on_headers('Accept-Language')
+@ratelimit(key='ip', rate='30/m', method='GET', block=True)  # 30 requests per minute per IP (ballot generation is expensive)
 def my_ballot(request):
     """
     Return candidates for the user's ballot based on their location.

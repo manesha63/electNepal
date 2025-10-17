@@ -26,6 +26,12 @@ class CandidateCardSerializer(serializers.ModelSerializer):
     municipality = serializers.SerializerMethodField()
     ward = serializers.IntegerField(source='ward_number', read_only=True)
 
+    # Search highlighting fields (only present when search is performed)
+    bio_en_highlighted = serializers.CharField(read_only=True, required=False)
+    bio_ne_highlighted = serializers.CharField(read_only=True, required=False)
+    education_en_highlighted = serializers.CharField(read_only=True, required=False)
+    education_ne_highlighted = serializers.CharField(read_only=True, required=False)
+
     class Meta:
         model = Candidate
         fields = [
@@ -40,6 +46,10 @@ class CandidateCardSerializer(serializers.ModelSerializer):
             'municipality',
             'ward',
             'ward_number',
+            'bio_en_highlighted',
+            'bio_ne_highlighted',
+            'education_en_highlighted',
+            'education_ne_highlighted',
         ]
 
     def get_photo(self, obj):

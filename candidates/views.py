@@ -287,8 +287,8 @@ def search_candidates_api(request):
     
     if municipality_id:
         queryset = queryset.filter(municipality_id=municipality_id)
-    
-    candidates = queryset.select_related('district', 'municipality')[:20]
+
+    candidates = queryset.select_related('province', 'district', 'municipality')[:20]
     
     results = []
     for candidate in candidates:
@@ -843,3 +843,74 @@ def delete_event(request, event_id):
 def registration_success(request):
     """Display success page after candidate registration."""
     return render(request, 'candidates/registration_success.html')
+
+
+@login_required
+def email_preview(request, template_name):
+    """
+    Preview email templates for admins.
+    Shows how emails will look before sending to candidates.
+    Admin-only feature for quality assurance.
+    """
+    # Restrict to admin users only
+    if not request.user.is_staff:
+        messages.error(request, _('You must be an admin to access email previews.'))
+        return redirect('admin:index')
+
+    # Define available email templates
+    template_map = {
+        'approval': 'candidates/emails/approval_notification.html',
+        'rejection': 'candidates/emails/rejection_notification.html',
+        'registration': 'candidates/emails/registration_confirmation.html',
+        'admin_notification': 'candidates/emails/admin_notification.html',
+    }
+
+    # Get the template path
+    template_path = template_map.get(template_name)
+    if not template_path:
+        messages.error(request, _('Invalid email template name.'))
+        return redirect('admin:candidates_candidate_changelist')
+
+    # Get a sample candidate for preview (use first approved candidate or create sample data)
+    try:
+        sample_candidate = Candidate.objects.filter(status='approved').select_related(
+            'user', 'province', 'district', 'municipality', 'approved_by'
+        ).first()
+
+        if not sample_candidate:
+            # If no approved candidates, use first pending candidate
+            sample_candidate = Candidate.objects.select_related(
+                'user', 'province', 'district', 'municipality'
+            ).first()
+
+        if not sample_candidate:
+            messages.error(request, _('No candidates available for preview. Please create a candidate first.'))
+            return redirect('admin:candidates_candidate_changelist')
+
+    except Exception as e:
+        messages.error(request, _('Error loading candidate data: %(error)s') % {'error': str(e)})
+        return redirect('admin:candidates_candidate_changelist')
+
+    # Build context for email template
+    domain = request.get_host()
+    protocol = 'https' if request.is_secure() else 'http'
+    full_domain = f"{protocol}://{domain}"
+
+    context = {
+        'candidate': sample_candidate,
+        'domain': full_domain,
+        'now': timezone.now(),
+    }
+
+    # Render the email template with sample data
+    from django.template.loader import render_to_string
+    try:
+        email_html = render_to_string(template_path, context)
+        return render(request, 'admin/email_preview.html', {
+            'email_html': email_html,
+            'template_name': template_name,
+            'candidate_name': sample_candidate.full_name,
+        })
+    except Exception as e:
+        messages.error(request, _('Error rendering email template: %(error)s') % {'error': str(e)})
+        return redirect('admin:candidates_candidate_changelist')

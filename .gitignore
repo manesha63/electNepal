@@ -21,10 +21,13 @@ db.sqlite3-journal
 /staticfiles/
 /static_root/
 
-# Environment variables
+# Environment variables (CRITICAL - Never commit these!)
 .env
 .env.*
 *.env
+.env.local
+.env.production
+.env.development
 !.env.example
 
 # Database
@@ -66,6 +69,8 @@ htmlcov/
 .tox/
 .pytest_cache/
 .hypothesis/
+*_test_report.json
+scripts/testing/
 
 # Documentation build
 docs/_build/
@@ -79,13 +84,23 @@ docs/_templates/
 *~.nib
 *.orig
 
-# Security
+# Security (CRITICAL - Never commit credentials!)
 *.key
 *.pem
 *.crt
 *.csr
 /certbot/
 /ssl/
+credentials.json
+secrets.json
+*.credentials
+*.secrets
+# AWS credentials
+.aws/
+aws-credentials.json
+# API keys
+api_keys.txt
+*.apikey
 
 # Logs
 logs/

@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Count, Sum
 from django.utils import timezone
+from django_ratelimit.decorators import ratelimit
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from drf_spectacular.types import OpenApiTypes
 
@@ -69,6 +70,7 @@ def _validate_int_param(value, param_name='id'):
     tags=['Locations']
 )
 @api_view(['GET'])
+@ratelimit(key='ip', rate='100/m', method='GET', block=True)  # 100 requests per minute per IP (location dropdown, high frequency)
 def districts_by_province(request):
     """
     Get all districts, optionally filtered by province.
@@ -112,6 +114,7 @@ def districts_by_province(request):
     tags=['Locations']
 )
 @api_view(['GET'])
+@ratelimit(key='ip', rate='100/m', method='GET', block=True)  # 100 requests per minute per IP (location dropdown, high frequency)
 def municipalities_by_district(request):
     """
     Get all municipalities, optionally filtered by district.
@@ -170,6 +173,7 @@ def municipalities_by_district(request):
     tags=['Locations']
 )
 @api_view(['GET'])
+@ratelimit(key='ip', rate='100/m', method='GET', block=True)  # 100 requests per minute per IP (location dropdown, high frequency)
 def municipality_wards(request, municipality_id):
     """
     Get ward information for a specific municipality.
@@ -228,6 +232,7 @@ def municipality_wards(request, municipality_id):
 )
 @api_view(['GET', 'POST'])
 @permission_classes([AllowAny])
+@ratelimit(key='ip', rate='30/m', method=['GET', 'POST'], block=True)  # 30 requests per minute per IP (GPS resolution is expensive)
 def geo_resolve(request):
     """
     Resolve GPS coordinates to Nepal administrative location.
@@ -271,6 +276,7 @@ def geo_resolve(request):
     tags=['Locations']
 )
 @api_view(['GET'])
+@ratelimit(key='ip', rate='20/m', method='GET', block=True)  # 20 requests per minute per IP (statistics endpoint)
 def location_statistics(request):
     """
     Get statistical information about locations in the database.
@@ -345,6 +351,7 @@ def location_statistics(request):
 )
 @api_view(['GET'])
 @permission_classes([AllowAny])
+@ratelimit(key='ip', rate='120/m', method='GET', block=True)  # 120 requests per minute per IP (health check endpoint, lenient for monitoring)
 def health_check(request):
     """
     Health check endpoint for monitoring API availability and status.

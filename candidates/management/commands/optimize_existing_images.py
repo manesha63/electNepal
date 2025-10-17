@@ -55,10 +55,11 @@ class Command(BaseCommand):
                 try:
                     current_size = candidate.photo.size
                     width, height = get_image_dimensions(candidate.photo)
-                except:
+                except (IOError, OSError, AttributeError, ValueError) as e:
                     self.stdout.write(
                         self.style.WARNING(
-                            f'Could not read photo for {candidate.full_name} (ID: {candidate.pk})'
+                            f'Could not read photo for {candidate.full_name} (ID: {candidate.pk}): '
+                            f'{type(e).__name__}: {str(e)}'
                         )
                     )
                     error_count += 1

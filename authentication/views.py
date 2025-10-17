@@ -13,6 +13,8 @@ from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
 from django.http import Http404
 from django.utils.translation import gettext as _
+from django.utils import timezone
+from core.log_utils import sanitize_email, sanitize_username, get_user_identifier
 import logging
 import uuid
 
@@ -81,7 +83,7 @@ class CandidateSignupView(CreateView):
             The ElectNepal Team
             """
 
-            logger.info(f"Sending verification email to {user.email}")
+            logger.info(f"Sending verification email to {sanitize_email(user.email)}")
 
             send_mail(
                 subject=subject,
@@ -92,11 +94,11 @@ class CandidateSignupView(CreateView):
                 fail_silently=False,
             )
 
-            logger.info(f"Verification email sent successfully to {user.email}")
+            logger.info(f"Verification email sent successfully to {sanitize_email(user.email)}")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to send verification email to {user.email}: {str(e)}", exc_info=True)
+            logger.error(f"Failed to send verification email to {sanitize_email(user.email)}: {str(e)}", exc_info=True)
             return False
 
     def form_valid(self, form):
@@ -159,9 +161,100 @@ class CustomLoginView(LoginView):
         return reverse_lazy('candidates:register')
 
     def form_valid(self, form):
+        # Get the user before logging in
+        user = form.get_user()
+
+        # Check if user is active (basic check)
+        if not user.is_active:
+            messages.error(
+                self.request,
+                _('Your email address is not verified. Please check your email for the verification link.')
+            )
+            return redirect('authentication:resend_verification')
+
+        # Check if user needs reverification (every 7 days)
+        try:
+            if hasattr(user, 'email_verification'):
+                verification = user.email_verification
+                if verification.needs_reverification():
+                    # Generate new token and send verification email
+                    new_token = verification.regenerate_token()
+
+                    # Send verification email
+                    self._send_reverification_email(user, new_token)
+
+                    messages.warning(
+                        self.request,
+                        _('For security, please verify your email again (required every 7 days). '
+                          'A verification link has been sent to %(email)s') % {'email': user.email}
+                    )
+                    return redirect('authentication:login')
+                else:
+                    # Update last verification check timestamp
+                    verification.update_verification_check()
+            else:
+                # User has no email verification record at all - shouldn't happen but handle it
+                EmailVerification.objects.create(user=user, is_verified=True, verified_at=timezone.now())
+        except Exception as e:
+            logger.error(f"Error checking email verification for {get_user_identifier(user)}: {e}")
+            # Don't block login on verification check errors
+
+        # Proceed with login
         response = super().form_valid(form)
         messages.success(self.request, _('Welcome back, %(username)s!') % {'username': self.request.user.username})
         return response
+
+    def _send_reverification_email(self, user, token):
+        """Send reverification email for 7-day check"""
+        try:
+            domain = self.request.get_host()
+            protocol = 'https' if self.request.is_secure() else 'http'
+            verification_url = f"{protocol}://{domain}/auth/verify-email/{token}/"
+
+            context = {
+                'user': user,
+                'domain': f"{protocol}://{domain}",
+                'verification_url': verification_url,
+                'is_reverification': True,
+                'expiry_hours': 72
+            }
+
+            # Create reverification email content
+            html_message = render_to_string(
+                'authentication/emails/email_verification.html',
+                context
+            )
+
+            plain_message = f"""
+            Hello {user.username}!
+
+            For security purposes, we require email verification every 7 days.
+
+            Please click the link below to verify your email and continue:
+            {verification_url}
+
+            This link will expire in 72 hours.
+
+            Best regards,
+            The ElectNepal Team
+            """
+
+            logger.info(f"Sending reverification email to {sanitize_email(user.email)}")
+
+            send_mail(
+                subject="[ElectNepal] Email Reverification Required",
+                message=plain_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+
+            logger.info(f"Reverification email sent successfully to {sanitize_email(user.email)}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to send reverification email to {sanitize_email(user.email)}: {str(e)}", exc_info=True)
+            return False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -201,6 +294,8 @@ class EmailVerificationView(View):
 
             # Verify the email
             if verification.verify():
+                # Also update last verification check
+                verification.update_verification_check()
                 messages.success(
                     request,
                     _('Your email has been verified successfully! You can now log in.')
@@ -234,19 +329,31 @@ class ResendVerificationView(TemplateView):
                     new_token = user.email_verification.regenerate_token()
 
                     # Send new verification email
-                    self._send_verification_email(user, new_token)
-                    messages.success(
-                        request,
-                        f'A new verification email has been sent to {email}'
-                    )
+                    email_sent = self._send_verification_email(user, new_token)
+                    if email_sent:
+                        messages.success(
+                            request,
+                            f'A new verification email has been sent to {email}'
+                        )
+                    else:
+                        messages.error(
+                            request,
+                            'Failed to send verification email. Please try again later or contact support.'
+                        )
             else:
                 # Create new verification record
                 verification = EmailVerification.objects.create(user=user)
-                self._send_verification_email(user, verification.token)
-                messages.success(
-                    request,
-                    f'A verification email has been sent to {email}'
-                )
+                email_sent = self._send_verification_email(user, verification.token)
+                if email_sent:
+                    messages.success(
+                        request,
+                        f'A verification email has been sent to {email}'
+                    )
+                else:
+                    messages.error(
+                        request,
+                        'Failed to send verification email. Please try again later or contact support.'
+                    )
 
         except User.DoesNotExist:
             # Don't reveal if email exists or not
@@ -259,29 +366,50 @@ class ResendVerificationView(TemplateView):
 
     def _send_verification_email(self, user, token):
         """Helper to send verification email"""
-        domain = self.request.get_host()
-        protocol = 'https' if self.request.is_secure() else 'http'
-        verification_url = f"{protocol}://{domain}/auth/verify-email/{token}/"
+        try:
+            domain = self.request.get_host()
+            protocol = 'https' if self.request.is_secure() else 'http'
+            verification_url = f"{protocol}://{domain}/auth/verify-email/{token}/"
 
-        context = {
-            'user': user,
-            'verification_url': verification_url,
-            'expiry_hours': 72
-        }
+            context = {
+                'user': user,
+                'verification_url': verification_url,
+                'expiry_hours': 72
+            }
 
-        html_message = render_to_string(
-            'authentication/emails/email_verification.html',
-            context
-        )
+            html_message = render_to_string(
+                'authentication/emails/email_verification.html',
+                context
+            )
 
-        send_mail(
-            subject="[ElectNepal] Verify Your Email Address",
-            message=f"Click here to verify your email: {verification_url}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            html_message=html_message,
-            fail_silently=False,
-        )
+            logger.info(f"Sending resend verification email to {sanitize_email(user.email)}")
+
+            send_mail(
+                subject="[ElectNepal] Verify Your Email Address",
+                message=f"Click here to verify your email: {verification_url}",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+
+            logger.info(f"Resend verification email sent successfully to {sanitize_email(user.email)}")
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to send resend verification email to {sanitize_email(user.email)}: {str(e)}", exc_info=True)
+
+            # Notify admins about email failure
+            try:
+                mail_admins(
+                    subject=f"[ALERT] Failed to send resend verification email",
+                    message=f"Failed to send resend verification email to {user.username} ({user.email}). Error: {str(e)}",
+                    fail_silently=True
+                )
+            except Exception as admin_err:
+                logger.error(f"Failed to notify admin of email failure: {admin_err}")
+
+            return False
 
 
 class ForgotPasswordView(TemplateView):
@@ -312,45 +440,66 @@ class ForgotPasswordView(TemplateView):
 
     def _send_reset_email(self, user, token):
         """Send password reset email"""
-        domain = self.request.get_host()
-        protocol = 'https' if self.request.is_secure() else 'http'
-        reset_url = f"{protocol}://{domain}/auth/reset-password/{token}/"
+        try:
+            domain = self.request.get_host()
+            protocol = 'https' if self.request.is_secure() else 'http'
+            reset_url = f"{protocol}://{domain}/auth/reset-password/{token}/"
 
-        context = {
-            'user': user,
-            'reset_url': reset_url,
-            'expiry_hours': 24
-        }
+            context = {
+                'user': user,
+                'reset_url': reset_url,
+                'expiry_hours': 24
+            }
 
-        html_message = render_to_string(
-            'authentication/emails/password_reset.html',
-            context
-        )
+            html_message = render_to_string(
+                'authentication/emails/password_reset.html',
+                context
+            )
 
-        plain_message = f"""
-        Hello {user.username},
+            plain_message = f"""
+            Hello {user.username},
 
-        You requested a password reset for your ElectNepal account.
+            You requested a password reset for your ElectNepal account.
 
-        Click the link below to reset your password:
-        {reset_url}
+            Click the link below to reset your password:
+            {reset_url}
 
-        This link will expire in 24 hours.
+            This link will expire in 24 hours.
 
-        If you did not request this, please ignore this email.
+            If you did not request this, please ignore this email.
 
-        Best regards,
-        The ElectNepal Team
-        """
+            Best regards,
+            The ElectNepal Team
+            """
 
-        send_mail(
-            subject="[ElectNepal] Password Reset Request",
-            message=plain_message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            html_message=html_message,
-            fail_silently=False,
-        )
+            logger.info(f"Sending password reset email to {sanitize_email(user.email)}")
+
+            send_mail(
+                subject="[ElectNepal] Password Reset Request",
+                message=plain_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+
+            logger.info(f"Password reset email sent successfully to {sanitize_email(user.email)}")
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to send password reset email to {sanitize_email(user.email)}: {str(e)}", exc_info=True)
+
+            # Notify admins about email failure
+            try:
+                mail_admins(
+                    subject=f"[ALERT] Failed to send password reset email",
+                    message=f"Failed to send password reset email to {user.username} ({user.email}). User may be unable to reset password. Error: {str(e)}",
+                    fail_silently=True
+                )
+            except Exception as admin_err:
+                logger.error(f"Failed to notify admin of email failure: {admin_err}")
+
+            return False
 
 
 class ResetPasswordView(TemplateView):

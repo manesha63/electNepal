@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from locations.models import Province, District, Municipality
 from .translation import AutoTranslationMixin
 from .validators import validate_file_size, validate_image_size, validate_file_extension, validate_image_extension, validate_file_content_type
+from core.log_utils import sanitize_email, get_user_identifier
 import logging
 
 # Get logger for email operations
@@ -207,7 +208,7 @@ class Candidate(AutoTranslationMixin, models.Model):
                 context
             )
 
-            logger.info(f"Sending registration confirmation to {self.user.email} for candidate {self.full_name}")
+            logger.info(f"Sending registration confirmation to {sanitize_email(self.user.email)} for candidate {self.full_name}")
 
             send_mail(
                 subject=subject,
@@ -218,11 +219,11 @@ class Candidate(AutoTranslationMixin, models.Model):
                 fail_silently=False,
             )
 
-            logger.info(f"Successfully sent registration confirmation to {self.user.email}")
+            logger.info(f"Successfully sent registration confirmation to {sanitize_email(self.user.email)}")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to send registration confirmation to {self.user.email}: {str(e)}", exc_info=True)
+            logger.error(f"Failed to send registration confirmation to {sanitize_email(self.user.email)}: {str(e)}", exc_info=True)
 
             # Fallback: Try to notify admins about the failure
             try:
@@ -293,7 +294,7 @@ class Candidate(AutoTranslationMixin, models.Model):
                 context
             )
 
-            logger.info(f"Sending approval email to {self.user.email} for candidate {self.full_name}")
+            logger.info(f"Sending approval email to {sanitize_email(self.user.email)} for candidate {self.full_name}")
 
             send_mail(
                 subject=subject,
@@ -304,11 +305,11 @@ class Candidate(AutoTranslationMixin, models.Model):
                 fail_silently=False,
             )
 
-            logger.info(f"Successfully sent approval email to {self.user.email}")
+            logger.info(f"Successfully sent approval email to {sanitize_email(self.user.email)}")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to send approval email to {self.user.email}: {str(e)}", exc_info=True)
+            logger.error(f"Failed to send approval email to {sanitize_email(self.user.email)}: {str(e)}", exc_info=True)
 
             # Notify admins about critical email failure
             try:
@@ -337,7 +338,7 @@ class Candidate(AutoTranslationMixin, models.Model):
                 context
             )
 
-            logger.info(f"Sending rejection email to {self.user.email} for candidate {self.full_name}")
+            logger.info(f"Sending rejection email to {sanitize_email(self.user.email)} for candidate {self.full_name}")
 
             send_mail(
                 subject=subject,
@@ -348,11 +349,11 @@ class Candidate(AutoTranslationMixin, models.Model):
                 fail_silently=False,
             )
 
-            logger.info(f"Successfully sent rejection email to {self.user.email}")
+            logger.info(f"Successfully sent rejection email to {sanitize_email(self.user.email)}")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to send rejection email to {self.user.email}: {str(e)}", exc_info=True)
+            logger.error(f"Failed to send rejection email to {sanitize_email(self.user.email)}: {str(e)}", exc_info=True)
 
             # Notify admins about email failure
             try:

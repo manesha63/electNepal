@@ -349,6 +349,71 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
+    /* No results message styling */
+    .no-results-container {
+        text-align: center;
+        padding: 60px 20px;
+        margin: 40px auto;
+        max-width: 600px;
+    }
+
+    .no-results-icon {
+        font-size: 4rem;
+        color: #9CA3AF;
+        margin-bottom: 20px;
+    }
+
+    .no-results-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1F2937;
+        margin-bottom: 12px;
+    }
+
+    .no-results-message {
+        font-size: 1rem;
+        color: #6B7280;
+        margin-bottom: 24px;
+        line-height: 1.6;
+    }
+
+    .no-results-suggestions {
+        background: #F9FAFB;
+        border: 1px solid #E5E7EB;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: left;
+    }
+
+    .no-results-suggestions h4 {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 12px;
+    }
+
+    .no-results-suggestions ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .no-results-suggestions li {
+        font-size: 0.875rem;
+        color: #6B7280;
+        padding: 6px 0;
+        padding-left: 20px;
+        position: relative;
+    }
+
+    .no-results-suggestions li:before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        color: #60A5FA;
+        font-weight: bold;
+    }
+
 </style>
 {% endblock %}
 
@@ -511,6 +576,30 @@
                     </div>
                 </template>
             </div>
+
+            <!-- No Results Message -->
+            <template x-if="!hasResults && !isLoading">
+                <div class="no-results-container">
+                    <div class="no-results-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h2 class="no-results-title">
+                        {% trans "No Candidates Found" %}
+                    </h2>
+                    <p class="no-results-message">
+                        {% trans "We couldn't find any candidates matching your search criteria. Try adjusting your filters or search term." %}
+                    </p>
+                    <div class="no-results-suggestions">
+                        <h4>{% trans "Suggestions:" %}</h4>
+                        <ul>
+                            <li>{% trans "Try searching with different keywords" %}</li>
+                            <li>{% trans "Remove some filters to broaden your search" %}</li>
+                            <li>{% trans "Check if you've selected the correct location" %}</li>
+                            <li>{% trans "Browse all candidates by clearing all filters" %}</li>
+                        </ul>
+                    </div>
+                </div>
+            </template>
 
             <!-- Pagination Controls -->
             <!-- Pagination Navigation -->

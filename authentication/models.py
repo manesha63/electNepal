@@ -13,6 +13,7 @@ class EmailVerification(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     verified_at = models.DateTimeField(null=True, blank=True)
     is_verified = models.BooleanField(default=False)
+    last_verification_check = models.DateTimeField(null=True, blank=True)  # Track when user last verified during login
 
     def is_expired(self):
         """Check if verification token has expired (72 hours)"""
@@ -38,6 +39,27 @@ class EmailVerification(models.Model):
         self.created_at = timezone.now()
         self.save()
         return self.token
+
+    def needs_reverification(self):
+        """Check if user needs to reverify (after 7 days)"""
+        if not self.is_verified:
+            return True  # Not verified at all
+
+        if not self.last_verification_check:
+            # Never checked during login, use initial verification date
+            if self.verified_at:
+                days_since = (timezone.now() - self.verified_at).days
+                return days_since >= 7
+            return True
+
+        # Check if 7 days have passed since last verification check
+        days_since = (timezone.now() - self.last_verification_check).days
+        return days_since >= 7
+
+    def update_verification_check(self):
+        """Update the last verification check timestamp"""
+        self.last_verification_check = timezone.now()
+        self.save()
 
     class Meta:
         verbose_name = "Email Verification"

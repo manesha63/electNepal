@@ -7,8 +7,21 @@ import threading
 import logging
 from googletrans import Translator
 from django.db import connection
+from .translation import retry_on_transient_errors
 
 logger = logging.getLogger(__name__)
+
+
+@retry_on_transient_errors(max_attempts=3, initial_delay=1.0, backoff_factor=2.0)
+def _translate_with_retry(translator, text, src='en', dest='ne'):
+    """
+    Internal helper to perform translation with retry logic.
+    Wrapped with retry decorator for transient error handling.
+
+    This ensures async translations benefit from the same retry mechanism
+    as synchronous translations (3 attempts, exponential backoff).
+    """
+    return translator.translate(text, src=src, dest=dest)
 
 
 def translate_candidate_async(candidate_id, fields_to_translate):
@@ -41,8 +54,8 @@ def translate_candidate_async(candidate_id, fields_to_translate):
                 # Only translate if English exists and Nepali is empty
                 if en_value and not ne_value:
                     try:
-                        # Translate to Nepali
-                        result = translator.translate(en_value, src='en', dest='ne')
+                        # Translate to Nepali with automatic retry on transient errors
+                        result = _translate_with_retry(translator, en_value, src='en', dest='ne')
                         translated = result.text
 
                         # Update the candidate fields
@@ -52,12 +65,17 @@ def translate_candidate_async(candidate_id, fields_to_translate):
 
                         logger.info(f"Successfully translated {en_field} to Nepali for Candidate {candidate_id}")
 
-                    except Exception as e:
-                        logger.error(f"Translation failed for {en_field} (Candidate {candidate_id}): {str(e)}")
-                        # On failure, copy English text as fallback
-                        setattr(candidate, ne_field, en_value)
+                    except (ConnectionError, TimeoutError, OSError, IOError) as e:
+                        # Network errors after all retries - leave Nepali field empty
+                        logger.warning(f"Translation service unavailable for {en_field} (Candidate {candidate_id}) after retries: {str(e)}")
+                        # DO NOT copy English to Nepali field - maintain data integrity
                         setattr(candidate, mt_flag_field, False)
-                        translations_made = True
+
+                    except ValueError as e:
+                        # Invalid input/response from translation service (not retried)
+                        logger.error(f"Invalid translation input/response for {en_field} (Candidate {candidate_id}): {str(e)}")
+                        # DO NOT copy English to Nepali field - maintain data integrity
+                        setattr(candidate, mt_flag_field, False)
 
             # Save the candidate with translated fields if any translations were made
             if translations_made:
@@ -114,7 +132,8 @@ def translate_event_async(event_id, fields_to_translate):
 
                 if en_value and not ne_value:
                     try:
-                        result = translator.translate(en_value, src='en', dest='ne')
+                        # Translate to Nepali with automatic retry on transient errors
+                        result = _translate_with_retry(translator, en_value, src='en', dest='ne')
                         translated = result.text
 
                         setattr(event, ne_field, translated)
@@ -123,11 +142,17 @@ def translate_event_async(event_id, fields_to_translate):
 
                         logger.info(f"Successfully translated {en_field} for CandidateEvent {event_id}")
 
-                    except Exception as e:
-                        logger.error(f"Translation failed for {en_field} (Event {event_id}): {str(e)}")
-                        setattr(event, ne_field, en_value)
+                    except (ConnectionError, TimeoutError, OSError, IOError) as e:
+                        # Network errors after all retries - leave Nepali field empty
+                        logger.warning(f"Translation service unavailable for {en_field} (Event {event_id}) after retries: {str(e)}")
+                        # DO NOT copy English to Nepali field - maintain data integrity
                         setattr(event, mt_flag_field, False)
-                        translations_made = True
+
+                    except ValueError as e:
+                        # Invalid input/response from translation service (not retried)
+                        logger.error(f"Invalid translation input/response for {en_field} (Event {event_id}): {str(e)}")
+                        # DO NOT copy English to Nepali field - maintain data integrity
+                        setattr(event, mt_flag_field, False)
 
             if translations_made:
                 update_values = {}

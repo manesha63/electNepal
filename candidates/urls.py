@@ -20,6 +20,9 @@ urlpatterns = [
     path('events/<int:event_id>/delete/', views.delete_event, name='delete_event'),
     path('registration-success/', views.registration_success, name='registration_success'),
 
+    # Admin email preview
+    path('admin/email-preview/<str:template_name>/', views.email_preview, name='email_preview'),
+
     # APIs - now using documented API views
     path('api/my-ballot/', api_views.my_ballot, name='my_ballot'),
     path('api/cards/', api_views.candidate_cards_api, name='candidate_cards_api'),
