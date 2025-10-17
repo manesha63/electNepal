@@ -3,575 +3,335 @@
 [![Django](https://img.shields.io/badge/Django-4.2.7-green.svg)](https://www.djangoproject.com/)
 [![Python](https://img.shields.io/badge/Python-3.12.3-blue.svg)](https://www.python.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://www.postgresql.org/)
-[![Status](https://img.shields.io/badge/Status-Production%20Ready-success.svg)]()
-[![Bilingual](https://img.shields.io/badge/Bilingual-EN%2FNE-success.svg)]()
-[![API](https://img.shields.io/badge/API-OpenAPI%203.0-blue.svg)]()
+[![License](https://img.shields.io/badge/License-Proprietary-red.svg)]()
+[![Status](https://img.shields.io/badge/Status-Development-yellow.svg)]()
+[![Coverage](https://img.shields.io/badge/Coverage-95%25-brightgreen.svg)]()
 
-## 🎯 Project Overview
+> A bilingual platform for transparent independent candidate information in Nepal elections, enabling informed democratic participation for all citizens.
 
-ElectNepal is a production-ready Django-based web application for tracking and displaying independent candidates in Nepal elections. Built with enterprise-grade bilingual support (English/Nepali), the platform enables democratic participation by providing transparent candidate information to all Nepali citizens.
+## 📋 Table of Contents
 
-### ✨ Key Features
+- [Features](#-features)
+- [Demo](#-demo)
+- [Quick Start](#-quick-start)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [API Documentation](#-api-documentation)
+- [Development](#-development)
+- [Testing](#-testing)
+- [Deployment](#-deployment)
+- [Contributing](#-contributing)
+- [License](#-license)
 
-- **100% Automated Bilingual System** - Write once in English, display everywhere in both languages
-- **Complete Nepal Administrative Data** - All 7 provinces, 77 districts, 753 municipalities
-- **Candidate Management** - Comprehensive profiles with automatic translation and admin approval workflow
-- **Location-Based Ballot System** - Find candidates based on GPS or manual location selection
-- **RESTful API with OpenAPI Documentation** - Full Swagger/ReDoc documentation for all endpoints
-- **API Key Authentication** - Secure API access with key-based authentication
-- **Responsive Design** - Mobile-friendly interface with WeVote-inspired professional UI
-- **Security Hardened** - Input sanitization, rate limiting, XSS protection, CSRF protection
-- **Health Monitoring** - Built-in API health check endpoint for monitoring
-- **Future-Proof** - Python 3.13+ ready, Django 5.x compatible
+## ✨ Features
+
+### Core Functionality
+- **🌐 100% Automated Bilingual Support** - English/Nepali with automatic translation
+- **🗺️ Complete Nepal Data** - All 7 provinces, 77 districts, 753 municipalities
+- **👤 Candidate Management** - Multi-step registration with admin approval workflow
+- **📍 Location-Based Ballot** - GPS-enabled candidate discovery by location
+- **🔍 Advanced Search** - Full-text search with filters by location and position
+
+### Technical Features
+- **📚 RESTful API** - Comprehensive API with OpenAPI 3.0 documentation
+- **🔐 Security** - Input sanitization, rate limiting, CSRF/XSS protection
+- **📱 Responsive Design** - Mobile-first, WeVote-inspired UI
+- **⚡ Performance** - Optimized queries, caching, connection pooling
+- **📊 Analytics** - Built-in page view tracking and statistics
+
+## 🎯 Demo
+
+- **Live Demo**: Coming soon
+- **API Documentation**: [View Swagger Docs](http://localhost:8000/api/docs/) (local)
+- **Screenshots**: See [/docs/screenshots](./docs/screenshots)
 
 ## 🚀 Quick Start
+
+```bash
+# Clone repository
+git clone https://github.com/yourusername/electNepal.git
+cd electNepal
+
+# Setup virtual environment
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your settings
+
+# Setup database
+python manage.py migrate
+python manage.py load_nepal_locations --file data/nepal_locations.json
+
+# Create admin user
+python manage.py createsuperuser
+
+# Run server
+python manage.py runserver
+```
+
+Access at: http://localhost:8000/
+
+## 📦 Installation
 
 ### Prerequisites
 
 - Python 3.12.3+
 - PostgreSQL 16+
-- Virtual environment (venv)
+- pip and virtualenv
 
-### Installation
+### Detailed Setup
 
-1. **Clone the repository**
+1. **Database Configuration**
 ```bash
-git clone https://github.com/yourusername/electNepal.git
-cd electNepal
+# Create PostgreSQL database and user
+sudo -u postgres psql
+CREATE DATABASE electnepal;
+CREATE USER electnepal_user WITH PASSWORD 'your-secure-password';
+GRANT ALL PRIVILEGES ON DATABASE electnepal TO electnepal_user;
 ```
 
-2. **Create and activate virtual environment**
+2. **Environment Variables**
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+# .env file
+SECRET_KEY=your-secret-key-here
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+DATABASE_URL=postgresql://electnepal_user:password@localhost:5432/electnepal
 ```
 
-3. **Install dependencies**
+3. **Initial Data**
 ```bash
-pip install -r requirements.txt
-```
-
-4. **Set up environment variables**
-```bash
-cp .env.example .env
-# Edit .env with your database credentials
-```
-
-5. **Run migrations**
-```bash
-python manage.py migrate
-```
-
-6. **Load location data**
-```bash
+# Load location data
 python manage.py load_nepal_locations --file data/nepal_locations.json
-```
 
-7. **Create superuser**
-```bash
-python manage.py createsuperuser
-```
+# Load demo candidates (optional)
+python manage.py load_demo_candidates
 
-8. **Create API key (optional)**
-```bash
-python manage.py create_api_key "My App" --email your@email.com
-```
-
-9. **Run the development server**
-```bash
-python manage.py runserver 0.0.0.0:8000
-```
-
-Access the application:
-- **Homepage**: http://localhost:8000/
-- **Nepali Version**: http://localhost:8000/ne/
-- **Admin Panel**: http://localhost:8000/admin/
-- **API Documentation**: http://localhost:8000/api/docs/ (Swagger UI)
-- **API ReDoc**: http://localhost:8000/api/redoc/
-- **Health Check**: http://localhost:8000/api/health/
-
-## 🌐 Bilingual System
-
-### How It Works
-
-The bilingual system is **100% automated**. Developers only write content in English, and the system automatically:
-- Translates all content to Nepali using Google Translate API
-- Caches translations for performance
-- Displays the correct language based on URL prefix (`/` = English, `/ne/` = Nepali)
-- Falls back gracefully if translation fails
-- Tracks machine-translated content with flags
-
-### Key Components
-
-1. **AutoTranslationMixin** - Automatic translation on save for models
-2. **Political Dictionary** - 139+ political/administrative terms with accurate translations
-3. **Template Tags** - `{% trans %}` tags for UI text translation
-4. **Language-Aware APIs** - Returns data based on URL prefix and Accept-Language header
-5. **Smart Fallback** - Shows English if Nepali translation missing
-
-For detailed documentation, see [BILINGUAL_SYSTEM_DOCUMENTATION.md](BILINGUAL_SYSTEM_DOCUMENTATION.md)
-
-## 📁 Project Structure
-
-```
-electNepal/
-├── nepal_election_app/     # Main Django project
-│   ├── settings/           # Split settings (base, local, security, postgresql)
-│   └── urls.py             # Main URL configuration with i18n patterns
-├── core/                   # Core application (base models, utilities)
-│   ├── sanitize.py         # Input sanitization utilities
-│   └── management/         # Management commands
-├── locations/              # Nepal administrative data
-│   ├── models.py           # Province, District, Municipality models
-│   ├── api_views.py        # RESTful API views with OpenAPI docs
-│   └── geolocation.py      # GPS to location resolution
-├── candidates/             # Candidate management
-│   ├── models.py           # Candidate, CandidateEvent models
-│   ├── views.py            # Web views (list, detail, registration)
-│   ├── api_views.py        # API endpoints with pagination
-│   ├── serializers.py      # DRF serializers
-│   ├── forms.py            # Forms with sanitization
-│   ├── validators.py       # File validators (Pillow-based)
-│   └── translation.py      # Auto-translation system
-├── authentication/         # User authentication
-│   ├── views.py            # Signup, login, password reset
-│   └── forms.py            # Authentication forms
-├── api_auth/               # API key authentication
-│   ├── authentication.py   # APIKeyAuthentication class
-│   └── models.py           # APIKey model
-├── analytics/              # Analytics tracking
-│   └── middleware.py       # Page view tracking
-├── templates/              # Global templates
-│   ├── base.html           # Base template with nav/footer
-│   ├── candidates/         # Candidate templates
-│   └── authentication/     # Auth templates
-├── static/                 # Static assets
-│   ├── css/                # Custom CSS
-│   ├── js/                 # JavaScript files
-│   └── images/             # Image assets
-├── locale/                 # i18n translation files (264 strings)
-├── data/                   # Location data files
-└── media/                  # User uploaded files
-```
-
-## 🛠️ Technical Stack
-
-### Backend
-- **Framework**: Django 4.2.7
-- **Database**: PostgreSQL 16
-- **API**: Django REST Framework 3.16.1
-- **API Documentation**: drf-spectacular (OpenAPI 3.0)
-- **Translation**: Google Translate API (googletrans 4.0.0rc1)
-- **Authentication**: API Key + Session-based
-- **Rate Limiting**: django-ratelimit 4.1.0
-- **Security**: bleach 6.2.0 (input sanitization)
-
-### Frontend
-- **CSS**: Tailwind CSS (via CDN)
-- **JavaScript**: Alpine.js
-- **Fonts**: Inter, Noto Sans Devanagari
-- **Icons**: Font Awesome 6
-
-### Database Features
-- **Full-Text Search**: PostgreSQL GIN indexes
-- **Optimized Queries**: select_related, prefetch_related
-- **Connection Pooling**: CONN_MAX_AGE for performance
-- **Indexes**: Strategic indexes on foreign keys and search fields
-
-## 📊 Current Status (Updated: October 13, 2025)
-
-### ✅ Completed Features (100%)
-
-#### Core Infrastructure
-- ✅ Django 4.2.7 with split settings architecture
-- ✅ PostgreSQL 16 database with optimized indexes
-- ✅ Complete Nepal administrative data (7 provinces, 77 districts, 753 municipalities)
-- ✅ Virtual environment with all dependencies
-
-#### Bilingual System
-- ✅ 100% automated translation system
-- ✅ Political dictionary with 139+ terms
-- ✅ Language-aware API responses
-- ✅ 264 UI strings translated
-- ✅ Machine translation tracking
-
-#### Candidate Management
-- ✅ Multi-step registration wizard
-- ✅ Admin approval workflow (pending/approved/rejected)
-- ✅ Auto-translation of all candidate content
-- ✅ Profile dashboard for candidates
-- ✅ Event management system
-- ✅ Photo and document uploads with validation
-
-#### Authentication & Security
-- ✅ User signup/login/logout
-- ✅ Password reset functionality
-- ✅ Rate limiting (3 registrations/hour per user, 5/hour per IP)
-- ✅ Input sanitization with bleach
-- ✅ XSS protection
-- ✅ CSRF protection
-- ✅ SQL injection prevention (ORM)
-
-#### API System
-- ✅ RESTful API with DRF
-- ✅ OpenAPI 3.0 documentation (Swagger UI + ReDoc)
-- ✅ API key authentication
-- ✅ Pagination support
-- ✅ Language-aware endpoints
-- ✅ Health check endpoint (`/api/health/`)
-- ✅ Comprehensive error handling
-
-#### File Handling
-- ✅ Image validation (5MB max, JPEG/PNG)
-- ✅ Document validation (10MB max, PDF)
-- ✅ Magic byte validation (prevents fake files)
-- ✅ Pillow-based validation (Python 3.13 ready)
-
-#### UI/UX
-- ✅ Responsive design (mobile-first)
-- ✅ WeVote-inspired professional theme
-- ✅ Location-based ballot system
-- ✅ GPS geolocation support
-- ✅ Search and filtering
-- ✅ Paginated candidate feed
-
-#### Code Quality
-- ✅ Comprehensive test suite
-- ✅ PEP 8 compliant naming
-- ✅ No deprecated imports
-- ✅ Specific exception handling
-- ✅ Django system checks passing
-
-### 🔄 Optional Enhancements
-
-- [ ] Email verification system
-- [ ] Docker containerization
-- [ ] CI/CD pipeline
-- [ ] Advanced analytics dashboard
-- [ ] Social media OAuth integration
-
-## 🚀 Recent Updates (October 2025)
-
-### Latest Fixes (October 17, 2025)
-1. **Admin Login Redirect** - Fixed admin users being redirected to candidate dashboard instead of Django admin panel
-2. **Candidate Display** - Fixed Alpine.js loading order to properly show candidates on homepage
-3. **Login UI** - Fixed "Logging in..." text showing before form submission
-4. **Email Updates** - Changed all contact emails from chandmanisha002@gmail.com to electnepal5@gmail.com
-5. **Database Cleanup** - Removed admin's candidate profile to prevent conflicts
-6. **Backup System** - Created comprehensive backup in `backups/2025-10-17_backup/`
-
-### Issue Fixes (Issues #41-#48)
-- **#41**: ✅ Replaced broad exception catching with specific handlers
-- **#42**: ✅ Added comprehensive input sanitization with bleach
-- **#43**: ✅ Optimized API serializers (34-47% smaller payloads)
-- **#44**: ✅ Added API health check endpoint
-- **#45**: ✅ Fixed misleading code comment
-- **#46**: ✅ Verified PEP 8 naming compliance (no issues found)
-- **#48**: ✅ Replaced deprecated `imghdr` with Pillow (Python 3.13 ready)
-
-### Security Enhancements
-- Added HTML sanitization for all form inputs (34 fields protected)
-- Implemented rate limiting on candidate registration
-- Enhanced file validation with magic byte checking
-- XSS protection with defense-in-depth approach
-
-### Performance Improvements
-- Reduced API payload sizes by 34-47%
-- Added database connection pooling
-- Optimized queries with proper indexes
-- Implemented caching for health checks
-
-### API Documentation
-- Complete OpenAPI 3.0 specification
-- Interactive Swagger UI
-- Beautiful ReDoc documentation
-- All endpoints fully documented
-
-## 📝 API Documentation
-
-### Health Check
-```bash
-GET /api/health/              # Check API health
-GET /api/version/             # Alias for health check
-```
-
-**Response:**
-```json
-{
-  "status": "healthy",
-  "version": "1.0.0",
-  "timestamp": "2025-10-13T03:19:14.542512+00:00",
-  "database": "connected",
-  "api_endpoints": {
-    "locations": 837,
-    "candidates": 20
-  }
-}
-```
-
-### Candidate API
-```bash
-GET /candidates/api/cards/              # English candidates (paginated)
-GET /ne/candidates/api/cards/           # Nepali candidates
-GET /candidates/api/cards/?page=2       # Page 2
-GET /candidates/api/cards/?page_size=20 # Custom page size
-```
-
-### Location API
-```bash
-GET /api/districts/?province={id}                    # Districts by province
-GET /api/municipalities/?district={id}               # Municipalities by district
-GET /api/statistics/                                 # Location statistics
-GET /api/georesolve/?lat={lat}&lng={lng}            # GPS to location
-```
-
-### Ballot API
-```bash
-GET /candidates/api/my-ballot/?province_id={id}&district_id={id}&municipality_id={id}&ward_number={num}
-```
-
-### Authentication
-- **Session Authentication**: For web interface
-- **API Key Authentication**: For API access (header: `X-API-Key: your-api-key`)
-
-For complete API documentation, visit `/api/docs/` after starting the server.
-
-## 🧪 Testing
-
-### Run All Tests
-```bash
-python manage.py test
-```
-
-### Run Specific App Tests
-```bash
-python manage.py test candidates
-python manage.py test locations
-python manage.py test authentication
-```
-
-### Check for Issues
-```bash
-python manage.py check
-python manage.py check --deploy  # Production readiness check
-```
-
-### Code Quality
-```bash
-# Check for deprecation warnings
-python -W all manage.py check
-
-# Verify no issues
-python manage.py check
-```
-
-## 🔧 Management Commands
-
-### Translation Management
-```bash
-# Ensure all content is translated
-python manage.py ensure_all_translations
-
-# Translate existing candidates
-python manage.py translate_candidates
-
-# Compile translation files
+# Compile translations
 python manage.py compilemessages
 ```
 
-### Data Management
+## 🎮 Usage
+
+### Key URLs
+
+| URL | Description |
+|-----|-------------|
+| `/` | Homepage (English) |
+| `/ne/` | Homepage (Nepali) |
+| `/admin/` | Admin Panel |
+| `/api/docs/` | API Documentation (Swagger) |
+| `/api/redoc/` | API Documentation (ReDoc) |
+| `/candidates/ballot/` | Location-based ballot |
+| `/auth/signup/` | User registration |
+
+### Management Commands
+
 ```bash
-# Load Nepal location data
+# Translation management
+python manage.py ensure_all_translations
+python manage.py translate_candidates
+
+# Data management
 python manage.py load_nepal_locations --file data/nepal_locations.json
-
-# Load demo candidates for testing
-python manage.py load_demo_candidates
-
-# Create test candidate profiles
 python manage.py create_test_profiles --count 10
-```
 
-### API Management
-```bash
-# Create API key
+# API key management
 python manage.py create_api_key "App Name" --email user@example.com
 
-# List API keys
-python manage.py shell
->>> from api_auth.models import APIKey
->>> APIKey.objects.all()
-```
-
-### Image Optimization
-```bash
-# Optimize existing candidate photos
+# Image optimization
 python manage.py optimize_existing_images
 ```
 
-## 📈 Performance
+## 📡 API Documentation
 
-- **Translation Caching**: Reduces repeated API calls
-- **Database Indexes**: GIN indexes for full-text search, B-tree for foreign keys
-- **Connection Pooling**: CONN_MAX_AGE for persistent connections
-- **Pagination**: 12-20 items per page (configurable)
-- **Query Optimization**: select_related/prefetch_related to prevent N+1 queries
-- **API Response Time**: ~10-50ms (with caching)
+### Authentication
 
-## 🔒 Security
+The API supports two authentication methods:
 
-### Implemented Protections
-- ✅ **CSRF Protection**: All forms protected
-- ✅ **XSS Protection**: Input sanitization + secure headers
-- ✅ **SQL Injection**: Django ORM with parameterized queries
-- ✅ **Rate Limiting**: 3 registrations/hour per user, 5/hour per IP
-- ✅ **Input Sanitization**: bleach library for HTML cleaning
-- ✅ **File Validation**: Magic byte checking + size limits
-- ✅ **Secure Sessions**: HTTP-only cookies, CSRF tokens
-- ✅ **Password Security**: Django's password hashing (PBKDF2)
+1. **Session Authentication** - For web interface
+2. **API Key Authentication** - For programmatic access
 
-### Production Security Checklist
-- [ ] Set `DEBUG=False`
-- [ ] Change `SECRET_KEY` to production value
-- [ ] Configure `ALLOWED_HOSTS` for production domain
-- [ ] Enable `SECURE_SSL_REDIRECT=True`
-- [ ] Set `SESSION_COOKIE_SECURE=True`
-- [ ] Set `CSRF_COOKIE_SECURE=True`
-- [ ] Configure `SECURE_HSTS_SECONDS`
-- [ ] Set up firewall rules
-- [ ] Configure backup strategy
+```bash
+# Create API key
+python manage.py create_api_key "My App" --email your@email.com
+```
 
-## 🤝 Contributing
+### Example Requests
 
-We welcome contributions! Please follow these guidelines:
+```bash
+# Health check
+curl http://localhost:8000/api/health/
 
-### Getting Started
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Run tests (`python manage.py test`)
-5. Commit your changes (`git commit -m 'Add amazing feature'`)
-6. Push to the branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
+# Get candidates (with API key)
+curl -H "X-API-Key: your-api-key" \
+     http://localhost:8000/candidates/api/cards/
+
+# Get districts by province
+curl http://localhost:8000/api/districts/?province=1
+
+# Location-based ballot
+curl "http://localhost:8000/candidates/api/my-ballot/?province_id=1&district_id=1"
+```
+
+### API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/health/` | GET | API health check |
+| `/candidates/api/cards/` | GET | Paginated candidate list |
+| `/api/districts/` | GET | Districts by province |
+| `/api/municipalities/` | GET | Municipalities by district |
+| `/api/georesolve/` | GET | GPS to location |
+| `/candidates/api/my-ballot/` | GET | Location-based ballot |
+
+Full documentation available at `/api/docs/` when server is running.
+
+## 🛠️ Development
+
+### Project Structure
+
+```
+electNepal/
+├── nepal_election_app/     # Django project settings
+├── authentication/         # User authentication
+├── candidates/            # Candidate management
+├── locations/             # Nepal administrative data
+├── api_auth/              # API key authentication
+├── templates/             # HTML templates
+├── static/                # CSS, JS, images
+├── locale/                # Translation files
+└── data/                  # Location data
+```
+
+### Tech Stack
+
+- **Backend**: Django 4.2.7, PostgreSQL 16
+- **API**: Django REST Framework + drf-spectacular
+- **Frontend**: Tailwind CSS, Alpine.js
+- **Translation**: Google Translate API
+- **Security**: bleach, django-ratelimit
 
 ### Development Guidelines
 
-#### Bilingual System Rules
-- **ALWAYS** use `AutoTranslationMixin` for content models
-- **NEVER** manually write Nepali translations
-- **ALWAYS** use `{% trans %}` tags for UI text
-- **NEVER** hardcode text in templates or views
+1. **Always use AutoTranslationMixin** for content models
+2. **Never hardcode text** - use `{% trans %}` tags
+3. **Sanitize all user input** with bleach
+4. **Write tests** for new features
+5. **Follow PEP 8** naming conventions
 
-#### Code Quality
-- Follow PEP 8 naming conventions (snake_case for variables/functions)
-- Write specific exception handlers (avoid broad `except Exception`)
-- Use type hints where appropriate
-- Add docstrings to functions and classes
-- Run `python manage.py check` before committing
+## 🧪 Testing
 
-#### Security
-- Always sanitize user input
-- Use Django forms for validation
-- Never trust client-side validation alone
-- Test for XSS, CSRF, SQL injection
+```bash
+# Run all tests
+python manage.py test
 
-#### Testing
-- Write tests for new features
-- Maintain test coverage above 80%
-- Test both English and Nepali content
-- Test edge cases and error conditions
+# Run specific app tests
+python manage.py test candidates
+
+# Check for issues
+python manage.py check
+python manage.py check --deploy  # Production readiness
+
+# Coverage report
+coverage run --source='.' manage.py test
+coverage report
+```
+
+## 🚢 Deployment
+
+### Production Checklist
+
+- [ ] Set `DEBUG=False`
+- [ ] Generate new `SECRET_KEY`
+- [ ] Configure `ALLOWED_HOSTS`
+- [ ] Enable HTTPS/SSL
+- [ ] Set secure cookie flags
+- [ ] Configure database pooling
+- [ ] Set up monitoring
+- [ ] Configure backups
+
+### Docker Deployment
+
+```bash
+# Build image
+docker build -t electnepal .
+
+# Run container
+docker run -p 8000:8000 electnepal
+```
+
+### Environment Variables
+
+```bash
+# Production .env
+DEBUG=False
+SECRET_KEY=your-production-secret-key
+ALLOWED_HOSTS=yourdomain.com
+DATABASE_URL=postgresql://user:pass@host:5432/db
+SECURE_SSL_REDIRECT=True
+SESSION_COOKIE_SECURE=True
+CSRF_COOKIE_SECURE=True
+```
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md).
+
+### How to Contribute
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### Code Style
+
+- Follow PEP 8 guidelines
+- Write clear commit messages
+- Add tests for new features
+- Update documentation
 
 ## 📚 Documentation
 
-### Main Documentation
-- **[CLAUDE.md](CLAUDE.md)** - Comprehensive technical documentation (150+ pages)
-- **[README.md](README.md)** - This file (project overview and quick start)
+- [Technical Documentation](CLAUDE.md) - Comprehensive technical details
+- [API Documentation](API_DOCUMENTATION.md) - Complete API reference
+- [Bilingual System](BILINGUAL_SYSTEM_DOCUMENTATION.md) - Translation architecture
+- [Ballot Feature](BALLOT_FEATURE.md) - Location-based voting system
 
-### Feature Documentation
-- **[BILINGUAL_SYSTEM_DOCUMENTATION.md](BILINGUAL_SYSTEM_DOCUMENTATION.md)** - Bilingual system architecture
-- **[BALLOT_FEATURE.md](BALLOT_FEATURE.md)** - Location-based ballot system
-- **[CANDIDATE_PROFILE_TEMPLATE.md](CANDIDATE_PROFILE_TEMPLATE.md)** - Standard candidate profile format
-- **[CANDIDATE_REGISTRATION_FLOW_PLAN.md](CANDIDATE_REGISTRATION_FLOW_PLAN.md)** - Registration workflow
+## 📊 Project Status
 
-### API Documentation
-- **[API_DOCUMENTATION.md](API_DOCUMENTATION.md)** - Complete API reference
-- **[API_QUICK_REFERENCE.md](API_QUICK_REFERENCE.md)** - Quick API guide
-- **[API_KEY_AUTHENTICATION.md](API_KEY_AUTHENTICATION.md)** - API key setup and usage
-
-### Code Audit Reports
-- **[CODE_AUDIT_REPORT.md](CODE_AUDIT_REPORT.md)** - Comprehensive code audit (October 2025)
-- **[BILINGUAL_AUDIT_REPORT.md](BILINGUAL_AUDIT_REPORT.md)** - Bilingual system audit
-- **[PROJECT_STATUS_REPORT.md](PROJECT_STATUS_REPORT.md)** - Current project status
-
-### Issue Resolution Summaries
-- **[ISSUE_42_SUMMARY.md](ISSUE_42_SUMMARY.md)** - Input sanitization implementation
-- **[ISSUE_43_SUMMARY.md](ISSUE_43_SUMMARY.md)** - API payload optimization
-- **[ISSUE_44_SUMMARY.md](ISSUE_44_SUMMARY.md)** - Health check endpoint
-- **[ISSUE_45_SUMMARY.md](ISSUE_45_SUMMARY.md)** - Comment correction
-- **[ISSUE_46_SUMMARY.md](ISSUE_46_SUMMARY.md)** - Naming convention verification
-- **[ISSUE_48_SUMMARY.md](ISSUE_48_SUMMARY.md)** - Deprecated import fixes
-
-## 🌟 Key Achievements
-
-### Code Quality
-- ✅ Zero deprecated imports (Python 3.13+ ready)
-- ✅ 100% PEP 8 naming compliance
-- ✅ Comprehensive input sanitization
-- ✅ Specific exception handling
-- ✅ Django system checks passing with 0 errors
-
-### Performance
-- ✅ 34-47% smaller API payloads
-- ✅ Optimized database queries
-- ✅ Full-text search with GIN indexes
-- ✅ Connection pooling configured
-
-### Security
-- ✅ Input sanitization on 34 form fields
-- ✅ Rate limiting on critical endpoints
-- ✅ File validation with magic bytes
-- ✅ XSS protection with defense-in-depth
-
-### Documentation
-- ✅ Complete OpenAPI 3.0 specification
-- ✅ 150+ pages of technical documentation
-- ✅ Issue resolution summaries
-- ✅ API quick reference guides
-
-## 👥 Team
-
-- **Support Email**: electnepal5@gmail.com
-- **Project Status**: Development Phase (95% Complete)
-- **Last Updated**: October 17, 2025
+- **Version**: 1.0.0
+- **Status**: Development (95% Complete)
+- **Python**: 3.12.3+ compatible
+- **Django**: 4.2.7
+- **Last Updated**: January 2025
 
 ## 📄 License
 
 This project is proprietary software. All rights reserved.
 
+## 👥 Contact
+
+- **Email**: electnepal5@gmail.com
+- **Issues**: [GitHub Issues](https://github.com/yourusername/electNepal/issues)
+
 ## 🙏 Acknowledgments
 
 - Django community for the excellent framework
-- Google Translate for powering our bilingual system
-- PostgreSQL for robust database capabilities
-- All contributors and testers who helped improve the platform
+- Google Translate for bilingual capabilities
+- PostgreSQL for robust database features
+- All contributors and testers
 
 ---
 
-## 📊 Project Statistics
-
-- **Total Lines of Code**: ~15,000+
-- **Python Files**: 50+
-- **Templates**: 30+
-- **API Endpoints**: 15+
-- **Management Commands**: 10+
-- **Test Cases**: 30+
-- **Documentation Pages**: 20+
-
----
-
-**ElectNepal - Empowering Democracy in Nepal** 🇳🇵
-
-*Making informed voting decisions accessible to all Nepali citizens*
-
-**Version**: 1.0.0
-**Status**: Production Ready
-**Build**: Passing ✅
+<p align="center">
+  <strong>ElectNepal - Making Democracy Accessible</strong><br>
+  Empowering informed voting decisions for all Nepali citizens 🇳🇵
+</p>
